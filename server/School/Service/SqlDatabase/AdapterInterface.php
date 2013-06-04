@@ -1,4 +1,7 @@
 <?php
+/**
+ * Интерфейс адаптера базы данных
+ */
 class School_Service_SqlDatabase_AdapterInterface {
     
     /**
