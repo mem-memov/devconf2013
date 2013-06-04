@@ -40,8 +40,9 @@ class School_Service_SqlDatabase_AdapterInterface {
      * @param string $tableName имя таблицы
      * @param string $idColumn имя поля с автоинкрементом
      * @param array $values значения полей (могут содержать поле с автоинкрементом)
+     * @return int идентификатор вставленной строки
      */
-    public function insertDefault($tableName, $idColumn, array $values = array());
+    public function fetchDefaultId($tableName, $idColumn, array $values = array());
 
     /**
      * Извлекает первую строку
