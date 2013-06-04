@@ -4,10 +4,23 @@ implements
     School_Service_SqlDatabase_AdapterInterface
 {
     
+    /**
+     * Драйвер базы данных
+     * @var School_Service_SqlDatabase_PostgreSql_DriverInterface 
+     */
     private $driver;
     
+    /**
+     * Фабрика преобразователей табличных данных
+     * @var School_Service_SqlDatabase_RowTransformer_RowTransformerFactory
+     */
     private $rowTransformerFactory;
     
+    /**
+     * Создаёт экземпляр класса
+     * @param School_Service_SqlDatabase_PostgreSql_DriverInterface $driver драйвер базы данных
+     * @param School_Service_SqlDatabase_RowTransformer_RowTransformerFactory $rowTransformerFactory фабрика преобразователей табличных данных
+     */
     public function __construct(
         School_Service_SqlDatabase_PostgreSql_DriverInterface $driver,
         School_Service_SqlDatabase_RowTransformer_RowTransformerFactory $rowTransformerFactory
@@ -59,12 +72,6 @@ implements
     }
 
     public function fetchValueFromFirstRow($query, $fieldName) {
-        
-        
-        
-    }
-
-    public function fetchLastId() {
         
         
         

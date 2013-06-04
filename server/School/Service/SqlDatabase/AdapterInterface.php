@@ -5,11 +5,35 @@
 class School_Service_SqlDatabase_AdapterInterface {
     
     /**
-     * Выполняет SQL-запрос
-     * @param string $query SQL-запрос
-     * @return null
+     * Выполняет запрос к базе данных
+     * @param string $query текст SQL-запроса
+     * @throws School_Service_SqlDatabase_Exception_QueryFailed
      */
-    public function query($query);
+    public function fetchNothing($query);
+    
+    /**
+     * Извлекает строки таблицы
+     * @param string $query текст SQL-запроса
+     * @return array
+     * @throws School_Service_SqlDatabase_Exception_QueryFailed
+     */
+    public function fetchRows($query);
+    
+    /**
+     * Сообщает количество изменённых в последнем запросе строк
+     * @param string $query текст SQL-запроса
+     * @return int
+     * @throws School_Service_SqlDatabase_Exception_QueryFailed
+     */
+    public function fetchNumberOfAffectedRows($query);
+    
+    /**
+     * Находит идентификатор добавленной записи
+     * @param string $query текст SQL-запроса
+     * @return int
+     * @throws School_Service_SqlDatabase_Exception_QueryFailed
+     */
+    public function fetchLastId($query);
     
     /**
      * Вставляет новую строку в таблицу, имеющую одно поле с автоинкрементом
@@ -18,14 +42,7 @@ class School_Service_SqlDatabase_AdapterInterface {
      * @param array $values значения полей (могут содержать поле с автоинкрементом)
      */
     public function insertDefault($tableName, $idColumn, array $values = array());
-    
-    /**
-     * Извлекает строки таблицы
-     * @param string $query SQL-запрос
-     * @return array
-     */
-    public function fetchRows($query);
-    
+
     /**
      * Извлекает первую строку
      * @param string $query SQL-запрос
@@ -55,18 +72,6 @@ class School_Service_SqlDatabase_AdapterInterface {
      * @return mixed|null
      */
     public function fetchValueFromFirstRow($query, $fieldName);
-    
-    /**
-     * Находит идентификатор добавленной записи
-     * @return int|null
-     */
-    public function fetchLastId();
-    
-    /**
-     * Сообщает количество изменённых в последнем запросе строк
-     * @return int
-     */
-    public function fetchNumberOfAffectedRows();
     
     /**
      * Начинает транзакцию

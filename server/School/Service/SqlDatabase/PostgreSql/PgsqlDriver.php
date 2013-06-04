@@ -12,7 +12,6 @@ implements
     private $shema;
     
     private $connection;
-    private $result;
     
     /**
      * Создаёт экземпляр класса
@@ -41,7 +40,6 @@ implements
         $this->shema = $shema;
         
         $this->connection = null;
-        $this->result = null;
 
     }
     
@@ -54,64 +52,61 @@ implements
         }
         
     }
-    
-    /**
-     * Выполняет запрос к базе данных
-     * @param string $query
-     * @return resource
-     * @throws School_Service_SqlDatabase_Exception_QueryFailed
-     */
-    public function query($query) {
-        
-        $this->connect();
-        
-        $this->freeResult();
 
-        $this->result = @pg_query($this->connection, $query);
+    // School_Service_SqlDatabase_PostgreSql_DriverInterface: START -----------
+
+    public function fetchNothing($query) {
         
-        if ($this->result === false) {
-            
-            throw new School_Service_SqlDatabase_Exception_QueryFailed(
-                $query, 
-                pg_last_error()
-            );
-            
-        }
- 
-        return null;
+        $this->query($query);
         
     }
     
-    /**
-     * Извлекает строки таблицы
-     * @param string $query SQL-запрос
-     * @return array
-     */
     public function fetchRows($query) {
         
         $rows = array();
+        
+        $result = $this->query($query);
 
-        while ($row = pg_fetch_assoc($this->result)) {
+        while ($row = pg_fetch_assoc($result)) {
             
             $rows[] = $row;
             
         }
         
-        $this->freeResult();
+        pg_free_result($result);
         
         return $rows;
 
     }
-    
-    /**
-     * Сообщает количество изменённых в последнем запросе строк
-     * @return int
-     */
-    public function fetchNumberOfAffectedRows() {
+
+    public function fetchNumberOfAffectedRows($query) {
         
-        return pg_affected_rows($this->result);
+        $result = $this->query($query);
+        
+        $numberOfAffectedRows = pg_affected_rows($result);
+        
+        pg_free_result($result);
+        
+        return $numberOfAffectedRows;
   
     }
+    
+    public function fetchLastId($query) {
+        
+        $result = $this->query($query);
+        
+        // http://stackoverflow.com/questions/55956/mysql-insert-id-alternative-for-postgresql
+        $rows = $this->fetchRows('SELECT LASTVAL() AS last_value;');
+
+        $lastId = $rows[0]['last_value'];
+        
+        pg_free_result($result);
+        
+        return $lastId;
+        
+    }
+    
+    // School_Service_SqlDatabase_PostgreSql_DriverInterface: END -----------
     
     /**
      * Выполняет подключение к базе данных
@@ -147,17 +142,27 @@ implements
     }
     
     /**
-     * Очищает результат последнего запроса
+     * Выполняет запрос к базе данных
+     * @param string $query
+     * @return resource
+     * @throws School_Service_SqlDatabase_Exception_QueryFailed
      */
-    private function freeResult() {
+    private function query($query) {
         
-        if (is_resource($this->result)) {
+        $this->connect();
+
+        $result = @pg_query($this->connection, $query);
+        
+        if ($result === false) {
             
-            pg_free_result($this->result);
+            throw new School_Service_SqlDatabase_Exception_QueryFailed(
+                $query, 
+                pg_last_error()
+            );
             
         }
-        
-        $this->result = null;
+ 
+        return $result;
         
     }
     
