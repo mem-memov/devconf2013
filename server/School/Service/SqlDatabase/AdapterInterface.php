@@ -101,6 +101,7 @@ class School_Service_SqlDatabase_AdapterInterface {
     
     /**
      * Приводит значение, полученное из базы данных, к булеву типу
+     * @return bool
      */
     public function castBollean($value);
     
