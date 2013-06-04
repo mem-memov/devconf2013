@@ -55,11 +55,13 @@ class School_Service_SqlDatabase_AdapterInterface {
     
     /**
      * Находит идентификатор добавленной записи
+     * @return int|null
      */
     public function fetchLastId();
     
     /**
      * Сообщает количество изменённых в последнем запросе строк
+     * @return int
      */
     public function fetchNumberOfAffectedRows();
     
@@ -81,18 +83,25 @@ class School_Service_SqlDatabase_AdapterInterface {
     /**
      * Подготавливает значение для вставки в SQL-запрос в качестве строки
      * Экранирует и оборачивает в кавычки.
+     * @return string
      */
     public function prepareString($value);
     
     /**
      * Подготавливает булево значение для вставки в SQL-запрос
+     * @return string
      */
     public function prepareBoolean($value);
     
     /**
      * Подготавливает переменную, которя может содержать null, для вставки в SQL-запрос
+     * @return string
      */
     public function prepareIfNull($value);
     
+    /**
+     * Приводит значение, полученное из базы данных, к булеву типу
+     */
+    public function castBollean($value);
     
 }
