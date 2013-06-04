@@ -9,6 +9,14 @@ class School_Service_SqlDatabase_AdapterInterface {
     public function query($query);
     
     /**
+     * Вставляет новую строку в таблицу, имеющую одно поле с автоинкрементом
+     * @param string $tableName имя таблицы
+     * @param string $idColumn имя поля с автоинкрементом
+     * @param array $values значения полей (могут содержать поле с автоинкрементом)
+     */
+    public function insertDefault($tableName, $idColumn, array $values = array());
+    
+    /**
      * Извлекает строки таблицы
      * @param string $query SQL-запрос
      * @return array
@@ -44,5 +52,47 @@ class School_Service_SqlDatabase_AdapterInterface {
      * @return mixed|null
      */
     public function fetchValueFromFirstRow($query, $fieldName);
+    
+    /**
+     * Находит идентификатор добавленной записи
+     */
+    public function fetchLastId();
+    
+    /**
+     * Сообщает количество изменённых в последнем запросе строк
+     */
+    public function fetchNumberOfAffectedRows();
+    
+    /**
+     * Начинает транзакцию
+     */
+    public function beginTransaction();
+    
+    /**
+     * Записывает транзакцию
+     */
+    public function commit();
+    
+    /**
+     * Отменяет транзакцию
+     */
+    public function rollback();
+    
+    /**
+     * Подготавливает значение для вставки в SQL-запрос в качестве строки
+     * Экранирует и оборачивает в кавычки.
+     */
+    public function prepareString($value);
+    
+    /**
+     * Подготавливает булево значение для вставки в SQL-запрос
+     */
+    public function prepareBoolean($value);
+    
+    /**
+     * Подготавливает переменную, которя может содержать null, для вставки в SQL-запрос
+     */
+    public function prepareIfNull($value);
+    
     
 }
