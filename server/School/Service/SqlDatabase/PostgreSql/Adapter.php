@@ -17,12 +17,6 @@ implements
     private $rowTransformerFactory;
     
     /**
-     * Признак начавшейся транзакции
-     * @var boolean
-     */
-    private $transactionRunning;
-    
-    /**
      * Создаёт экземпляр класса
      * @param School_Service_SqlDatabase_PostgreSql_DriverInterface $driver драйвер базы данных
      * @param School_Service_SqlDatabase_RowTransformer_RowTransformerFactory $rowTransformerFactory фабрика преобразователей табличных данных
@@ -34,8 +28,6 @@ implements
         
         $this->driver = $driver;
         $this->rowTransformerFactory = $rowTransformerFactory;
-        
-        $this->transactionRunning = false;
         
     }
     
@@ -111,67 +103,50 @@ implements
 
     public function beginTransaction() {
         
-		if(!$this->transaction_has_begun) {
-            
-			$this->query('BEGIN');
-			$this->transaction_has_begun = true;
-			return true;
-            
-		}
-        
-		return false;
+		$this->driver->fetchNothing('BEGIN');
         
     }
 
     public function commit() {
         
-		if($this->transaction_has_begun) {
-            
-			$this->query('COMMIT');
-			$this->transaction_has_begun = false;
-			return true;
-            
-		}
-        
-		return false;
+		$this->driver->fetchNothing('COMMIT');
         
     }
 
     public function rollback() {
         
-		if($this->transaction_has_begun) {
-            
-			$this->driver->fetchNothing('ROLLBACK');
-            $this->transaction_has_begun = false;
-			return true;
-            
-		}
-        
-		return false;
+		$this->driver->fetchNothing('ROLLBACK');
         
     }
 
     public function prepareString($value) {
         
-        
+        return '\''. pg_escape_string($value) . '\'';
         
     }
 
     public function prepareBoolean($value) {
         
-        
+        return $value ? 'TRUE' : 'FALSE';
         
     }
 
     public function prepareIfNull($value) {
         
-        
+        return is_null($value) ? 'NULL' : $value;
         
     }
 
     public function castBollean(&$value) {
         
+        if ($value === 't') {
+            $value = true;
+        }
+        if ($value === 'f') {
+            $value = false;
+        }
         
+        $value = (bool)$value;
         
     }
     
