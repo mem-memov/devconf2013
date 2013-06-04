@@ -1,7 +1,7 @@
 <?php
-class School_Service_SqlDatabase_PostgreSql_PgsqlDriver 
+class School_Service_SqlDatabase_PostgreSql_MysqliDriver 
 implements
-    School_Service_SqlDatabase_PostgreSql_DriverInterface
+    School_Service_SqlDatabase_MySql_DriverInterface
 {
     
     private $server;
@@ -9,7 +9,6 @@ implements
     private $user;
     private $password;
     private $database;
-    private $shema;
     
     private $connection;
     
@@ -21,12 +20,11 @@ implements
      * @param string $password пароль
      * @param string $database имя базы данных
      * @param string $encoding кодировка
-     * @param string $shema имя схемы
      * @throws School_Service_SqlDatabase_Exception_PhpExtensionMisssing
      */
-    public function __construct($server, $port, $user, $password, $database, $encoding, $shema = null) {
+    public function __construct($server, $port, $user, $password, $database, $encoding) {
 
-        $phpExtensionName = 'pgsql';
+        $phpExtensionName = 'mysqli';
         if (!extension_loaded($phpExtensionName)) {
             throw new School_Service_SqlDatabase_Exception_PhpExtensionMisssing($phpExtensionName);
         }
@@ -37,7 +35,6 @@ implements
         $this->password = $password;
         $this->database = $database;
         $this->encoding = $encoding;
-        $this->shema = $shema;
         
         $this->connection = null;
 
@@ -45,16 +42,14 @@ implements
     
     public function __destruct() {
         
-        if (is_resource($this->connection)) {
+        if ($this->connection instanceof mysqli) {
             
-            pg_close($this->connection);
+            $this->connection->close();
             
         }
         
     }
-
-    // School_Service_SqlDatabase_PostgreSql_DriverInterface: START -----------
-
+    
     public function fetchNothing($query) {
         
         $this->query($query);
@@ -66,14 +61,18 @@ implements
         $rows = array();
         
         $result = $this->query($query);
+        
+        if (!($result instanceof mysqli_result)) {
+            throw new School_Service_SqlDatabase_Exception_ResultUnexpected(gettype($result), $query);
+        }
 
-        while ($row = pg_fetch_assoc($result)) {
+        while ($row = $result->fetch_assoc()) {
             
             $rows[] = $row;
             
         }
         
-        pg_free_result($result);
+        $result->free();
         
         return $rows;
 
@@ -83,11 +82,11 @@ implements
         
         $result = $this->query($query);
         
-        $numberOfAffectedRows = pg_affected_rows($result);
+        if ($result !== true) {
+            throw new School_Service_SqlDatabase_Exception_ResultUnexpected(gettype($result), $query);
+        }
         
-        pg_free_result($result);
-        
-        return $numberOfAffectedRows;
+        return $this->connection->affected_rows;
   
     }
     
@@ -95,18 +94,13 @@ implements
         
         $result = $this->query($query);
         
-        // http://stackoverflow.com/questions/55956/mysql-insert-id-alternative-for-postgresql
-        $rows = $this->fetchRows('SELECT LASTVAL() AS last_value;');
+        if ($result !== true) {
+            throw new School_Service_SqlDatabase_Exception_ResultUnexpected(gettype($result), $query);
+        }
 
-        $lastId = $rows[0]['last_value'];
-        
-        pg_free_result($result);
-        
-        return $lastId;
+        return $this->connection->insert_id;
         
     }
-    
-    // School_Service_SqlDatabase_PostgreSql_DriverInterface: END -----------
     
     /**
      * Выполняет подключение к базе данных
@@ -115,49 +109,41 @@ implements
      */
     private function connect() {
         
-        if (is_resource($this->connection)) {
+        if ($this->connection instanceof mysqli) {
             return;
         }
         
-        $this->connection = pg_connect('host='.$this->server.' port='.$this->port.' dbname='.$this->database.' user='.$this->user.' password='.$this->password.' connect_timeout=1');
+        $this->connection = new mysqli(
+                $this->server,
+                $this->user,
+                $this->password,
+                $this->database,
+                $this->port
+        );
         
-        if ($this->connection === false) {
-            throw new School_Service_SqlDatabase_Exception_ConnectionFailed(pg_last_error());
+        if ($this->connection->connect_error) {
+            throw new School_Service_SqlDatabase_Exception_ConnectionFailed($this->connection->connect_error);
         }
 
-        $this->setSchema();
-
-    }
-    
-    /**
-     * Устанавливает схему для всех последующих запросов 
-     * так, что её не нужно указывать перед именами таблиц
-     */
-    private function setSchema() {
-        
-        if (!is_null($this->shema)) {
-            $this->query('SET search_path TO '.$this->shema.',public;');
-        }
-        
     }
     
     /**
      * Выполняет запрос к базе данных
      * @param string $query
-     * @return resource
+     * @return resource|boolean
      * @throws School_Service_SqlDatabase_Exception_QueryFailed
      */
     private function query($query) {
         
         $this->connect();
 
-        $result = @pg_query($this->connection, $query);
+        $result = $this->connection->query($query);
         
         if ($result === false) {
             
             throw new School_Service_SqlDatabase_Exception_QueryFailed(
-                $query, 
-                pg_last_error()
+                $query,
+                $mysqli->error
             );
             
         }

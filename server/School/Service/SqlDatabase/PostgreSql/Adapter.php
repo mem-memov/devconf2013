@@ -63,8 +63,13 @@ implements
         
         $values[$idColumn] = 'DEFAULT';
         
+        $fields = array();
+        foreach (array_keys($columnValues) as $field) {
+            $fields[] = '"' . $field . '"';
+        }
+        
         $id = $this->fetchLastId('
-            INSERT INTO '.$tableName.'(
+            INSERT INTO "'.$tableName.'"(
                 '.implode(', ', array_keys($columnValues)).'
             )
             VALUES (
