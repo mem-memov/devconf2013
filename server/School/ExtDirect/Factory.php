@@ -60,14 +60,97 @@ class School_ExtDirect_Factory {
     /**
      * Создаёт контейнер входных данных
      * 
-     * @return CFrontend_Input
+     * @return School_ExtDirect_Input
      */
     public function getInput() {
+
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            $this->instances[$instanceKey] = new School_ExtDirect_Input();
+        }
+
+        return $this->instances[$instanceKey];
+
+    }
+    
+    /**
+     * Создаёт API сервера
+     * @return School_ExtDirect_Api
+     */
+    public function makeApi() {
+
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            $api = require_once dirname(dirname(__DIR__)).'/api/api.php';
+            $this->instances[$instanceKey] = new School_ExtDirect_Api($api);
+        }
+
+        return $this->instances[$instanceKey];
+
+    }
+    
+    /**
+     * Создаёт фабрику запросов
+     * @return School_ExtDirect_Factory_Request
+     */
+    public function makeRequestFactory() {
+
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            $this->instances[$instanceKey] = new School_ExtDirect_Factory_Request($this);
+        }
+
+        return $this->instances[$instanceKey];
+
+    }
+
+    /**
+     * Создаёт фабрику ответов
+     * @return School_ExtDirect_Factory_Response
+     */
+    public function makeResponseFactory() {
+
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            $this->instances[$instanceKey] = new School_ExtDirect_Factory_Response($this);
+        }
+
+        return $this->instances[$instanceKey];
+
+    }
+
+    /**
+     * Создаёт фабрику команд
+     * @return School_ExtDirect_Factory_Action
+     */
+    public function makeActionFactory() {
+
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            $this->instances[$instanceKey] = new School_ExtDirect_Factory_Action($this);
+        }
+
+        return $this->instances[$instanceKey];
+
+    }
+    
+    /**
+     * Создаёт фабрику контроллеров
+     * @return School_ExtDirect_Factory_Controller
+     */
+    public function makeControllerFactory() {
 
         $instance_key = __FUNCTION__;
 
         if (!isset($this->_aInstances[$instance_key])) {
-            $this->_aInstances[$instance_key] = new CFrontend_Input();
+
+            $this->_aInstances[$instance_key] = new School_ExtDirect_Factory_Controller($this);
+            
         }
 
         return $this->_aInstances[$instance_key];

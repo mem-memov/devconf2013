@@ -135,16 +135,17 @@ abstract class School_ExtDirect_Abstract_Action {
      * @return string 
      */
     protected function classJsToPhp($jsClass) {
-        
-        $commonNamespace = 'C'.ucwords(self::$commonNamespace);
-        
+
+        $commonNamespace = ucwords(self::$commonNamespace);
+
         $remotePath = preg_replace(
                 '/^(.*)('.$commonNamespace.'(.*))\/main.php(.*)$/', 
                 '$2', 
                 $this->input->getUri()
         );
-        
-        $class = str_replace('/', '_', $remotePath).'_'.$jsClass;
+
+        // TODO: вынести School
+        $class = 'School_'.str_replace('/', '_', $remotePath).'_'.$jsClass;
 
         return $class;
         

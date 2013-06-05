@@ -35,7 +35,7 @@ class School_ExtDirect_Processor {
         $this->config = $config;
         $this->factory = $factory;
         
-        $this->factory->makeClassLoader( dirname(dirname(__FILE__)) )->start();
+        $this->factory->makeClassLoader( dirname(dirname(__DIR__)) )->start();
 
     }
     
@@ -73,8 +73,8 @@ class School_ExtDirect_Processor {
      * @return array
      */
     public function process(
-        $requestUri,
-        $rawPostString,
+        $uri,
+        $rawRequestString,
         array $post,
         array $files
     ) {
@@ -82,8 +82,8 @@ class School_ExtDirect_Processor {
         $input = $this->factory->getInput();
         $input->initialize($post, $files, $rawRequestString, $uri);
 
-        $requestFactory = $this->factory->getRequestFactory();
-        $loActionFactory = $this->factory->getActionFactory();
+        $requestFactory = $this->factory->makeRequestFactory();
+        $actionFactory = $this->factory->makeActionFactory();
 
         // Обраратываем запросы из форм
         if (!isset($headers, $contents)) {
@@ -92,7 +92,7 @@ class School_ExtDirect_Processor {
 
             if ($formRequest->isValid()) {
 
-                $formAction = $loActionFactory->getFormAction($formRequest);
+                $formAction = $actionFactory->getFormAction($formRequest);
 
                 $formResponse = $formAction->tryToRun();
 
@@ -115,7 +115,7 @@ class School_ExtDirect_Processor {
 
                 if ($batchRequest->isValid()) {
 
-                    $batchAction = $loActionFactory->getBatchAction($batchRequest);
+                    $batchAction = $actionFactory->getBatchAction($batchRequest);
 
                     $batchResponse = $batchAction->tryToRun();
 

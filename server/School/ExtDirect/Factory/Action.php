@@ -13,9 +13,9 @@ class School_ExtDirect_Factory_Action extends School_ExtDirect_Abstract_Factory 
         
         return new School_ExtDirect_Action_Form(
             $request,
-            $this->factory->getControllerFactory(),
-            $this->factory->getApi(),
-            $this->factory->getResponseFactory(),
+            $this->factory->makeControllerFactory(),
+            $this->factory->makeApi(),
+            $this->factory->makeResponseFactory(),
             $this->factory->getInput()
         );
         
@@ -30,9 +30,9 @@ class School_ExtDirect_Factory_Action extends School_ExtDirect_Abstract_Factory 
         
         return new School_ExtDirect_Action_Batch(
             $request,
-            $this->factory->getControllerFactory(),
-            $this->factory->getApi(),
-            $this->factory->getResponseFactory(),
+            $this->factory->makeControllerFactory(),
+            $this->factory->makeApi(),
+            $this->factory->makeResponseFactory(),
             $this->factory->getInput()
         );
         
