@@ -5,6 +5,30 @@ Ext.define('school.Application', {
     extend: 'Ext.app.Application',
     
     autoCreateViewport: true,
+    
+    requires: ['Ext.direct.*'],
+    
+    launch: function() {
+        
+        // Даём возможность вызывать методы серверной части приложения
+        (function applyMultipleNamespacesOfRemoteApi (apiNamespace){
+
+            Ext.Object.each(apiNamespace, function(key, value, object) {
+
+                if (key == 'REMOTING_API') {
+                    Ext.direct.Manager.addProvider(value);
+                } else {
+                    applyMultipleNamespacesOfRemoteApi(value); // recursive call
+                }
+
+
+            });
+
+        })(Ext.remote);
+        
+        Ext.remote.Test.doit(5);
+        
+    },
 
     views: [
         'school.view.Viewport',

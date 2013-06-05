@@ -69,6 +69,11 @@ class School_Service_ApiGenerator_ApiGenerator {
         $actions = array();
 
         foreach ($classes as $namespace => $classNames) {
+            
+            // проверяем на на наличие в директории файла main.php
+            if (!in_array('main', $classNames)) {
+                throw new School_Service_ApiGenerator_Exception('В директории для '.$namespace.' не хватает файла main.php');
+            }
 
             foreach ($classNames as $className) {
 

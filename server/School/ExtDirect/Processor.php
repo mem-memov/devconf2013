@@ -77,6 +77,8 @@ class School_ExtDirect_Processor {
         array $files
     ) {
         
+        var_dump(99);
+        
         return array(array(), '');
         
     }
