@@ -1,0 +1,41 @@
+<?php
+/**
+ * Абстрактный запрос
+ */
+abstract class School_ExtDirect_Abstract_Request extends School_ExtDirect_Abstract_Transaction {
+    
+    /**
+     * Тип запроса
+     * @var string 
+     */
+    protected $type;
+    
+    /**
+     * Имя класса
+     * @var string 
+     */
+    protected $class;
+    
+    /**
+     * Имя метода
+     * @var string 
+     */
+    protected $method;
+    
+    /**
+     * Аргументы
+     * @var stdObject 
+     */
+    protected $parameters;
+    
+    /**
+     * Инициализирует запрос
+     */
+    abstract public function initialize(array $values);
+    
+    /**
+     * Проверяет правильность запроса
+     */
+    abstract public function isValid();
+    
+}
