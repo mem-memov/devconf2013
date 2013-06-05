@@ -1,38 +1,32 @@
 <?php
 /**
  * Контейнер входных данных
- * 
- *  
  */
 class School_ExtDirect_Input {
     
     /** 
      * Массив данных из POST-запроса 
-     * 
      * @var array 
      */
-    private $_post;
+    private $post;
     
     /** 
      * Массив данных с информацией о загруженных файлах
-     * 
      * @var array 
      */
-    private $_files;
+    private $files;
     
     /** 
      * Необработанные данные из тела запроса php://input
-     * 
      * @var string 
      */
-    private $_rawRequestString;
+    private $rawRequestString;
     
     /**
      * URI
-     * 
      * @var string
      */
-    private $sUri;
+    private $uri;
     
     /**
      * Создаёт экземпляр класса 
@@ -43,17 +37,16 @@ class School_ExtDirect_Input {
     
     /**
      * Инициализирует запрос
-     * 
-     * @param array $paPost массив данных из POST-запроса
+     * @param array $post массив данных из POST-запроса
      * @param array $files
-     * @param string $psRawRequestString необработанные данные из тела запроса php://input
-     * @param string $psUri
+     * @param string $rawRequestString необработанные данные из тела запроса php://input
+     * @param string $uri
      */
     public function initialize(
-        array $paPost, 
+        array $post, 
         array $files, 
-        $psRawRequestString,
-        $psUri
+        $rawRequestString,
+        $uri
     ) {
         
         if (
@@ -64,18 +57,16 @@ class School_ExtDirect_Input {
             throw new School_ExtDirect_Exception('Повторная инициализация запроса невозможна.');
         }
         
-        $this->post = $paPost;
+        $this->post = $post;
         $this->files = $files;
-        $this->rawRequestString = $psRawRequestString;
-        $this->sUri = $psUri;
+        $this->rawRequestString = $rawRequestString;
+        $this->uri = $uri;
         
     }
     
     /**
      * Предоставляет запрос, отправленный из формы 
-     * 
      * @link http://www.sencha.com/products/extjs/extdirect
-     * 
      * @param School_ExtDirect_Factory_Request $rrequestFactory
      * @return School_ExtDirect_Request_Form
      */
@@ -89,9 +80,7 @@ class School_ExtDirect_Input {
     
     /**
      * Предоставляет массив RPC-запросов 
-     * 
      * @link http://www.sencha.com/products/extjs/extdirect
-     * 
      * @param School_ExtDirect_Factory_Request $rrequestFactory
      * @return array
      */
@@ -123,7 +112,9 @@ class School_ExtDirect_Input {
     }
     
     public function getUri() {
-        return $this->sUri;
+        
+        return $this->uri;
+        
     }
 
     

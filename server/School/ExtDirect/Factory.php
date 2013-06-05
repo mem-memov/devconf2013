@@ -39,7 +39,10 @@ class School_ExtDirect_Factory {
         
     }
 
-
+    /**
+     * Cоздаёт фабрику сервисов
+     * @return School_Service_Factory
+     */
     public function makeServiceFactory() {
         
         $instanceKey = __FUNCTION__;
@@ -52,6 +55,23 @@ class School_ExtDirect_Factory {
 
         return $this->instances[$instanceKey];
         
+    }
+    
+    /**
+     * Создаёт контейнер входных данных
+     * 
+     * @return CFrontend_Input
+     */
+    public function getInput() {
+
+        $instance_key = __FUNCTION__;
+
+        if (!isset($this->_aInstances[$instance_key])) {
+            $this->_aInstances[$instance_key] = new CFrontend_Input();
+        }
+
+        return $this->_aInstances[$instance_key];
+
     }
 
 
