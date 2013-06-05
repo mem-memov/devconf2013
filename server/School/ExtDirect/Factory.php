@@ -13,7 +13,7 @@ class School_ExtDirect_Factory {
     /**
      * Создаёт экземпляр класса
      */
-    protected function __construct() {
+    public function __construct() {
 
         $this->instances = array();
         
@@ -30,6 +30,7 @@ class School_ExtDirect_Factory {
 
         if (!isset($this->instances[$instanceKey])) {
 
+            require_once('ClassLoader.php');
             $this->instances[$instanceKey] = new School_ExtDirect_ClassLoader($pathToRootDirectory);
             
         }
@@ -39,7 +40,19 @@ class School_ExtDirect_Factory {
     }
 
 
+    public function makeServiceFactory() {
+        
+        $instanceKey = __FUNCTION__;
 
+        if (!isset($this->instances[$instanceKey])) {
+
+            $this->instances[$instanceKey] = new School_Service_Factory();
+            
+        }
+
+        return $this->instances[$instanceKey];
+        
+    }
 
 
 }

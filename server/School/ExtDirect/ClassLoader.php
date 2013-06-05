@@ -33,7 +33,7 @@ class School_ExtDirect_ClassLoader {
     public function autoload($class) {
 
         $path = $this->buildUnderscoreClassPath($class);
-        
+
         if (is_readable($path)) {
             
             require_once($path);
