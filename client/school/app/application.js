@@ -4,13 +4,18 @@ Ext.define('school.Application', {
 
     extend: 'Ext.app.Application',
     
+    requires: ['Ext.direct.*'], // эти классы должны быть загружены до запуска конструктора
+    
     autoCreateViewport: true,
     
-    requires: ['Ext.direct.*'],
-    
-    launch: function() {
+    constructor: function(config) {
         
+        config = config || {};
+
         // Даём возможность вызывать методы серверной части приложения
+        // Выполняется в конструкторе, т.к. он запускается до создания каких-либо хранилищ, моделей и контроллеров
+        // В противном случае вызов удалённых процедур будет невозможен.
+        // Работает как в режиме динамической загрузки, так и после компиляции в Sencha Cmd
         (function applyMultipleNamespacesOfRemoteApi (apiNamespace){
 
             Ext.Object.each(apiNamespace, function(key, value, object) {
@@ -25,9 +30,10 @@ Ext.define('school.Application', {
             });
 
         })(Ext.remote);
-        
-        Ext.remote.Grade.readAll();
-        
+
+
+        this.callParent([config]);
+
     },
 
     views: [
@@ -39,7 +45,8 @@ Ext.define('school.Application', {
     ],
 
     controllers: [
-		'school.controller.ViewportController'
+		'school.controller.ViewportController',
+        'school.controller.AssessmentController'
     ],
     
     models: [
