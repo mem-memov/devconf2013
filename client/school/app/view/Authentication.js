@@ -18,7 +18,8 @@ Ext.define('school.view.Authentication', {
     
     buttons: [
         { 
-            text: 'Вход' 
+            text: 'Вход',
+            componentCls: 'submit-button'
         }
     ],
 

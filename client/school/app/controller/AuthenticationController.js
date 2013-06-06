@@ -8,6 +8,9 @@ Ext.define('school.controller.AuthenticationController', {
             component: {
                 'school-authentication': {
                     added: this.onAuthenticationAdded
+                },
+                'school-authentication [componentCls=submit-button]': {
+                    click: this.onSubmitButtonClick
                 }
             }
         });
@@ -21,6 +24,14 @@ Ext.define('school.controller.AuthenticationController', {
         authenticationWindow.down('[componentCls=authentication-form]').loadRecord(record);
         
         authenticationWindow.down('[componentCls=professor-name-list]').getStore().load();
+        
+    },
+    
+    onSubmitButtonClick: function(submitButton) {
+
+        var record = submitButton.up('school-authentication').down('[componentCls=authentication-form]').getRecord();
+console.log(record);
+        record.save();
         
     }
 	
