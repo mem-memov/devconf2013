@@ -143,7 +143,7 @@ implements
             
             throw new School_Service_SqlDatabase_Exception_QueryFailed(
                 $query,
-                $mysqli->error
+                $this->connection->error
             );
             
         }

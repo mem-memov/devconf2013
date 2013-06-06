@@ -46,7 +46,8 @@ Ext.define('school.Application', {
 
     controllers: [
 		'school.controller.ViewportController',
-        'school.controller.AssessmentController'
+        'school.controller.AssessmentController',
+        'school.controller.AuthenticationController'
     ],
     
     models: [

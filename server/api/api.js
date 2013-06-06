@@ -6,8 +6,14 @@ Ext.remote.REMOTING_API = {
 	"actions": {
 		"Grade": [
 			{
-				"name": "doit",
-				"len": 2
+				"name": "readAll",
+				"len": 0
+			}
+		],
+		"Professor": [
+			{
+				"name": "readNameList",
+				"len": 0
 			}
 		]
 	}

@@ -3,13 +3,21 @@
   array (
     'Grade' => 
     array (
-      'doit' => 
+      'readAll' => 
       array (
-        'length' => 2,
+        'length' => 0,
         'parameters' => 
         array (
-          'var1' => NULL,
-          'var2' => NULL,
+        ),
+      ),
+    ),
+    'Professor' => 
+    array (
+      'readNameList' => 
+      array (
+        'length' => 0,
+        'parameters' => 
+        array (
         ),
       ),
     ),

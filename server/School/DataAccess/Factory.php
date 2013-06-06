@@ -45,4 +45,21 @@ class School_DataAccess_Factory {
         
     }
     
+    /**
+     * Профессоры
+     * @return School_DataAccess_Professor
+     */
+    public function makeProfessor() {
+        
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            
+            $this->instances[$instanceKey] = new School_DataAccess_Professor($this->db);
+        }
+
+        return $this->instances[$instanceKey];
+        
+    }
+    
 }

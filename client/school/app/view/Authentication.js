@@ -25,8 +25,10 @@ Ext.define('school.view.Authentication', {
     items: [
         {
             xtype: 'form',
+            componentCls: 'authentication-form',
             flex: 1,
             layout: 'vbox',
+            trackResetOnLoad: true, // позволяет следить за изменениями в полях формы через событие dirtychange
             fieldDefaults: {
                 labelPad: 10,
                 labelAlign: 'top',
@@ -37,6 +39,7 @@ Ext.define('school.view.Authentication', {
                 {
                     fieldLabel: 'Имя:',
                     xtype: 'combobox',
+                    componentCls: 'professor-name-list',
                     valueField: 'id',
                     displayField: 'last_name',
                     queryMode: 'local',
