@@ -5,18 +5,6 @@
 class School_ExtDirect_Processor {
     
     /**
-     * Единственный экземпляр данного класса в системе
-     * @var School_ExtDirect_Processor
-     */
-    private static $instance;
-    
-    /** 
-     * Настройки системы
-     * @var array  
-     */
-    private $config;
-    
-    /**
      * Фабрика объектов, необходимых для работы обработчика клиентских запросов
      * @var School_ExtDirect_Factory
      */
@@ -24,46 +12,16 @@ class School_ExtDirect_Processor {
     
     /**
      * Создаёт экземпляр класса
-     * @param array $config настройки системы
      * @param School_ExtDirect_Factory $factory фабрика объектов, необходимых для работы обработчика клиентских запросов
      */
-    protected function __construct(
-        array $config,
+    public function __construct(
         School_ExtDirect_Factory $factory
     ) {
 
-        $this->config = $config;
         $this->factory = $factory;
-        
-        $this->factory->makeClassLoader( dirname(dirname(__DIR__)) )->start();
 
     }
-    
-    /**
-     * Возвращает уникальный экземпляр
-     * @param array $config настройки системы
-     * @param School_ExtDirect_Factory $factory фабрика объектов, необходимых для работы обработчика клиентских запросов
-     * @return School_ExtDirect_Processor
-     * @throws School_ExtDirect_Exception
-     */
-    public static function construct(
-        array $config,
-        School_ExtDirect_Factory $factory
-    ) {
 
-        if (empty(self::$instance)) {
-
-            self::$instance = new self($config, $factory);
-            return self::$instance;
-
-        } else {
-
-            throw new School_ExtDirect_Exception('Процессор можно создавать только один раз.');
-
-        }
-
-    }
-    
     /**
      * Обрабатывает запрос в виде набора массивов и возвращает текст и заголовки для отправки в браузер.
      * @param string $requestUri адрес страницы - для назначения конечного обработчика запроса
@@ -79,7 +37,7 @@ class School_ExtDirect_Processor {
         array $files
     ) {
 
-        $input = $this->factory->getInput();
+        $input = $this->factory->makeInput();
         $input->initialize($post, $files, $rawRequestString, $uri);
 
         $requestFactory = $this->factory->makeRequestFactory();
@@ -96,9 +54,9 @@ class School_ExtDirect_Processor {
 
                 $formResponse = $formAction->tryToRun();
 
-                $laFormResult = $formResponse->toArray();
+                $formResult = $formResponse->toArray();
 
-                list($headers, $contents) = $this->processFormResult($laFormResult);
+                list($headers, $contents) = $this->processFormResult($formResult);
 
             }
 

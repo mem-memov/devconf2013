@@ -1,6 +1,9 @@
 <?php
 
-class School_Service_ApiGenerator_ApiGenerator {
+class School_Service_ApiGenerator_ApiGenerator 
+implements 
+    School_Service_Interface_ApiGenerator 
+{
 
     /** @var string Путь к корневой директории приложения */
     private $rootDirectory;

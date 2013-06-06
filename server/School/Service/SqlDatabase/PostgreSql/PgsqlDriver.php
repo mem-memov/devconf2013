@@ -9,7 +9,7 @@ implements
     private $user;
     private $password;
     private $database;
-    private $shema;
+    private $schema;
     
     private $connection;
     
@@ -21,10 +21,10 @@ implements
      * @param string $password пароль
      * @param string $database имя базы данных
      * @param string $encoding кодировка
-     * @param string $shema имя схемы
+     * @param string $schema имя схемы
      * @throws School_Service_SqlDatabase_Exception_PhpExtensionMisssing
      */
-    public function __construct($server, $port, $user, $password, $database, $encoding, $shema = null) {
+    public function __construct($server, $port, $user, $password, $database, $encoding, $schema = null) {
 
         $phpExtensionName = 'pgsql';
         if (!extension_loaded($phpExtensionName)) {
@@ -37,7 +37,7 @@ implements
         $this->password = $password;
         $this->database = $database;
         $this->encoding = $encoding;
-        $this->shema = $shema;
+        $this->schema = $schema;
         
         $this->connection = null;
 
@@ -135,8 +135,8 @@ implements
      */
     private function setSchema() {
         
-        if (!is_null($this->shema)) {
-            $this->query('SET search_path TO '.$this->shema.',public;');
+        if (!is_null($this->schema)) {
+            $this->query('SET search_path TO '.$this->schema.',public;');
         }
         
     }

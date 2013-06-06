@@ -106,7 +106,7 @@ abstract class School_ExtDirect_Abstract_Action {
      */
     protected function runMethod($class, $method, array $parameters) {
         
-        $controller = $this->controllerFactory->getController($class);
+        $controller = $this->controllerFactory->makeController($class);
 
         $result = call_user_func_array(array($controller, $method), $parameters);
         

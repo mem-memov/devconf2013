@@ -1,7 +1,7 @@
 <?php
 class School_Service_SqlDatabase_PostgreSql_Adapter 
 implements
-    School_Service_SqlDatabase_AdapterInterface
+    School_Service_Interface_SqlDatabase
 {
     
     /**

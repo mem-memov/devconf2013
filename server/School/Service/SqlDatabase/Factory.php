@@ -10,7 +10,7 @@ class School_Service_SqlDatabase_Factory {
     /**
      * Создаёт экземпляр класса
      */
-    protected function __construct() {
+    public function __construct() {
 
         $this->instances = array();
         
@@ -24,8 +24,8 @@ class School_Service_SqlDatabase_Factory {
      * @param string $password пароль
      * @param string $database имя базы данных
      * @param string $encoding кодировка
-     * @param string $shema имя схемы
-     * @return School_Service_SqlDatabase_PostgreSql_Adapter
+     * @param string $schema имя схемы
+     * @return School_Service_Interface_SqlDatabase
      */
     public function makePostgreSqlAdapter(
         $server, 
@@ -34,7 +34,7 @@ class School_Service_SqlDatabase_Factory {
         $password, 
         $database, 
         $encoding, 
-        $shema = null
+        $schema = null
     ) {
         
         $driver = $this->makePostgreSqlPgsqlDriver(
@@ -44,7 +44,7 @@ class School_Service_SqlDatabase_Factory {
             $password, 
             $database, 
             $encoding, 
-            $shema
+            $schema
         );
         
         return new School_Service_SqlDatabase_PostgreSql_Adapter(
@@ -62,8 +62,8 @@ class School_Service_SqlDatabase_Factory {
      * @param string $password пароль
      * @param string $database имя базы данных
      * @param string $encoding кодировка
-     * @param string $shema имя схемы
-     * @return School_Service_SqlDatabase_PostgreSql_PgsqlDriver
+     * @param string $schema имя схемы
+     * @return School_Service_SqlDatabase_PostgreSql_DriverInterface
      */
     private function makePostgreSqlPgsqlDriver(
         $server, 
@@ -72,7 +72,7 @@ class School_Service_SqlDatabase_Factory {
         $password, 
         $database, 
         $encoding, 
-        $shema = null
+        $schema = null
     ) {
 
         return new School_Service_SqlDatabase_PostgreSql_PgsqlDriver(
@@ -82,7 +82,176 @@ class School_Service_SqlDatabase_Factory {
             $password, 
             $database, 
             $encoding, 
-            $shema
+            $schema
+        );
+        
+    }
+    
+    /**
+     * Создаёт адаптер MySQL
+     * @param string $server имя сервера
+     * @param string $port порт
+     * @param string $user имя пользователя
+     * @param string $password пароль
+     * @param string $database имя базы данных
+     * @param string $encoding кодировка
+     * @return School_Service_Interface_SqlDatabase
+     */
+    public function makeMySqlAdapter(
+        $server, 
+        $port, 
+        $user, 
+        $password, 
+        $database, 
+        $encoding
+    ) {
+        
+        $driver = $this->makeMySqlMysqliDriver(
+            $server, 
+            $port, 
+            $user, 
+            $password, 
+            $database, 
+            $encoding
+        );
+        
+        return new School_Service_SqlDatabase_MySql_Adapter(
+            $driver,
+            $this->makeRowTransformerFactory()
+        );
+        
+    }
+    
+    /**
+     * Содаёт драйвер mysqli для MySQL
+     * @param string $server имя сервера
+     * @param string $port порт
+     * @param string $user имя пользователя
+     * @param string $password пароль
+     * @param string $database имя базы данных
+     * @param string $encoding кодировка
+     * @return School_Service_SqlDatabase_MySql_DriverInterface
+     */
+    private function makeMySqlMysqliDriver(
+        $server, 
+        $port, 
+        $user, 
+        $password, 
+        $database, 
+        $encoding
+    ) {
+
+        return new School_Service_SqlDatabase_MySql_MysqliDriver(
+            $server, 
+            $port, 
+            $user, 
+            $password, 
+            $database, 
+            $encoding
+        );
+        
+    }
+    
+    /**
+     * Создаёт адаптер MS SQL Server
+     * @param string $server имя сервера
+     * @param string $user имя пользователя
+     * @param string $password пароль
+     * @param string $database имя базы данных
+     * @param string $encoding кодировка
+     * @return School_Service_Interface_SqlDatabase
+     */
+    public function makeMsSqlServerAdapter(
+        $server,
+        $user, 
+        $password, 
+        $database, 
+        $encoding
+    ) {
+        
+        if (extension_loaded('sqlsrv')) {
+            
+            $driver = $this->makeMsSqlServerSqlsrvDriver(
+                $server, 
+                $user, 
+                $password, 
+                $database, 
+                $encoding
+            );
+            
+        } elseif (extension_loaded('mssql')) {
+            
+            $driver = $this->makeMsSqlServerMssqlDriver(
+                $server, 
+                $user, 
+                $password, 
+                $database, 
+                $encoding
+            );
+            
+        } else {
+            
+            throw new School_Service_Exception('Не подключено расширения PHP для работы с MS SQL Server');
+
+        }
+
+        return new School_Service_SqlDatabase_MsSqlServer_Adapter(
+            $driver,
+            $this->makeRowTransformerFactory()
+        );
+        
+    }
+    
+    /**
+     * Содаёт драйвер mssql для MS SQL Server
+     * @param string $server имя сервера
+     * @param string $user имя пользователя
+     * @param string $password пароль
+     * @param string $database имя базы данных
+     * @param string $encoding кодировка
+     * @return School_Service_SqlDatabase_MsSqlServer_DriverInterface
+     */
+    private function makeMsSqlServerMssqlDriver(
+        $server,
+        $user, 
+        $password, 
+        $database, 
+        $encoding
+    ) {
+
+        return new School_Service_SqlDatabase_MsSqlServer_MssqlDriver(
+            $server,
+            $user, 
+            $password, 
+            $database, 
+            $encoding
+        );
+        
+    }
+    
+    /**
+     * Содаёт драйвер sqlsrv для MS SQL Server
+     * @param string $server имя сервера
+     * @param string $user имя пользователя
+     * @param string $password пароль
+     * @param string $database имя базы данных
+     * @param string $encoding кодировка
+     * @return School_Service_SqlDatabase_MsSqlServer_DriverInterface
+     */
+    private function makeMsSqlServerSqlsrvDriver(
+        $server,
+        $user, 
+        $password, 
+        $database, 
+        $encoding
+    ) {
+
+        return new School_Service_SqlDatabase_MsSqlServer_SqlsrvDriver(
+            $server,
+            $user, 
+            $password, 
+            $database, 
+            $encoding
         );
         
     }

@@ -26,7 +26,7 @@ Ext.define('school.Application', {
 
         })(Ext.remote);
         
-        Ext.remote.Test.doit(5,7);
+        Ext.remote.Grade.readAll();
         
     },
 

@@ -16,7 +16,7 @@ class School_ExtDirect_Factory_Action extends School_ExtDirect_Abstract_Factory 
             $this->factory->makeControllerFactory(),
             $this->factory->makeApi(),
             $this->factory->makeResponseFactory(),
-            $this->factory->getInput()
+            $this->factory->makeInput()
         );
         
     }
@@ -33,7 +33,7 @@ class School_ExtDirect_Factory_Action extends School_ExtDirect_Abstract_Factory 
             $this->factory->makeControllerFactory(),
             $this->factory->makeApi(),
             $this->factory->makeResponseFactory(),
-            $this->factory->getInput()
+            $this->factory->makeInput()
         );
         
     }

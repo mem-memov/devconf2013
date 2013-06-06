@@ -12,15 +12,14 @@ error_reporting(-1);
 
 ini_set('always_populate_raw_post_data', true);
 
-require_once('School/ExtDirect/Processor.php');
 require_once('School/ExtDirect/Factory.php');
 
 try {
     
-    list($headers, $contents) =     School_ExtDirect_Processor::construct(
-                                        require_once('config.php'),
-                                        new School_ExtDirect_Factory()
-                                    )->process(
+    list($headers, $contents) =     School_ExtDirect_Factory::construct(
+                                        require_once('config.php')
+                                    )->makeProcessor()
+                                    ->process(
                                         $_SERVER['REQUEST_URI'],
                                         $HTTP_RAW_POST_DATA,
                                         $_POST,

@@ -33,7 +33,7 @@ class School_ExtDirect_Action_Batch extends School_ExtDirect_Abstract_Action {
         $parameters = $this->request->getParameters();
         $this->checkApi($class, $method);
 
-        $controller = $this->controllerFactory->getController($class);
+        $controller = $this->controllerFactory->makeController($class);
       
         $result = $this->runMethod($class, $method, $parameters);
      

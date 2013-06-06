@@ -4,6 +4,18 @@
  */
 class School_ExtDirect_Factory {
 
+    /**
+     * Единственный экземпляр данного класса в системе
+     * @var School_ExtDirect_Factory
+     */
+    private static $instance;
+    
+    /** 
+     * Настройки системы
+     * @var array  
+     */
+    private $config;
+    
     /** 
      * Контейнер для уникальных объектов
      * @var array  
@@ -12,11 +24,36 @@ class School_ExtDirect_Factory {
 
     /**
      * Создаёт экземпляр класса
+     * @param array $config настройки системы
      */
-    public function __construct() {
+    protected function __construct(array $config) {
 
+        $this->config = $config;
         $this->instances = array();
         
+        $this->makeClassLoader( dirname(dirname(__DIR__)) )->start();
+        
+    }
+    
+    /**
+     * Возвращает уникальный экземпляр
+     * @param array $config настройки системы
+     * @return School_ExtDirect_Factory
+     * @throws School_ExtDirect_Exception
+     */
+    public static function construct(array $config) {
+
+        if (empty(self::$instance)) {
+
+            self::$instance = new self($config);
+            return self::$instance;
+
+        } else {
+
+            throw new School_ExtDirect_Exception('Фабрику верхнего уровня можно создавать только один раз.');
+
+        }
+
     }
     
     /**
@@ -24,7 +61,7 @@ class School_ExtDirect_Factory {
      * @param type $pathToRootDirectory путь к корневой директории
      * @return School_ExtDirect_ClassLoader
      */
-    public function makeClassLoader($pathToRootDirectory) {
+    private function makeClassLoader($pathToRootDirectory) {
         
         $instanceKey = __FUNCTION__;
 
@@ -38,31 +75,31 @@ class School_ExtDirect_Factory {
         return $this->instances[$instanceKey];
         
     }
-
+    
     /**
-     * Cоздаёт фабрику сервисов
-     * @return School_Service_Factory
+     * Создаёт обработчик запросов ExtDirect
+     * @return School_ExtDirect_Processor
      */
-    public function makeServiceFactory() {
+    public function makeProcessor() {
         
         $instanceKey = __FUNCTION__;
 
         if (!isset($this->instances[$instanceKey])) {
 
-            $this->instances[$instanceKey] = new School_Service_Factory();
+            $this->instances[$instanceKey] = new School_ExtDirect_Processor($this);
             
         }
 
         return $this->instances[$instanceKey];
         
     }
-    
+
     /**
      * Создаёт контейнер входных данных
      * 
      * @return School_ExtDirect_Input
      */
-    public function getInput() {
+    public function makeInput() {
 
         $instanceKey = __FUNCTION__;
 
@@ -145,17 +182,79 @@ class School_ExtDirect_Factory {
      */
     public function makeControllerFactory() {
 
-        $instance_key = __FUNCTION__;
+        $instanceKey = __FUNCTION__;
 
-        if (!isset($this->_aInstances[$instance_key])) {
+        if (!isset($this->instances[$instanceKey])) {
 
-            $this->_aInstances[$instance_key] = new School_ExtDirect_Factory_Controller($this);
+            $this->instances[$instanceKey] = new School_ExtDirect_Factory_Controller(
+                  $this->makeDataAccessFactory(),
+                  $this->makeServiceLocator()  
+            );
             
         }
 
-        return $this->_aInstances[$instance_key];
+        return $this->instances[$instanceKey];
 
     }
 
+    /**
+     * Создаёт фабрику объектов доступа к данных
+     * @return School_DataAccess_Factory
+     */
+    public function makeDataAccessFactory() {
+
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+
+            $this->instances[$instanceKey] = new School_DataAccess_Factory(
+                $this->makeServiceLocator()->getDatabase()
+            );
+            
+        }
+
+        return $this->instances[$instanceKey];
+
+    }
+    
+    /**
+     * Cоздаёт поставщика сервисов
+     * @return School_Service_Locator
+     */
+    public function makeServiceLocator() {
+        
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+
+            $this->instances[$instanceKey] = new School_Service_Locator(
+                $this->config,
+                $this->makeServiceFactory()
+             );
+            
+        }
+
+        return $this->instances[$instanceKey];
+        
+    }
+
+
+    /**
+     * Cоздаёт фабрику сервисов
+     * @return School_Service_Factory
+     */
+    private function makeServiceFactory() {
+        
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+
+            $this->instances[$instanceKey] = new School_Service_Factory();
+            
+        }
+
+        return $this->instances[$instanceKey];
+        
+    }
 
 }

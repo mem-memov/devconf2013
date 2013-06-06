@@ -1,5 +1,5 @@
 <?php
-class School_Service_SqlDatabase_PostgreSql_MysqliDriver 
+class School_Service_SqlDatabase_MySql_MysqliDriver 
 implements
     School_Service_SqlDatabase_MySql_DriverInterface
 {
@@ -112,7 +112,7 @@ implements
         if ($this->connection instanceof mysqli) {
             return;
         }
-        
+
         $this->connection = new mysqli(
                 $this->server,
                 $this->user,
