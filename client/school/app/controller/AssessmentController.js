@@ -8,6 +8,9 @@ Ext.define('school.controller.AssessmentController', {
             component: {
                 'school-grade-list': {
                     added: this.onSchoolGradeListAdded
+                },
+                'school-student-list': {
+                    added: this.onSchoolStudentListAdded
                 }
             }
         });
@@ -17,6 +20,12 @@ Ext.define('school.controller.AssessmentController', {
     onSchoolGradeListAdded: function(schoolGradeList) {
         
         schoolGradeList.getStore().load();
+        
+    },
+    
+    onSchoolStudentListAdded: function(schoolStudentList) {
+        
+        schoolStudentList.getStore().load();
         
     }
 	

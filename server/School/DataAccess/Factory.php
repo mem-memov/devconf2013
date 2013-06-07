@@ -62,4 +62,21 @@ class School_DataAccess_Factory {
         
     }
     
+    /**
+     * Учащиеся
+     * @return School_DataAccess_Student
+     */
+    public function makeStudent() {
+        
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            
+            $this->instances[$instanceKey] = new School_DataAccess_Student($this->db);
+        }
+
+        return $this->instances[$instanceKey];
+        
+    }
+    
 }

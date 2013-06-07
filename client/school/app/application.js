@@ -52,7 +52,6 @@ Ext.define('school.Application', {
     
     models: [
         'school.model.ProfessorModel',
-        'school.model.AuthenticationModel',
         'school.model.GradeModel'
     ],
 
