@@ -115,7 +115,7 @@ class School_ExtDirect_Processor {
 
         $contents = utf8_encode(json_encode($formResult));
 
-        $contents = '<html><body><textarea>' . preg_replace( '/&quot;/', '\\&quot;', $contents ) . '</textarea></body></html>';
+        //$contents = '<html><body><textarea>' . preg_replace( '/&quot;/', '\\&quot;', $contents ) . '</textarea></body></html>';
 
         return array($headers, $contents);
 

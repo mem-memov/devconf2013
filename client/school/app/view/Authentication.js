@@ -29,7 +29,6 @@ Ext.define('school.view.Authentication', {
             componentCls: 'authentication-form',
             flex: 1,
             layout: 'vbox',
-            trackResetOnLoad: true, // позволяет следить за изменениями в полях формы через событие dirtychange
             fieldDefaults: {
                 labelPad: 10,
                 labelAlign: 'top',
@@ -40,19 +39,30 @@ Ext.define('school.view.Authentication', {
                 {
                     fieldLabel: 'Имя:',
                     xtype: 'combobox',
+                    name: 'id',
                     componentCls: 'professor-name-list',
                     valueField: 'id',
                     displayField: 'last_name',
                     queryMode: 'local',
+                    formBind: true,
+                    editable: false,
                     store: {
                         type: 'school-professor-store'
                     }
                 }, {
                     fieldLabel: 'Пароль:',
                     xtype: 'textfield',
+                    name: 'password',
+                    formBind: true,
                     inputType: 'password'
                 }
-            ]
+            ],
+            // конфигурация BasicForm
+            api: {
+                //load: 'Ext.remote.Authentication.login',
+                submit: 'Ext.remote.Authentication.loginFormHandler'
+            },
+            paramOrder: ['uid', 'foo']
         }, {
             xtype: 'image',
             src: 'resources/images/person/Albus_Dumbledore_300x400.png',

@@ -66,7 +66,7 @@ class School_ExtDirect_Api {
      */
     public function getMethodParameters($class, $method) {
         
-        if (!$this->method_exists($class, $method)) {
+        if (!$this->methodExists($class, $method)) {
             throw new exception('Метод '.$class.'::'.$method.' не существует или недоступен.');
         }
         

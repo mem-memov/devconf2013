@@ -1,28 +1,23 @@
 <?php
 /**
  * Ответ на удалённый вызов процедуры (RPC)
- * 
- * 
  */
 class School_ExtDirect_Response_Rpc extends School_ExtDirect_Abstract_Response {
     
     /**
      * Имя класса
-     * 
      * @var string 
      */
     protected $class;
     
     /**
      * Имя метода
-     * 
      * @var string 
      */
     protected $method;
     
     /**
      * Создаёт экземпляр класса
-     * 
      * @param integer $transactionId
      * @param string $class
      * @param string $method
@@ -46,7 +41,6 @@ class School_ExtDirect_Response_Rpc extends School_ExtDirect_Abstract_Response {
     
     /**
      * Преобразует данный объект в массив
-     * 
      * @return array 
      */
     public function toArray() {

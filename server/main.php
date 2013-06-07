@@ -21,7 +21,7 @@ try {
                                     )->makeProcessor()
                                     ->process(
                                         $_SERVER['REQUEST_URI'],
-                                        $HTTP_RAW_POST_DATA,
+                                        isset($HTTP_RAW_POST_DATA) ? $HTTP_RAW_POST_DATA : '',
                                         $_POST,
                                         $_FILES
                                     );

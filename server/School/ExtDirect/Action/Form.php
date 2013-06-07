@@ -32,14 +32,16 @@ class School_ExtDirect_Action_Form extends School_ExtDirect_Abstract_Action {
         $class = $this->classJsToPhp($this->request->getClass());
         $method = $this->request->getMethod();
         $parameters = $this->request->getParameters();
-        
+
         $this->checkApi($class, $method);
 
         $values = array();
         
         $files = $this->request->getFiles();
         
-        $methodParameters = $this->oApi->getMethodParameters($class, $method);
+        // отсекаем служебные значения из тех, что пришли в POST-запросе
+        
+        $methodParameters = $this->api->getMethodParameters($class, $method);
 
         foreach($methodParameters as $parameterName => $defaultValue) {
 
@@ -54,6 +56,7 @@ class School_ExtDirect_Action_Form extends School_ExtDirect_Abstract_Action {
             $values[] = $value;
         }
         
+        // выполняем метод-обработчик формы
         $result = $this->runMethod($class, $method, $values);
         
         if (isset($result['success'], $result['data'])) {
@@ -61,7 +64,7 @@ class School_ExtDirect_Action_Form extends School_ExtDirect_Abstract_Action {
             $response = $this
                             ->responseFactory
                             ->getRpcResponse(
-                                    $this->request->get_transaction_id(), 
+                                    $this->request->getTransactionId(), 
                                     $this->classPhpToJs($class), 
                                     $method, 
                                     $result

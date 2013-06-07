@@ -67,12 +67,12 @@ class School_ExtDirect_Input {
     /**
      * Предоставляет запрос, отправленный из формы 
      * @link http://www.sencha.com/products/extjs/extdirect
-     * @param School_ExtDirect_Factory_Request $rrequestFactory
+     * @param School_ExtDirect_Factory_Request $requestFactory
      * @return School_ExtDirect_Request_Form
      */
-    public function fetchFormRequest(School_ExtDirect_Factory_Request $rrequestFactory) {
+    public function fetchFormRequest(School_ExtDirect_Factory_Request $requestFactory) {
 
-        $formRequest = $rrequestFactory->getFormRequest($this->post, $this->files);
+        $formRequest = $requestFactory->getFormRequest($this->post, $this->files);
         
         return $formRequest;
         

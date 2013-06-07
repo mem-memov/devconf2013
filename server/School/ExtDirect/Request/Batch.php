@@ -60,23 +60,5 @@ class School_ExtDirect_Request_Batch extends School_ExtDirect_Abstract_Request {
         );
         
     }
-    
-    public function getClass() {
-        
-        return $this->class;
-        
-    }
-    
-    public function getMethod() {
-        
-        return $this->method;
-        
-    }
-    
-    public function getParameters() {
-        
-        return $this->parameters;
-        
-    }
-    
+
 }

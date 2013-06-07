@@ -84,7 +84,7 @@ class School_ExtDirect_Request_Form extends School_ExtDirect_Abstract_Request {
         $this->parameters = $formValues;
         $this->isUpload = ($rpcValues['extUpload'] == 'true');
         $this->type = $rpcValues['extType'];
-        
+
         // Первичная инициализация сведений о загруженных файлах.  См. set_files()
         $this->files = array();
         

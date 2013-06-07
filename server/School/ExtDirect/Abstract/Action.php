@@ -158,8 +158,8 @@ abstract class School_ExtDirect_Abstract_Action {
      */
     protected function classPhpToJs($phpClass) {
         
-        $class = substr($phpClass, strlen(self::$commonNamespace)+1+1); // 'C'
-        
+        $class = substr($phpClass, strlen('School_') + strlen(self::$commonNamespace)+1);
+
         return $class;
         
     }

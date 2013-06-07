@@ -39,11 +39,15 @@ implements
      * @var array
      */
     private $phpRootNamespaceParts;
+    
+    private $formHandlerParameterName;
 
     /**
      * Конструктор сервиса
      */
     public function __construct($siteRootOffset = '') {
+        
+        $this->formHandlerParameterName = 'formHandler';
         
         $this->phpRootNamespaceParts = explode('_', 'School');
 
@@ -103,11 +107,11 @@ implements
 
         // Сохраняем текст API в файлы
 
-        $javascript_api = $this->buildJavascript($actions);
-        file_put_contents($this->javascriptApiFile, $javascript_api);
+        $javascriptApi = $this->buildJavascript($actions);
+        file_put_contents($this->javascriptApiFile, $javascriptApi);
 
-        $php_api =$this->buildPhp($actions);
-        file_put_contents($this->phpApiFile, $php_api);
+        $phpApi =$this->buildPhp($actions);
+        file_put_contents($this->phpApiFile, $phpApi);
         
         // Проверяем возможность писать в файлы
         
@@ -137,28 +141,28 @@ implements
 
         $methods = array();
 
-        $class_reflection = new ReflectionClass($className);
+        $classReflection = new ReflectionClass($className);
 
         // Получаем открытые методы класса
-        $public_method_reflections = $class_reflection->getMethods(ReflectionMethod::IS_PUBLIC);
+        $publicMethodReflections = $classReflection->getMethods(ReflectionMethod::IS_PUBLIC);
 
-        foreach ($public_method_reflections as $public_method_reflection) {
+        foreach ($publicMethodReflections as $publicMethodReflection) {
 
-            $method_name = $public_method_reflection->name;
+            $methodName = $publicMethodReflection->name;
 
             // исключаем специальные и волшебные методы
-            if (strlen($method_name) > 2 && substr($method_name, 0, 2) == '__') {
+            if (strlen($methodName) > 2 && substr($methodName, 0, 2) == '__') {
                 continue;
             }
 
             // исключаем статические методы
-            if ($public_method_reflection->isStatic()) {
+            if ($publicMethodReflection->isStatic()) {
                 continue;
             }
 
-            $methods[$method_name] = array(
-                'length' => $public_method_reflection->getNumberOfParameters(),
-                'parameters' => $this->getMethodParameters($public_method_reflection)
+            $methods[$methodName] = array(
+                'length' => $publicMethodReflection->getNumberOfParameters(),
+                'parameters' => $this->getMethodParameters($publicMethodReflection)
             );
 
         }
@@ -171,13 +175,18 @@ implements
 
         $parameters = array();
 
-        $parameter_reflections = $method_reflection->getParameters();
+        $parameterReflections = $method_reflection->getParameters();
 
-        foreach ($parameter_reflections as $parameter_reflection) {
+        foreach ($parameterReflections as $parameterReflection) {
+            
+            // пропускаем служебный параметр $formHandler = true
+            if ($parameterReflection->getName() == $this->formHandlerParameterName) {
+                continue;
+            }
 
-            if ($parameter_reflection->isDefaultValueAvailable()) {
+            if ($parameterReflection->isDefaultValueAvailable()) {
 
-                $value = $parameter_reflection->getDefaultValue();
+                $value = $parameterReflection->getDefaultValue();
 
             } else {
 
@@ -185,7 +194,7 @@ implements
 
             }
 
-            $parameters[$parameter_reflection->getName()] = $value;
+            $parameters[$parameterReflection->getName()] = $value;
 
         }
 
@@ -229,14 +238,14 @@ implements
         return $classNames;
     }
 
-    private function namespacePhpToJavascript($php_namespace) {
+    private function namespacePhpToJavascript($phpNamespace) {
 
-        $javascript_namespace = str_replace('_', '.', $php_namespace);
-        $javascript_namespace = substr( $javascript_namespace, strlen(implode('_', $this->phpRootNamespaceParts))+1 );
-        $javascript_namespace = strtolower($javascript_namespace);
-        $javascript_namespace = 'Ext.' . $javascript_namespace;
+        $javascriptNamespace = str_replace('_', '.', $phpNamespace);
+        $javascriptNamespace = substr( $javascriptNamespace, strlen(implode('_', $this->phpRootNamespaceParts))+1 );
+        $javascriptNamespace = strtolower($javascriptNamespace);
+        $javascriptNamespace = 'Ext.' . $javascriptNamespace;
 
-        return $javascript_namespace;
+        return $javascriptNamespace;
 
     }
 
@@ -254,13 +263,13 @@ implements
 
         $api = '';
 
-        foreach ($namespaces as $php_namespace => $actions) {
+        foreach ($namespaces as $phpNamespace => $actions) {
             
-            $url = $this->namespaceToUrl($php_namespace);
+            $url = $this->namespaceToUrl($phpNamespace);
 
-            $javascript_namespace = $this->namespacePhpToJavascript($php_namespace);
+            $javascriptNamespace = $this->namespacePhpToJavascript($phpNamespace);
 
-            $api .= $this->buildJavascriptNamespace($url, $javascript_namespace, $actions);
+            $api .= $this->buildJavascriptNamespace($url, $javascriptNamespace, $actions);
 
         }
 
@@ -268,12 +277,12 @@ implements
 
     }
     
-    private function buildJavascriptNamespace($url, $javascript_namespace, $actions) {
+    private function buildJavascriptNamespace($url, $javascriptNamespace, $actions) {
 
-        $api = 'Ext.ns("'.$javascript_namespace.'");'."\n";
-        $api .= ''.$javascript_namespace.'.REMOTING_API = {'."\n";
+        $api = 'Ext.ns("'.$javascriptNamespace.'");'."\n";
+        $api .= ''.$javascriptNamespace.'.REMOTING_API = {'."\n";
         $api .= "\t".'"url": "'.str_replace('/', '\/', $url).'",'."\n";
-        $api .= "\t".'"namespace": "'.$javascript_namespace.'",'."\n";
+        $api .= "\t".'"namespace": "'.$javascriptNamespace.'",'."\n";
         $api .= "\t".'"type": "remoting",'."\n";
         $api .= "\t".'"actions": {'."\n";
 
@@ -281,10 +290,11 @@ implements
 
             $api .= "\t\t".'"'.$className.'": ['."\n";
 
-            foreach ($methods as $method_name => $method_description) {
+            foreach ($methods as $methodName => $methodDescription) {
                 $api .= "\t\t\t".'{'."\n";
-                $api .= "\t\t\t\t".'"name": "'.$method_name.'",'."\n";
-                $api .= "\t\t\t\t".'"len": '.$method_description['length']."\n";
+                $api .= "\t\t\t\t".'"name": "'.$methodName.'",'."\n";
+                $api .= "\t\t\t\t".'"len": '.$methodDescription['length'].','."\n";
+                $api .= "\t\t\t\t".'"formHandler": '.($this->methodIsFormHandler($methodName, $methodDescription) ? 'true' : 'false')."\n";
                 $api .= "\t\t\t".'},'."\n";
             }
 
@@ -305,6 +315,20 @@ implements
 
 
         return $api;
+
+     }
+
+     private function methodIsFormHandler($methodName, array $methodDescription) {
+
+         if (array_key_exists($this->formHandlerParameterName, $methodDescription['parameters'])) {
+             return true;
+         }
+
+         if (strpos($methodName, ucfirst($this->formHandlerParameterName)) !== false) {
+             return true;
+         }
+
+         return false;
 
      }
 

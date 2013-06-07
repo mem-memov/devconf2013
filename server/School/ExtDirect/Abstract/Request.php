@@ -38,4 +38,22 @@ abstract class School_ExtDirect_Abstract_Request extends School_ExtDirect_Abstra
      */
     abstract public function isValid();
     
+    public function getClass() {
+        
+        return $this->class;
+        
+    }
+    
+    public function getMethod() {
+        
+        return $this->method;
+        
+    }
+    
+    public function getParameters() {
+        
+        return $this->parameters;
+        
+    }
+    
 }
