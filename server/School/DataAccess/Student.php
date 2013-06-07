@@ -11,6 +11,7 @@ class School_DataAccess_Student extends School_DataAccess_Abstract_Provider {
                 person.id,
                 person.first_name,
                 person.last_name,
+                student.year,
                 house.house
             FROM
                 person

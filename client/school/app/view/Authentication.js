@@ -59,10 +59,8 @@ Ext.define('school.view.Authentication', {
             ],
             // конфигурация BasicForm
             api: {
-                //load: 'Ext.remote.Authentication.login',
                 submit: 'Ext.remote.Authentication.loginFormHandler'
-            },
-            paramOrder: ['uid', 'foo']
+            }
         }, {
             xtype: 'image',
             src: 'resources/images/person/Albus_Dumbledore_300x400.png',

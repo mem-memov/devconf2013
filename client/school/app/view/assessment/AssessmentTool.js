@@ -14,10 +14,26 @@ Ext.define('school.view.assessment.AssessmentTool', {
     items: [
         {
             xtype: 'school-student-list',
-            flex: 1
+            flex: 1,
+            border: false
         }, {
-            xtype: 'school-grade-list',
-            flex: 1
+            xtype: 'panel',
+            flex: 2,
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                {
+                    xtype: 'school-student-profile',
+                    flex: 1,
+                    border: false
+                }, {
+                    xtype: 'school-grade-list',
+                    flex: 1,
+                    border: false
+                }
+            ]
         }
     ]
     

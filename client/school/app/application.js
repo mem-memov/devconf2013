@@ -41,13 +41,17 @@ Ext.define('school.Application', {
         'school.view.Authentication',
         'school.view.assessment.StudentList',
         'school.view.assessment.AssessmentTool',
-        'school.view.assessment.GradeList'
+        'school.view.assessment.GradeList',
+        'school.view.profile.Student',
+        'school.view.profile.ActivityChart',
+        'school.view.profile.PersonCard'
     ],
 
     controllers: [
 		'school.controller.ViewportController',
         'school.controller.AssessmentController',
-        'school.controller.AuthenticationController'
+        'school.controller.AuthenticationController',
+        'school.controller.ProfileController'
     ],
     
     models: [
@@ -58,7 +62,8 @@ Ext.define('school.Application', {
     stores: [
         'school.store.ProfessorStore',
         'school.store.StudentStore',
-        'school.store.GradeStore'
+        'school.store.GradeStore',
+        'school.store.StudentActivityStore'
     ]
     
 });

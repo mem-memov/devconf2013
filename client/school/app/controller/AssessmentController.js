@@ -10,7 +10,8 @@ Ext.define('school.controller.AssessmentController', {
                     added: this.onSchoolGradeListAdded
                 },
                 'school-student-list': {
-                    added: this.onSchoolStudentListAdded
+                    added: this.onSchoolStudentListAdded,
+                    itemclick: this.onStudentItemClick
                 }
             }
         });
@@ -26,6 +27,12 @@ Ext.define('school.controller.AssessmentController', {
     onSchoolStudentListAdded: function(schoolStudentList) {
         
         schoolStudentList.getStore().load();
+        
+    },
+    
+    onStudentItemClick: function(schoolStudentList, record) {
+        
+        this.fireEvent('student-selected', record.getData());
         
     }
 	

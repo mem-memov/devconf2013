@@ -25,11 +25,18 @@ Ext.define('school.controller.AuthenticationController', {
     
     onSubmitButtonClick: function(submitButton) {
 
-        var formPanel = submitButton.up('school-authentication').down('[componentCls=authentication-form]');
+        var authenticationWindow = submitButton.up('school-authentication');
+        var formPanel = authenticationWindow.down('[componentCls=authentication-form]');
         var basicForm = formPanel.getForm();
 
         basicForm.submit({
-            params: {}
+            params: {},
+            success: function(form, action) {
+                authenticationWindow.close();
+            },
+            failure: function(form, action) {
+                
+            }
         });
         
     }
