@@ -23,4 +23,16 @@ class School_DataAccess_Assessment extends School_DataAccess_Abstract_Provider {
         
     }
     
+    public function update($gradeId) {
+        
+        return $this->db->fetchNumberOfAffectedRows('
+            UPDATE
+                assessment
+            SET
+                grade_id = '.(int)$gradeId.'
+            ;
+        ');
+        
+    }
+    
 }

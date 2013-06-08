@@ -1,15 +1,20 @@
-Ext.define('school.view.assessment.GradeList', {
+Ext.define('school.view.assessment.AssessmentList', {
 
 	extend: 'Ext.grid.Panel',
 
-	alias: 'widget.school-grade-list',
+	alias: 'widget.school-assessment-list',
+    
+    requires: [
+        'Ext.grid.plugin.RowEditing'
+    ],
 
     plugins: [
-        Ext.create('Ext.grid.plugin.RowEditing', {
-            pluginId: 'school-grade-edit-plugin-id',
+        {
+            ptype: 'rowediting',
+            pluginId: 'school-assessment-grade-edit-plugin-id',
             clicksToMoveEditor: 1,
             autoCancel: false
-        })
+        }
     ],
     
     columns: [
@@ -24,7 +29,6 @@ Ext.define('school.view.assessment.GradeList', {
             flex: 1,
             editor: {
                 xtype: 'combobox',
-                componentCls: 'grade-list-combobox',
                 allowBlank: false,
                 editable: false,
                 enableKeyEvents: true,
@@ -35,7 +39,19 @@ Ext.define('school.view.assessment.GradeList', {
                 },
                 queryMode: 'local',
                 displayField: 'grade',
-                valueField: 'grade'
+                listeners: {
+                    select: function(combobox, comboboxRecords) {
+                        
+                        var assessmentList = combobox.up('school-assessment-list');
+                        
+                        assessmentList.fireEvent('school-grade-selected', 
+                            assessmentList, // таблица успеваемости
+                            assessmentList.getSelectionModel().getSelection()[0], // запись таблицы
+                            comboboxRecords[0].get('id') // ID оценки
+                        );
+                            
+                    }
+                }
             }
         }
     ],

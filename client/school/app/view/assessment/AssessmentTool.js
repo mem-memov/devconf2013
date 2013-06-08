@@ -29,7 +29,7 @@ Ext.define('school.view.assessment.AssessmentTool', {
                     flex: 1,
                     border: false
                 }, {
-                    xtype: 'school-grade-list',
+                    xtype: 'school-assessment-list',
                     flex: 1,
                     border: false
                 }

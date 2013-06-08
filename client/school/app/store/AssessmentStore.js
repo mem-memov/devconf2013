@@ -12,7 +12,8 @@ Ext.define('school.store.AssessmentStore', {
         
         api: {
             
-            read: 'Ext.remote.Assessment.read'  // string!!!
+            read: 'Ext.remote.Assessment.read',  // string!!!
+            update: 'Ext.remote.Assessment.update'  // string!!!
             
         },
         

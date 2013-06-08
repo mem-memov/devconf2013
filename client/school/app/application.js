@@ -41,7 +41,7 @@ Ext.define('school.Application', {
         'school.view.Authentication',
         'school.view.assessment.StudentList',
         'school.view.assessment.AssessmentTool',
-        'school.view.assessment.GradeList',
+        'school.view.assessment.AssessmentList',
         'school.view.profile.Student',
         'school.view.profile.ActivityChart',
         'school.view.profile.PersonCard'

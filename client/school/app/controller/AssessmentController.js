@@ -8,13 +8,14 @@ Ext.define('school.controller.AssessmentController', {
         
         this.listen({
             component: {
-                'school-grade-list': {
-                    
-                },
                 'school-student-list': {
                     itemclick: this.onStudentItemClick
                 },
-                'school-grade-list [componentCls=add-button]': {
+                'school-assessment-list': {
+                    edit: this.onGradeListEdit,
+                    'school-grade-selected': this.onGradeSelected
+                },
+                'school-assessment-list [componentCls=add-button]': {
                     click: this.onAddGradeButtonClick
                 }
             },
@@ -32,7 +33,7 @@ Ext.define('school.controller.AssessmentController', {
         this.fireEvent('student-selected', record.getData());
         
         var assessmentTool = Ext.ComponentQuery.query('school-assessment-tool')[0];
-        var gradeList = assessmentTool.down('school-grade-list');
+        var gradeList = assessmentTool.down('school-assessment-list');
         
         gradeList.getStore().load({
             params: {
@@ -53,10 +54,6 @@ Ext.define('school.controller.AssessmentController', {
         assessmentTool.show();
         
         studentList.getStore().load();
-        
-//        var gradeList = assessmentTool.down('school-grade-list');
-//        var gradeCombobox = gradeList.down('[componentCls=grade-list-combobox]');
-//        gradeCombobox.getStore().load();
 
     },
     
@@ -66,27 +63,24 @@ Ext.define('school.controller.AssessmentController', {
         
     },
     
-    onGradeListEdit: function(editor, editEvent) {
+    onGradeSelected: function(assessmentList, assessmentRecord, gradeId) {
+
+        assessmentRecord.set('grade_id', gradeId);
         
+    },
+    
+    onGradeListEdit: function(editor, editEvent) {
+
         editEvent.grid.setLoading('Изменения сохраняются...');
 
         editEvent.store.sync({
             success: function() {
                 
-                editEvent.grid.setLoading('Обновление данных...');
-                
-                editEvent.store.reload({
-                    callback: function() {
-                        editEvent.grid.setLoading(false);
-                    },
-                    scope: this
-                });
+                editEvent.grid.setLoading(false);
                 
             },
             scope: this
         });
-        
-        this.isAddingNewWidgetInteraction = null;
         
     }
 	
