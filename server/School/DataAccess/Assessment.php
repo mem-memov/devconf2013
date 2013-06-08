@@ -42,6 +42,8 @@ class School_DataAccess_Assessment extends School_DataAccess_Abstract_Provider {
             WHERE
                 assessment.student_id = '.(int)$studentId.'
                 AND assessment.subject_id = '.(int)$subjectId.'
+            ORDER BY
+                assessment.date DESC
             ;
         ');
         

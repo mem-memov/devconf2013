@@ -96,5 +96,22 @@ class School_DataAccess_Factory {
         
     }
         
+    /**
+     * Машина времени
+     * @return School_DataAccess_TimeMachine
+     */
+    public function makeTimeMachine() {
+        
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            
+            $this->instances[$instanceKey] = new School_DataAccess_TimeMachine($this->db);
+        }
+
+        return $this->instances[$instanceKey];
+        
+    }
+        
     
 }

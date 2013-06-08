@@ -29,7 +29,14 @@ Ext.define('school.view.assessment.AssessmentList', {
             text: 'Дата', 
             dataIndex: 'date',
             format: 'd.m.Y',
-            flex: 1
+            flex: 1,
+            editor: {
+                xtype: 'datefield',
+                format: 'd.m.Y',
+                showToday: false,
+                minValue: new Date(1991, 9, 1),
+                maxValue: new Date(1992, 6, 30) 
+            }
         }, {
             text: 'Оценка', 
             dataIndex: 'grade',
@@ -37,7 +44,6 @@ Ext.define('school.view.assessment.AssessmentList', {
             editor: {
                 xtype: 'combobox',
                 editable: false,
-                enableKeyEvents: true,
                 matchFieldWidth: false,
                 store: {
                     type: 'school-grade-store',
@@ -65,7 +71,12 @@ Ext.define('school.view.assessment.AssessmentList', {
     ],
     
     store: {
-        type: 'school-assessment-store'
+        type: 'school-assessment-store',
+        sortOnLosd: true,
+        sorters: [{
+            property: 'date',
+            direction: 'DESC'
+        }]
     },
     
     tbar: [

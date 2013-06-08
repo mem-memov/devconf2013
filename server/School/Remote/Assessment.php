@@ -3,14 +3,18 @@ class School_Remote_Assessment extends School_Remote_Abstract_Controller {
     
     public function create(stdClass $request) {
 
-        $date =  date_format(new DateTime(), 'Y-m-d');
-        
+        if (empty($request->date)) {
+            $date = $this->dataAccessFactory->makeTimeMachine()->getCurrentDate();
+        } else {
+            $date = $request->date;
+        }
+
         $assessmentId = $this->dataAccessFactory->makeAssessment()->create(
                 $request->student_id, 
                 $request->subject_id, 
                 $request->teacher_id, 
                 $request->grade_id, 
-               $date
+                $date
         );
         
         return array(

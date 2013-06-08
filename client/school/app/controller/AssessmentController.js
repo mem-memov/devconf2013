@@ -4,6 +4,7 @@ Ext.define('school.controller.AssessmentController', {
     
     currentProfessor: null,
     currentStudent: null,
+    currentDate: null,
 	
 	init: function() {
         
@@ -28,10 +29,17 @@ Ext.define('school.controller.AssessmentController', {
             },
             controller: {
                 '*': {
-                    'professor-authenticated': this.onProfessorAuthenticated
+                    'professor-authenticated': this.onProfessorAuthenticated,
+                    'date-defined': this.onDateDefined
                 }
             }
         });
+        
+    },
+    
+    onDateDefined: function(date) {
+        
+        this.currentDate = date;
         
     },
     
@@ -72,6 +80,7 @@ Ext.define('school.controller.AssessmentController', {
         var rowEditingPlugin = assessmentList.getPlugin('school-assessment-edit-plugin-id');
         var assessmentStore = assessmentList.getStore();
         var record = Ext.create('school.model.AssessmentModel', {
+                date: this.currentDate,
                 subject_id: this.currentProfessor.subject_id,
                 student_id: this.currentStudent.id,
                 teacher_id: this.currentProfessor.id
@@ -132,6 +141,7 @@ Ext.define('school.controller.AssessmentController', {
             success: function() {
                 
                 editEvent.grid.setLoading(false);
+                editEvent.store.sort();
                 
             },
             scope: this
