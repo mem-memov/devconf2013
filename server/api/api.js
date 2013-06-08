@@ -4,6 +4,28 @@ Ext.remote.REMOTING_API = {
 	"namespace": "Ext.remote",
 	"type": "remoting",
 	"actions": {
+		"Assessment": [
+			{
+				"name": "create",
+				"len": 1,
+				"formHandler": false
+			},
+			{
+				"name": "read",
+				"len": 1,
+				"formHandler": false
+			},
+			{
+				"name": "update",
+				"len": 1,
+				"formHandler": false
+			},
+			{
+				"name": "destroy",
+				"len": 1,
+				"formHandler": false
+			}
+		],
 		"Authentication": [
 			{
 				"name": "loginFormHandler",
@@ -19,6 +41,13 @@ Ext.remote.REMOTING_API = {
 			}
 		],
 		"Professor": [
+			{
+				"name": "readNameList",
+				"len": 0,
+				"formHandler": false
+			}
+		],
+		"Student": [
 			{
 				"name": "readNameList",
 				"len": 0,

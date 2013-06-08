@@ -11,17 +11,24 @@ Ext.define('school.view.assessment.AssessmentList', {
     plugins: [
         {
             ptype: 'rowediting',
-            pluginId: 'school-assessment-grade-edit-plugin-id',
+            pluginId: 'school-assessment-edit-plugin-id',
             clicksToMoveEditor: 1,
             autoCancel: false
         }
     ],
+    
+    selType: 'rowmodel',
+    selModel: {
+        mode: 'SINGLE',
+        allowDeselect: true
+    },
     
     columns: [
         { 
             xtype: 'datecolumn',
             text: 'Дата', 
             dataIndex: 'date',
+            format: 'd.m.Y',
             flex: 1
         }, {
             text: 'Оценка', 
@@ -29,7 +36,6 @@ Ext.define('school.view.assessment.AssessmentList', {
             flex: 1,
             editor: {
                 xtype: 'combobox',
-                allowBlank: false,
                 editable: false,
                 enableKeyEvents: true,
                 matchFieldWidth: false,
@@ -39,17 +45,19 @@ Ext.define('school.view.assessment.AssessmentList', {
                 },
                 queryMode: 'local',
                 displayField: 'grade',
+                valueField: 'grade',
                 listeners: {
-                    select: function(combobox, comboboxRecords) {
+                    select: function(gradeCombobox, comboboxRecords) {
                         
-                        var assessmentList = combobox.up('school-assessment-list');
+                        var assessmentList = gradeCombobox.up('school-assessment-list');
                         
                         assessmentList.fireEvent('school-grade-selected', 
                             assessmentList, // таблица успеваемости
-                            assessmentList.getSelectionModel().getSelection()[0], // запись таблицы
-                            comboboxRecords[0].get('id') // ID оценки
+                            gradeCombobox, // список названий оценок
+                            comboboxRecords[0], // выбранная из списка оценок запись
+                            assessmentList.getSelectionModel().getSelection()[0] // редактируеая строка таблицы таблицы
                         );
-                            
+
                     }
                 }
             }
@@ -61,9 +69,14 @@ Ext.define('school.view.assessment.AssessmentList', {
     },
     
     tbar: [
+        '->',
         {
             text: 'Добавить',
             componentCls: 'add-button'
+        }, {
+            text: 'Удалить',
+            componentCls: 'remove-button',
+            disabled: true
         }
     ]
     
