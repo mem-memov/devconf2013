@@ -3,11 +3,14 @@ Ext.define('school.view.assessment.GradeList', {
 	extend: 'Ext.grid.Panel',
 
 	alias: 'widget.school-grade-list',
-    
-//    layout: {
-//        type: 'vbox',
-//        align: 'left'
-//    },
+
+    plugins: [
+        Ext.create('Ext.grid.plugin.RowEditing', {
+            pluginId: 'school-grade-edit-plugin-id',
+            clicksToMoveEditor: 1,
+            autoCancel: false
+        })
+    ],
     
     columns: [
         { 
@@ -16,15 +19,36 @@ Ext.define('school.view.assessment.GradeList', {
             dataIndex: 'date',
             flex: 1
         }, {
-//            xtype: 'gridcolumn',
             text: 'Оценка', 
             dataIndex: 'grade',
-            flex: 1
+            flex: 1,
+            editor: {
+                xtype: 'combobox',
+                componentCls: 'grade-list-combobox',
+                allowBlank: false,
+                editable: false,
+                enableKeyEvents: true,
+                matchFieldWidth: false,
+                store: {
+                    type: 'school-grade-store',
+                    autoLoad: true
+                },
+                queryMode: 'local',
+                displayField: 'grade',
+                valueField: 'grade'
+            }
         }
     ],
     
     store: {
-        type: 'school-grade-store'
-    }
+        type: 'school-assessment-store'
+    },
+    
+    tbar: [
+        {
+            text: 'Добавить',
+            componentCls: 'add-button'
+        }
+    ]
     
 });

@@ -7,7 +7,9 @@ Ext.define('school.model.ProfessorModel', {
     fields: [
         { name: 'id', type: 'int', useNull: true },
         { name: 'first_name', type: 'string' },
-        { name: 'last_name', type: 'string' }
+        { name: 'last_name', type: 'string' },
+        { name: 'subject_id', type: 'int', useNull: true },
+        { name: 'subject', type: 'string' }
     ]
     
 });

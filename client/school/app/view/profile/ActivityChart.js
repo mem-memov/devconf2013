@@ -19,7 +19,6 @@ Ext.define('school.view.profile.ActivityChart', {
             width: 140,
             height: 28,
             renderer: function(storeItem, item) {
-                alert(1);
                 // calculate and display percentage on hover
                 var total = 0;
                 store.each(function(rec) {

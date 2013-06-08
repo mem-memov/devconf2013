@@ -79,4 +79,22 @@ class School_DataAccess_Factory {
         
     }
     
+    /**
+     * Успеваемость
+     * @return School_DataAccess_Assessment
+     */
+    public function makeAssessment() {
+        
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            
+            $this->instances[$instanceKey] = new School_DataAccess_Assessment($this->db);
+        }
+
+        return $this->instances[$instanceKey];
+        
+    }
+        
+    
 }

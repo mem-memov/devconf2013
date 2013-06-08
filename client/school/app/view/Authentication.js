@@ -53,6 +53,7 @@ Ext.define('school.view.Authentication', {
                     fieldLabel: 'Пароль:',
                     xtype: 'textfield',
                     name: 'password',
+                    componentCls: 'password-field',
                     formBind: true,
                     inputType: 'password'
                 }

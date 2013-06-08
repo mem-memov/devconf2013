@@ -56,14 +56,16 @@ Ext.define('school.Application', {
     
     models: [
         'school.model.ProfessorModel',
-        'school.model.GradeModel'
+        'school.model.GradeModel',
+        'school.model.AssessmentModel'
     ],
 
     stores: [
         'school.store.ProfessorStore',
         'school.store.StudentStore',
         'school.store.GradeStore',
-        'school.store.StudentActivityStore'
+        'school.store.StudentActivityStore',
+        'school.store.AssessmentStore'
     ]
     
 });

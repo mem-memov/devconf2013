@@ -21,7 +21,8 @@ Ext.define('school.view.Viewport', {
                     xtype: 'school-authentication',
                     autoShow: true
                 }, {
-                    xtype: 'school-assessment-tool'
+                    xtype: 'school-assessment-tool',
+                    hidden: true
                 }
             ]
         }
