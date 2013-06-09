@@ -2,41 +2,45 @@ Ext.define('school.view.profile.ActivityChart', {
     
     extend: 'Ext.chart.Chart',
     
-    alias: 'widget.school-student-activity-chart',
+    requires: [
+        'Ext.util.Point' // http://www.sencha.com/forum/showthread.php?259304-Error-in-onMouseEnter-on-Sprites
+    ],
     
-    title: 'активность на занятиях',
+    alias: 'widget.school-student-activity-chart',
+
+    animate: true,
     
     store: {
         type: 'school-student-activity-store'
     },
     
+    legend: {
+        position: 'right',
+        boxStrokeWidth: 0
+    },
+    
     series: [{
         type: 'pie',
-        angleField: 'data',
-        showInLegend: true,
+        angleField: 'activity',
+        donut: 30,
+        //showInLegend: true,
+        label: {
+            field: 'subject'
+        },
+        renderer: function(sprite, record, attributes, index, store) {
+
+            return Ext.apply(attributes, {
+                fill: record.get('color')
+            });
+            
+        },
         tips: {
             trackMouse: true,
             width: 140,
             height: 28,
             renderer: function(storeItem, item) {
-                // calculate and display percentage on hover
-                var total = 0;
-                store.each(function(rec) {
-                    total += rec.get('data');
-                });
-                this.setTitle(storeItem.get('name') + ': ' + Math.round(storeItem.get('data') / total * 100) + '%');
+                this.setTitle(storeItem.get('subject').replace(' ', '<br />'));
             }
-        },
-        highlight: {
-            segment: {
-                margin: 20
-            }
-        },
-        label: {
-            field: 'name',
-            display: 'rotate',
-            contrast: true,
-            font: '18px Arial'
         }
     }]
     

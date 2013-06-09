@@ -72,7 +72,7 @@ Ext.define('school.view.assessment.AssessmentList', {
     
     store: {
         type: 'school-assessment-store',
-        sortOnLosd: true,
+        sortOnLoad: true,
         sorters: [{
             property: 'date',
             direction: 'DESC'

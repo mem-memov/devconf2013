@@ -113,5 +113,39 @@ class School_DataAccess_Factory {
         
     }
         
+    /**
+     * Статистика
+     * @return School_DataAccess_Statistics
+     */
+    public function makeStatistics() {
+        
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            
+            $this->instances[$instanceKey] = new School_DataAccess_Statistics($this->db);
+        }
+
+        return $this->instances[$instanceKey];
+        
+    }
+        
+    /**
+     * Предмет
+     * @return School_DataAccess_Subject
+     */
+    public function makeSubject() {
+        
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            
+            $this->instances[$instanceKey] = new School_DataAccess_Subject($this->db);
+        }
+
+        return $this->instances[$instanceKey];
+        
+    }
+        
     
 }

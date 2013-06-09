@@ -5,10 +5,10 @@ Ext.define('school.view.profile.PersonCard', {
     alias: 'widget.school-student-card',
     
     tpl: [
-        '<h1 class="title">{first_name} {last_name}</h1>'
-    ],
+        '<table><tr>',
+        '<td><img src="{image}" style="width: 100px;" /></td>',
+        '<td><h1 class="title">{first_name} {last_name}</h1></td>',
+        '</tr><table>'
+    ]
     
-    data: {
-        first_name: ''
-    }
 });

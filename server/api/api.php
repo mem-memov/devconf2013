@@ -68,9 +68,30 @@
         ),
       ),
     ),
+    'Statistics' => 
+    array (
+      'getStudentActivityData' => 
+      array (
+        'length' => 1,
+        'parameters' => 
+        array (
+          'request' => NULL,
+        ),
+      ),
+    ),
     'Student' => 
     array (
       'readNameList' => 
+      array (
+        'length' => 0,
+        'parameters' => 
+        array (
+        ),
+      ),
+    ),
+    'TimeMachine' => 
+    array (
+      'getCurrentDate' => 
       array (
         'length' => 0,
         'parameters' => 

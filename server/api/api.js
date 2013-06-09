@@ -47,9 +47,23 @@ Ext.remote.REMOTING_API = {
 				"formHandler": false
 			}
 		],
+		"Statistics": [
+			{
+				"name": "getStudentActivityData",
+				"len": 1,
+				"formHandler": false
+			}
+		],
 		"Student": [
 			{
 				"name": "readNameList",
+				"len": 0,
+				"formHandler": false
+			}
+		],
+		"TimeMachine": [
+			{
+				"name": "getCurrentDate",
 				"len": 0,
 				"formHandler": false
 			}

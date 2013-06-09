@@ -67,6 +67,8 @@ Ext.define('school.controller.AssessmentController', {
 
         var assessmentTool = Ext.ComponentQuery.query('school-assessment-tool')[0];
         var studentList = assessmentTool.down('school-student-list');
+        
+        assessmentTool.setTitle(professor.subject);
 
         assessmentTool.show();
         
@@ -110,6 +112,7 @@ Ext.define('school.controller.AssessmentController', {
             success: function() {
                 
                 assessmentList.setLoading(false);
+                this.fireEvent('assessment-removed');
                 
             },
             scope: this
@@ -142,6 +145,7 @@ Ext.define('school.controller.AssessmentController', {
                 
                 editEvent.grid.setLoading(false);
                 editEvent.store.sort();
+                this.fireEvent('assessment-edited');
                 
             },
             scope: this
