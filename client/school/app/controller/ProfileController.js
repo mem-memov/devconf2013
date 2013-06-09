@@ -33,7 +33,7 @@ Ext.define('school.controller.ProfileController', {
         var studentCards = Ext.ComponentQuery.query('school-student-card');
 
         Ext.Array.each(studentCards, function(studentCard) {
-            
+
             studentCard.update(student);
             
         });

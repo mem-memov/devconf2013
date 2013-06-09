@@ -3,9 +3,7 @@ Ext.define('school.view.profile.Student', {
     extend: 'Ext.panel.Panel',
     
     alias: 'widget.school-student-profile',
-    
-    title: 'Карточка учащегося',
-    
+
     layout: {
         type: 'hbox',
         align: 'stretch'

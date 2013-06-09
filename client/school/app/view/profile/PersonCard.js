@@ -5,9 +5,9 @@ Ext.define('school.view.profile.PersonCard', {
     alias: 'widget.school-student-card',
     
     tpl: [
-        '<table><tr>',
-        '<td><img src="{image}" style="width: 100px;" /></td>',
-        '<td><h1 class="title">{first_name} {last_name}</h1></td>',
+        '<table style="width: 100%; height: 100%;"><tr>',
+        '<td style="width: 50%;"><img src="{image}" style="width: 100%;" /></td>',
+        '<td style="width: 50%;"><h1 class="title">{first_name} {last_name}</h1></td>',
         '</tr><table>'
     ]
     

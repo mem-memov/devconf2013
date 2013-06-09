@@ -14,25 +14,31 @@ Ext.define('school.view.profile.ActivityChart', {
         type: 'school-student-activity-store'
     },
     
-    legend: {
-        position: 'right',
-        boxStrokeWidth: 0
-    },
+    legend: false,
     
     series: [{
         type: 'pie',
         angleField: 'activity',
         donut: 30,
-        //showInLegend: true,
         label: {
             field: 'subject'
         },
         renderer: function(sprite, record, attributes, index, store) {
-
-            return Ext.apply(attributes, {
-                fill: record.get('color')
-            });
             
+            var color = record.get('color');
+            
+            if (color) {
+                
+                return Ext.apply(attributes, {
+                    fill: record.get('color')
+                });
+                
+            } else {
+                
+                return attributes;
+                
+            }
+
         },
         tips: {
             trackMouse: true,

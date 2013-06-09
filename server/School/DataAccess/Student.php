@@ -20,6 +20,7 @@ class School_DataAccess_Student extends School_DataAccess_Abstract_Provider {
                 LEFT JOIN house ON (house.id = student.house_id)
             WHERE
                 student.person_id IS NOT NULL
+                AND person.image IS NOT NULL
             ;
         ');
         

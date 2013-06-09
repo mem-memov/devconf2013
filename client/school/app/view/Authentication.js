@@ -64,7 +64,7 @@ Ext.define('school.view.Authentication', {
             }
         }, {
             xtype: 'image',
-            src: 'resources/images/person/Albus_Dumbledore_300x400.png',
+            src: '/client/school/resources/images/person/Albus_Dumbledore_300x400.png',
             width: 150,
             height: 200
         }

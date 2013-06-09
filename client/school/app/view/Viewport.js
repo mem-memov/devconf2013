@@ -12,7 +12,7 @@ Ext.define('school.view.Viewport', {
             region: 'center',
             layout: 'fit',
             bodyStyle: { 
-                backgroundImage: 'url(resources/images/school/hogwarts_yard_at_day.png)',
+                backgroundImage: 'url(/client/school/resources/images/school/hogwarts_yard_at_day.png)',
                 backgroundPosition: 'right bottom',
                 backgroundSize: 'cover'
             },

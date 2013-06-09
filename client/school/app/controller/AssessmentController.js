@@ -51,6 +51,7 @@ Ext.define('school.controller.AssessmentController', {
         
         var assessmentTool = Ext.ComponentQuery.query('school-assessment-tool')[0];
         var gradeList = assessmentTool.down('school-assessment-list');
+        gradeList.show();
         
         gradeList.getStore().load({
             params: {
@@ -58,6 +59,9 @@ Ext.define('school.controller.AssessmentController', {
                 subjectId: this.currentProfessor.subject_id
             }
         });
+        
+        var studentProfile = assessmentTool.down('school-student-profile');
+        studentProfile.show();
         
     },
     

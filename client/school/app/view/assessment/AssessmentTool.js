@@ -27,11 +27,13 @@ Ext.define('school.view.assessment.AssessmentTool', {
                 {
                     xtype: 'school-student-profile',
                     flex: 1,
-                    border: false
+                    border: false,
+                    hidden: true
                 }, {
                     xtype: 'school-assessment-list',
                     flex: 1,
-                    border: false
+                    border: false,
+                    hidden: true
                 }
             ]
         }

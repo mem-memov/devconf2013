@@ -4,7 +4,11 @@ Ext.define('school.Application', {
 
     extend: 'Ext.app.Application',
     
-    requires: ['Ext.direct.*'], // эти классы должны быть загружены до запуска конструктора
+    requires: [
+        'Ext.direct.*', // эти классы должны быть загружены до запуска конструктора
+        'Ext.form.*',
+        'Ext.chart.*'
+    ], 
     
     autoCreateViewport: true,
     
