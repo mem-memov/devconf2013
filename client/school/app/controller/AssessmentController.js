@@ -72,7 +72,7 @@ Ext.define('school.controller.AssessmentController', {
         var assessmentTool = Ext.ComponentQuery.query('school-assessment-tool')[0];
         var studentList = assessmentTool.down('school-student-list');
         
-        assessmentTool.setTitle(professor.subject);
+        assessmentTool.setTitle('Журнал успеваемости по предмету: ' + professor.subject);
 
         assessmentTool.show();
         
