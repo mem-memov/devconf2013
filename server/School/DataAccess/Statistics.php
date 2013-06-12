@@ -1,6 +1,6 @@
 <?php
 /**
- * Объект доступа к данным профессоров
+ * Объект доступа к статистике
  */
 class School_DataAccess_Statistics extends School_DataAccess_Abstract_Provider {
     
@@ -23,5 +23,26 @@ class School_DataAccess_Statistics extends School_DataAccess_Abstract_Provider {
         ');
         
     }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 }
