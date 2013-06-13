@@ -1,6 +1,12 @@
 <?php
 class School_Remote_Statistics extends School_Remote_Abstract_Controller {
     
+    public function getHouseRating() {
+        
+        return $this->dataAccessFactory->makeStatistics()->getHouseRating();
+        
+    }
+    
     public function getStudentActivityData(stdClass $request) {
         
         $subjects = $this->dataAccessFactory->makeSubject()->readAll();

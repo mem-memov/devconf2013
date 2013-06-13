@@ -48,20 +48,23 @@ Ext.define('school.Application', {
         'school.view.assessment.AssessmentList',
         'school.view.profile.Student',
         'school.view.profile.ActivityChart',
-        'school.view.profile.PersonCard'
+        'school.view.profile.PersonCard',
+        'school.view.Rating'
     ],
 
     controllers: [
 		'school.controller.ViewportController',
         'school.controller.AssessmentController',
         'school.controller.AuthenticationController',
-        'school.controller.ProfileController'
+        'school.controller.ProfileController',
+        'school.controller.RatingController'
     ],
     
     models: [
         'school.model.ProfessorModel',
         'school.model.GradeModel',
-        'school.model.AssessmentModel'
+        'school.model.AssessmentModel',
+        'school.model.RatingModel'
     ],
 
     stores: [
@@ -69,7 +72,8 @@ Ext.define('school.Application', {
         'school.store.StudentStore',
         'school.store.GradeStore',
         'school.store.StudentActivityStore',
-        'school.store.AssessmentStore'
+        'school.store.AssessmentStore',
+        'school.store.RatingStore'
     ]
     
 });

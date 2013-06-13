@@ -16,7 +16,10 @@ Ext.define('school.view.Viewport', {
                 backgroundPosition: 'right bottom',
                 backgroundSize: 'cover'
             },
-            items: [
+            items: [ 
+//                {
+//                    xtype: 'school-rating'
+//                },
                 {
                     xtype: 'school-authentication',
                     autoShow: true
