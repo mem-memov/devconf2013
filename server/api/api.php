@@ -70,13 +70,6 @@
     ),
     'Statistics' => 
     array (
-      'getHouseRating' => 
-      array (
-        'length' => 0,
-        'parameters' => 
-        array (
-        ),
-      ),
       'getStudentActivityData' => 
       array (
         'length' => 1,

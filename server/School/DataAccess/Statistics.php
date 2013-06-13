@@ -24,27 +24,6 @@ class School_DataAccess_Statistics extends School_DataAccess_Abstract_Provider {
         
     }
 
-    public function getHouseRating() {
-        
-        return $this->db->fetchRows('
-            SELECT 
-                house.house,
-                COUNT(grade.id) AS rating
-            FROM
-                assessment
-                LEFT JOIN grade ON (grade.id = assessment.grade_id)
-                LEFT JOIN student ON (student.id = assessment.student_id)
-                Left JOIN house ON (house.id = student.house_id)
-            WHERE
-                grade.passing = 1
-            GROUP BY
-                house.id
-            ORDER BY
-               house.house ASC
-            ;
-        ');
-        
-    }
     
     
     

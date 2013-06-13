@@ -49,11 +49,6 @@ Ext.remote.REMOTING_API = {
 		],
 		"Statistics": [
 			{
-				"name": "getHouseRating",
-				"len": 0,
-				"formHandler": false
-			},
-			{
 				"name": "getStudentActivityData",
 				"len": 1,
 				"formHandler": false

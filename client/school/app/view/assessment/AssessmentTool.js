@@ -13,23 +13,9 @@ Ext.define('school.view.assessment.AssessmentTool', {
     
     items: [
         {
-            //
-            xtype: 'panel',
+            xtype: 'school-student-list',
             flex: 1,
-            border: false,
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [
-                {
-                    xtype: 'school-student-list',
-                    flex: 2
-                }, {
-                    xtype: 'school-rating',
-                    flex: 1
-                }
-            ]
+            border: false
         }, {
             xtype: 'panel',
             flex: 2,
