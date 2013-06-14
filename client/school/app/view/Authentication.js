@@ -14,6 +14,8 @@ Ext.define('school.view.Authentication', {
     closable: false,
     resizable: false,
     
+    closeAction: 'hide', // http://stackoverflow.com/questions/16763860/extjs-type-error-el-is-null
+    
     buttonAlign: 'center',
     
     buttons: [
