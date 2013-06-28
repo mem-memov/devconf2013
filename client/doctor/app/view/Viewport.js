@@ -1,15 +1,26 @@
 Ext.define('doctor.view.Viewport', {
+    
     extend: 'Ext.container.Viewport',
-    requires:[
-        'Ext.layout.container.Fit',
-        'doctor.view.Main'
-    ],
+    
+    alias: 'widget.app-viewport',
 
     layout: {
-        type: 'fit'
+        type: 'hbox',
+        align: 'stretch'
     },
 
     items: [{
-        xtype: 'app-main'
+        //xtype: 'app-menu',
+        title: 'Меню',
+        componentCls: 'left-part',
+        width: 150, 
+        hidden: true // скрываем, чтобы показать с анимацией
+
+    },{
+        border: 10,
+        componentCls: 'right-part',
+        title: '1111',
+        flex: 1
     }]
+
 });

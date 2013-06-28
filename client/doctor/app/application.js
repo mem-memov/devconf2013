@@ -4,14 +4,17 @@ Ext.define('doctor.Application', {
     extend: 'Ext.app.Application',
 
     views: [
-        // TODO: add views here
+        'doctor.view.Viewport',
+        'doctor.view.Menu'
     ],
 
     controllers: [
-        // TODO: add controllers here
+        'doctor.controller.ViewportController',
+        'doctor.controller.MenuController'
     ],
 
     stores: [
         // TODO: add stores here
     ]
+    
 });
