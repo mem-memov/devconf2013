@@ -5,22 +5,31 @@ Ext.define('doctor.view.Viewport', {
     alias: 'widget.app-viewport',
 
     layout: {
-        type: 'hbox',
-        align: 'stretch'
+        type: 'absolute'
     },
 
     items: [{
-        //xtype: 'app-menu',
+        xtype: 'panel',
         title: 'Меню',
-        componentCls: 'left-part',
+        componentCls: 'menu-container',
         width: 150, 
-        hidden: true // скрываем, чтобы показать с анимацией
-
+        x: -150, // скрываем, чтобы показать с анимацией
+        anchor: 'auto 0', 
+        layout: 'fit',
+        items: [{
+            xtype: 'app-menu',
+            store: {
+                type: 'app-menu-store'
+            }
+        }]
     },{
         border: 10,
-        componentCls: 'right-part',
+        componentCls: 'content-container',
         title: '1111',
-        flex: 1
+        anchor: '0 0',
+        x: 0,
+        html: 'lalala',
+        animCollapse: true
     }]
 
 });

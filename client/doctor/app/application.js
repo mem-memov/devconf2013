@@ -14,7 +14,11 @@ Ext.define('doctor.Application', {
     ],
 
     stores: [
-        // TODO: add stores here
+        'doctor.store.MenuStore'
+    ],
+    
+    models: [
+        'doctor.model.MenuModel'
     ]
     
 });

@@ -2,35 +2,74 @@ Ext.define('doctor.controller.ViewportController', {
     
     extend: 'Ext.app.Controller',
     
+    selectors: {
+        viewport: 'app-viewport',
+        menuContainer: 'panel[componentCls="menu-container"]',
+        contentContainer: 'panel[componentCls="content-container"]'
+    },
+
     init: function () {
 
-        this.listen({
-            component: {
-                'app-viewport': {
-                    afterrender: this.onRender
-                }
-            }
-        });
+        var eventPool = {
+            component: {}
+        };
+
+        eventPool.component[this.selectors.viewport] = {
+            afterrender: this.afterRender
+        }
+
+        this.listen(eventPool);
         
     },
-    
-    onRender: function(viewport) {
+
+    afterRender: function(viewport) {
+
+        var menuContainer = this.fetchMenuContainer(viewport);
+        var contentContainer = this.fetchContentContainer(viewport);
         
-        var leftPart = viewport.down('[componentCls="left-part"]');
-        var rightPart = viewport.down('[componentCls="right-part"]');
+        var length = menuContainer.getWidth();
+        var duration = 2000;
         
-        leftPart.show();
-        leftPart.animate({
-            from: {
-                x: -leftPart.getWidth()
-            },
+        menuContainer.animate({
             to: {
                 x: 0
             },
-            duration: 2000
+            duration: duration
+        });
+        
+        contentContainer.animate({
+            from: {
+                opacity: 0
+            },
+            to: {
+                x: length,
+                opacity: 0
+            },
+            duration: duration
+        });
+        
+        contentContainer.animate({
+            from: {
+                opacity: 0
+            },
+            to: {
+                opacity: 1
+            },
+            duration: duration
         });
 
-    }
+    },
     
+    fetchMenuContainer: function(viewport) {
+        
+        return viewport.down(this.selectors.menuContainer);
+        
+    },
+    
+    fetchContentContainer: function(viewport) {
+        
+        return viewport.down(this.selectors.contentContainer);
+        
+    }    
     
 });
