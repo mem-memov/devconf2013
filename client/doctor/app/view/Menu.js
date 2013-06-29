@@ -13,10 +13,10 @@ Ext.define('doctor.view.Menu', {
 
     initComponent: function() {
         
-        if (Ext.isString(this.store)) {
+        if (Ext.isString(this.store)  || (Ext.isObject(this.store) && !this.store.isStore)) {
+            
             this.store = Ext.StoreMgr.lookup(this.store);
-        } else if (!this.store || Ext.isObject(this.store) && !this.store.isStore) {
-            this.store = Ext.create('doctor.store.MenuStore', this.store);
+            
             this.store.setRootNode({
                 id: 1,
                 text: '.',
@@ -28,10 +28,14 @@ Ext.define('doctor.view.Menu', {
                             {
                                 id: 5,
                                 text: 'Факультеты',
+                                linkType: 'HtmlPanel',
+                                linkId: 2,
                                 leaf: true
                             }, {
                                 id: 7,
                                 text: 'Прфессора',
+                                linkType: 'HtmlPanel',
+                                linkId: 1,
                                 leaf: true
                             }
                         ]

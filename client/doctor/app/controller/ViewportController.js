@@ -45,7 +45,10 @@ Ext.define('doctor.controller.ViewportController', {
                 x: length,
                 opacity: 0
             },
-            duration: duration
+            duration: duration,
+            callback: function() {
+                contentContainer.ownerCt.doComponentLayout(); // устраняем заход за правый край экрана
+            }
         });
         
         contentContainer.animate({

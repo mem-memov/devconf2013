@@ -24,10 +24,15 @@ Ext.define('doctor.view.Viewport', {
     },{
         border: 10,
         componentCls: 'content-container',
-        anchor: '0 0',
+        anchor: '0 0', 
         x: 0,
-        html: '<img src="resources/images/portret.png" />',
-        animCollapse: true
+        animCollapse: true,
+        layout: 'fit',
+        items: [
+            {
+                xtype: 'app-html-panel'
+            }
+        ]
     }]
 
 });

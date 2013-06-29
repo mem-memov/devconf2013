@@ -5,20 +5,24 @@ Ext.define('doctor.Application', {
 
     views: [
         'doctor.view.Viewport',
-        'doctor.view.Menu'
+        'doctor.view.Menu',
+        'doctor.view.HtmlPanel'
     ],
 
     controllers: [
         'doctor.controller.ViewportController',
-        'doctor.controller.MenuController'
+        'doctor.controller.MenuController',
+        'doctor.controller.HtmlPanelController'
     ],
 
     stores: [
-        'doctor.store.MenuStore'
+        'doctor.store.MenuStore',
+        'doctor.store.HtmlStore'
     ],
     
     models: [
-        'doctor.model.MenuModel'
+        'doctor.model.MenuModel',
+        'doctor.model.HtmlModel'
     ]
     
 });

@@ -12,7 +12,8 @@ Ext.define('doctor.model.MenuModel', {
         { name:'id', type: 'int', useNull: true }, 
         { name:'text', type: 'string' }, 
         { name:'linkId', type: 'int', useNull: true },
-        { name:'linkType', type: 'string' }
+        { name:'linkType', type: 'string' },
+        { name:'leaf', type: 'boolean', defaultValue: false }
         
     ]
 
