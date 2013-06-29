@@ -101,6 +101,7 @@ Ext.define('doctor.view.Menu', {
                     
                     if (!firstChild.get('leaf')) {
                         
+                        // вставляем аккордион
                         items.push({
                             xtype: 'app-menu',
                             title:  Ext.String.repeat('-', node.getDepth()-1) + nodeText,
@@ -110,6 +111,7 @@ Ext.define('doctor.view.Menu', {
                         
                     } else {
                         
+                        // вставляем панель с кнопками
                         var panel = {
                             xtype: 'panel',
                             title:  Ext.String.repeat('-', node.getDepth()-1) + nodeText,
@@ -119,6 +121,7 @@ Ext.define('doctor.view.Menu', {
                             }
                         };
                         
+                        // создаём кнопки
                         if (node.hasChildNodes()) {
                             panel.items = [];
                             node.eachChild(function(leafNode) {
