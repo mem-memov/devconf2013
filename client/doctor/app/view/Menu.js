@@ -28,27 +28,11 @@ Ext.define('doctor.view.Menu', {
                             {
                                 id: 5,
                                 text: 'Факультеты',
-                                children: [
-                                    {
-                                        id: 6,
-                                        text: 'Лечебный',
-                                        leaf: true
-                                    }, {
-                                        id: 11,
-                                        text: 'Стоматологический',
-                                        leaf: true
-                                    }
-                                ]
+                                leaf: true
                             }, {
                                 id: 7,
                                 text: 'Прфессора',
-                                children: [
-                                    {
-                                        id: 8,
-                                        text: 'Иванов',
-                                        leaf: true
-                                    }
-                                ]
+                                leaf: true
                             }
                         ]
                     },
