@@ -11,8 +11,8 @@ Ext.define('doctor.view.Viewport', {
     items: [{
         xtype: 'panel',
         componentCls: 'menu-container',
-        width: 150, 
-        x: -150, // скрываем, чтобы показать с анимацией
+        width: 250, 
+        x: -250, // скрываем, чтобы показать с анимацией
         anchor: 'auto 0', 
         layout: 'fit',
         items: [{
@@ -26,7 +26,7 @@ Ext.define('doctor.view.Viewport', {
         componentCls: 'content-container',
         anchor: '0 0',
         x: 0,
-        html: 'lalala',
+        html: '<img src="resources/images/portret.png" />',
         animCollapse: true
     }]
 
