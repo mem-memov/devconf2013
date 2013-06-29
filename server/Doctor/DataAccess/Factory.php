@@ -29,16 +29,16 @@ class Doctor_DataAccess_Factory {
     }
     
     /**
-     * Оценки
-     * @return Doctor_DataAccess_Grade
+     * Меню
+     * @return Doctor_DataAccess_Menu
      */
-    public function makeGrade() {
+    public function makeMenu() {
         
         $instanceKey = __FUNCTION__;
 
         if (!isset($this->instances[$instanceKey])) {
             
-            $this->instances[$instanceKey] = new Doctor_DataAccess_Grade($this->db);
+            $this->instances[$instanceKey] = new Doctor_DataAccess_Menu($this->db);
         }
 
         return $this->instances[$instanceKey];
@@ -46,106 +46,20 @@ class Doctor_DataAccess_Factory {
     }
     
     /**
-     * Профессоры
-     * @return Doctor_DataAccess_Professor
+     * Панель HTML
+     * @return Doctor_DataAccess_Html
      */
-    public function makeProfessor() {
+    public function makeHtml() {
         
         $instanceKey = __FUNCTION__;
 
         if (!isset($this->instances[$instanceKey])) {
             
-            $this->instances[$instanceKey] = new Doctor_DataAccess_Professor($this->db);
+            $this->instances[$instanceKey] = new Doctor_DataAccess_Html($this->db);
         }
 
         return $this->instances[$instanceKey];
         
     }
-    
-    /**
-     * Учащиеся
-     * @return Doctor_DataAccess_Student
-     */
-    public function makeStudent() {
-        
-        $instanceKey = __FUNCTION__;
 
-        if (!isset($this->instances[$instanceKey])) {
-            
-            $this->instances[$instanceKey] = new Doctor_DataAccess_Student($this->db);
-        }
-
-        return $this->instances[$instanceKey];
-        
-    }
-    
-    /**
-     * Успеваемость
-     * @return Doctor_DataAccess_Assessment
-     */
-    public function makeAssessment() {
-        
-        $instanceKey = __FUNCTION__;
-
-        if (!isset($this->instances[$instanceKey])) {
-            
-            $this->instances[$instanceKey] = new Doctor_DataAccess_Assessment($this->db);
-        }
-
-        return $this->instances[$instanceKey];
-        
-    }
-        
-    /**
-     * Машина времени
-     * @return Doctor_DataAccess_TimeMachine
-     */
-    public function makeTimeMachine() {
-        
-        $instanceKey = __FUNCTION__;
-
-        if (!isset($this->instances[$instanceKey])) {
-            
-            $this->instances[$instanceKey] = new Doctor_DataAccess_TimeMachine($this->db);
-        }
-
-        return $this->instances[$instanceKey];
-        
-    }
-        
-    /**
-     * Статистика
-     * @return Doctor_DataAccess_Statistics
-     */
-    public function makeStatistics() {
-        
-        $instanceKey = __FUNCTION__;
-
-        if (!isset($this->instances[$instanceKey])) {
-            
-            $this->instances[$instanceKey] = new Doctor_DataAccess_Statistics($this->db);
-        }
-
-        return $this->instances[$instanceKey];
-        
-    }
-        
-    /**
-     * Предмет
-     * @return Doctor_DataAccess_Subject
-     */
-    public function makeSubject() {
-        
-        $instanceKey = __FUNCTION__;
-
-        if (!isset($this->instances[$instanceKey])) {
-            
-            $this->instances[$instanceKey] = new Doctor_DataAccess_Subject($this->db);
-        }
-
-        return $this->instances[$instanceKey];
-        
-    }
-        
-    
 }

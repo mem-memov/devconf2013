@@ -12,11 +12,11 @@ error_reporting(-1);
 
 ini_set('always_populate_raw_post_data', true);
 
-require_once('School/ExtDirect/Factory.php');
+require_once('Doctor/ExtDirect/Factory.php');
 
 try {
     
-    list($headers, $contents) =     School_ExtDirect_Factory::construct(
+    list($headers, $contents) =     Doctor_ExtDirect_Factory::construct(
                                         require_once('config.php')
                                     )->makeProcessor()
                                     ->process(

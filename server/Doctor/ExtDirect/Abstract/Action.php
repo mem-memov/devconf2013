@@ -144,7 +144,7 @@ abstract class Doctor_ExtDirect_Abstract_Action {
                 $this->input->getUri()
         );
 
-        // TODO: вынести School
+        // TODO: вынести Doctor
         $class = 'Doctor_'.str_replace('/', '_', $remotePath).'_'.$jsClass;
 
         return $class;

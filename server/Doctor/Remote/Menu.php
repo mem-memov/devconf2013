@@ -1,6 +1,100 @@
 <?php
 class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
     
+    public function appendList($parentId, $text) {
+
+        $userPanel = $this->getDomainFactory()->makeUserPanel();
+        $list = $userPanel->createMenuList($text);
+        $isSuccessful = $userPanel->appendToMenu($parentId, $list);
+
+        $listTree = $list->getTree();
+        
+        return array(
+            'success' => $isSuccessful,
+            'children' => array($listTree)
+        );
+        
+    }
+    
+    public function appendReference($parentId, $text) {
+
+        $userPanel = $this->getDomainFactory()->makeUserPanel();
+        $reference = $userPanel->createMenuReference($text);
+        $isSuccessful = $userPanel->appendToMenu($parentId, $reference);
+
+        $referenceTree = $reference->getTree();
+        
+        return array(
+            'success' => $isSuccessful,
+            'children' => array($referenceTree)
+        );
+        
+    }
+    
+    public function readMenu() {
+
+        if (!is_null($response)) {
+            return $response;
+        }
+        
+        $userPanel = $this->getDomainFactory()->makeUserPanel();
+        $tree = $userPanel->readMenuTree();
+
+        $response = array(
+            'success' => true,
+            'children' => $tree['children']
+        ); 
+
+        return $response;    
+        
+    }
+    
+    public function updateMenu($id, $text, $linkType, $linkId) {
+
+        $userPanel = $this->getDomainFactory()->makeUserPanel();
+        $isSuccessful = $userPanel->updateMenuItem($id, $text, $linkType, $linkId);
+        
+        return array(
+            'success' => $isSuccessful
+        );
+        
+    }
+    
+    public function destroyMenu($id) {
+
+        $userPanel = $this->getDomainFactory()->makeUserPanel();
+        $userPanel->destroyMenuItem($id);
+        
+        return array(
+            'success' => true
+        );
+        
+    }
+    
+    /**
+     * Перемещает пункты меню
+     * @param integer $targetId
+     * @param integer[] $movedIds
+     * @param string $position "before", "after" или "append"
+     */
+    public function updatePositions($targetId, array $movedIds, $position) {
+
+        $userPanel = $this->getDomainFactory()->makeUserPanel();
+        $isSuccessful = $userPanel->moveMenuItems($targetId, $movedIds, $position);
+
+        return array(
+            'success' => $isSuccessful
+        );
+        
+    }
+
+    
+    
+    
+    
+    
+    
+    
     public function create(stdClass $request) {
 
         if (empty($request->date)) {

@@ -150,7 +150,7 @@ implements
         
     }
 
-    public function castBollean(&$value) {
+    public function castBoolean(&$value) {
         
         $value = (bool)$value;
         

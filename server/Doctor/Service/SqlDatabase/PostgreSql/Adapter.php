@@ -142,7 +142,7 @@ implements
         
     }
 
-    public function castBollean(&$value) {
+    public function castBoolean(&$value) {
         
         if ($value === 't') {
             $value = true;

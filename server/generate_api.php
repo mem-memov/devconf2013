@@ -5,9 +5,9 @@ ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
 error_reporting(-1);
 
-require_once('School/ExtDirect/Factory.php');
+require_once('Doctor/ExtDirect/Factory.php');
 
-School_ExtDirect_Factory::construct(
+Doctor_ExtDirect_Factory::construct(
     require_once('config.php')
 )->makeServiceLocator()
 ->getApiGenerator()

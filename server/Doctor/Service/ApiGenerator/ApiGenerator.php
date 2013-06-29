@@ -49,7 +49,7 @@ implements
         
         $this->formHandlerParameterName = 'formHandler';
         
-        $this->phpRootNamespaceParts = explode('_', 'School');
+        $this->phpRootNamespaceParts = explode('_', 'Doctor');
 
         $this->commonNamespace = 'remote';
         $this->rootDirectory = dirname(dirname(dirname(dirname(__FILE__))));
@@ -109,7 +109,6 @@ implements
 
         $javascriptApi = $this->buildJavascript($actions);
         file_put_contents($this->javascriptApiFile, $javascriptApi);
-
         $phpApi =$this->buildPhp($actions);
         file_put_contents($this->phpApiFile, $phpApi);
         

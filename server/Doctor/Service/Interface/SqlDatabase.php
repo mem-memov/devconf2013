@@ -112,6 +112,6 @@ interface Doctor_Service_Interface_SqlDatabase {
      * Приводит значение, полученное из базы данных, к булеву типу
      * @return bool
      */
-    public function castBollean(&$value);
+    public function castBoolean(&$value);
     
 }
