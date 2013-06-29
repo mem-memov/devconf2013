@@ -85,7 +85,9 @@ class Doctor_Service_Locator {
         
     }
     
-    public function getCache() {
+    public function getTreeMaker(array &$rows) {
+        
+        return $this->factory->makeTreeMaker($rows);
         
     }
     

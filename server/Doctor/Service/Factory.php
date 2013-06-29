@@ -60,4 +60,14 @@ class Doctor_Service_Factory {
         
     }
     
+    /**
+     * Создаёт построитель древовидной структуры 
+     * @return Doctor_Service_Interface_TreeMaker
+     */
+    public function makeTreeMaker(array &$rows) {
+
+        return new Doctor_Service_TreeMaker_Tree($rows);
+        
+    }
+    
 }

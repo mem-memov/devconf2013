@@ -54,17 +54,26 @@ Ext.define('doctor.view.Menu', {
                 ]
             });
         }
+        
+        this.store.load({
+            callback: function() {
+                
+                var parentNode;
+                if (!this.initialConfig.parentNodeId) {
+                    parentNode = this.store.getRootNode();
+                } else {
+                    parentNode = this.store.getNodeById(this.initialConfig.parentNodeId);
+                }
 
-        var parentNode;
-        if (!this.initialConfig.parentNodeId) {
-            parentNode = this.store.getRootNode();
-        } else {
-            parentNode = this.store.getNodeById(this.initialConfig.parentNodeId);
-        }
+                var items = this.buildItems(parentNode);
 
-        if (!this.items) {
-            this.items = this.buildItems(parentNode);
-        }
+                this.add(items);
+                
+            },
+            scope: this
+        });
+
+
         
         
         this.callParent(arguments);
@@ -136,6 +145,12 @@ Ext.define('doctor.view.Menu', {
         });
 
         return items;
+        
+    },
+    
+    getStore: function() {
+        
+        return this.store;
         
     }
 

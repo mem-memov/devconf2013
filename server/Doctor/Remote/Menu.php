@@ -33,19 +33,10 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
     
     public function readMenu() {
 
-        if (!is_null($response)) {
-            return $response;
-        }
-        
-        $userPanel = $this->getDomainFactory()->makeUserPanel();
-        $tree = $userPanel->readMenuTree();
+        $rows = $this->dataAccessFactory->makeMenu()->load();
+        $tree = $this->serviceLocator->getTreeMaker($rows);
 
-        $response = array(
-            'success' => true,
-            'children' => $tree['children']
-        ); 
-
-        return $response;    
+        return $tree->toArray();  
         
     }
     
