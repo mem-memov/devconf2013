@@ -90,7 +90,8 @@ Ext.define('doctor.view.Menu', {
                             xtype: 'app-menu',
                             title:  Ext.String.repeat('-', node.getDepth()-1) + nodeText,
                             parentNodeId: nodeId,
-                            store: this.store
+                            store: this.store,
+                            node: node
                         });
                         
                     } else {
@@ -98,11 +99,13 @@ Ext.define('doctor.view.Menu', {
                         // вставляем панель с кнопками
                         var panel = {
                             xtype: 'panel',
+                            componentCls: 'app-menu-list',
                             title:  Ext.String.repeat('-', node.getDepth()-1) + nodeText,
                             layout: {
                                 type: 'vbox',
                                 align: 'stretch'
-                            }
+                            },
+                            node: node
                         };
                         
                         // создаём кнопки
@@ -111,7 +114,9 @@ Ext.define('doctor.view.Menu', {
                             node.eachChild(function(leafNode) {
                                 panel.items.push({
                                     xtype: 'button',
-                                    text: leafNode.get('text')
+                                    componentCls: 'app-menu-item',
+                                    text: leafNode.get('text'),
+                                    node: leafNode
                                 });
                             });
                         }

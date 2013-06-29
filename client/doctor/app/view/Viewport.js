@@ -10,7 +10,6 @@ Ext.define('doctor.view.Viewport', {
 
     items: [{
         xtype: 'panel',
-        title: 'Меню',
         componentCls: 'menu-container',
         width: 150, 
         x: -150, // скрываем, чтобы показать с анимацией
@@ -25,7 +24,6 @@ Ext.define('doctor.view.Viewport', {
     },{
         border: 10,
         componentCls: 'content-container',
-        title: '1111',
         anchor: '0 0',
         x: 0,
         html: 'lalala',
