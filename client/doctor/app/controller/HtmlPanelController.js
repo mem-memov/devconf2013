@@ -19,7 +19,7 @@ Ext.define('doctor.controller.HtmlPanelController', {
     
     onMenuItemSelected: function(menuRecord) {
         
-        if (menuRecord.get('linkType') != 'HtmlPanel') {
+        if (menuRecord.get('linkType') != 'html') {
             return;
         }
         

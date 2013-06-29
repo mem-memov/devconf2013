@@ -28,13 +28,13 @@ Ext.define('doctor.view.Menu', {
                             {
                                 id: 5,
                                 text: 'Факультеты',
-                                linkType: 'HtmlPanel',
+                                linkType: 'html',
                                 linkId: 2,
                                 leaf: true
                             }, {
                                 id: 7,
                                 text: 'Прфессора',
-                                linkType: 'HtmlPanel',
+                                linkType: 'html',
                                 linkId: 1,
                                 leaf: true
                             }
