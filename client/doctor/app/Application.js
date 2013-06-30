@@ -2,12 +2,12 @@ Ext.define('Doctor.Application', {
     name: 'Doctor',
 
     extend: 'Ext.app.Application',
+
+    autoCreateViewport: true,
     
     requires: [
         'Ext.direct.*' // эти классы должны быть загружены до запуска конструктора
     ],
-    
-    autoCreateViewport: true,
     
     constructor: function(config) {
         

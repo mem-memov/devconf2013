@@ -2,16 +2,58 @@ Ext.define('Admin.Application', {
     name: 'Admin',
 
     extend: 'Ext.app.Application',
+    
+    autoCreateViewport: true,
+    
+    requires: [
+        'Ext.direct.*' // эти классы должны быть загружены до запуска конструктора
+    ],
+    
+    constructor: function(config) {
+        
+        config = config || {};
+
+        // Даём возможность вызывать методы серверной части приложения
+        // Выполняется в конструкторе, т.к. он запускается до создания каких-либо хранилищ, моделей и контроллеров
+        // В противном случае вызов удалённых процедур будет невозможен.
+        // Работает как в режиме динамической загрузки, так и после компиляции в Sencha Cmd
+        (function applyMultipleNamespacesOfRemoteApi (apiNamespace){
+
+            Ext.Object.each(apiNamespace, function(key, value, object) {
+
+                if (key == 'REMOTING_API') {
+                    Ext.direct.Manager.addProvider(value);
+                } else {
+                    applyMultipleNamespacesOfRemoteApi(value); // recursive call
+                }
+
+
+            });
+
+        })(Ext.remote);
+
+
+        this.callParent([config]);
+
+    },
 
     views: [
-        // TODO: add views here
+        'Admin.view.HtmlEditor',
+        'Admin.view.MenuEditor',
+        'Admin.view.Viewport'
     ],
 
     controllers: [
         // TODO: add controllers here
     ],
+    
+    models: [
+        'Admin.model.HtmlModel',
+        'Admin.model.MenuModel'
+    ],
 
     stores: [
-        // TODO: add stores here
+        'Admin.store.HtmlStore',
+        'Admin.store.MenuStore'
     ]
 });

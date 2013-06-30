@@ -1,15 +1,22 @@
 Ext.define('Admin.view.Viewport', {
+    
     extend: 'Ext.container.Viewport',
-    requires:[
-        'Ext.layout.container.Fit',
-        'Admin.view.Main'
-    ],
+    
+    alias: 'widget.app-viewport',
 
     layout: {
         type: 'fit'
     },
 
     items: [{
-        xtype: 'app-main'
+        xtype: 'tabpanel',
+        items: [
+            {
+                title: 'Меню'
+            }, {
+                title: 'HTML',
+                xtype: 'app-html-editor'
+            }
+        ]
     }]
 });

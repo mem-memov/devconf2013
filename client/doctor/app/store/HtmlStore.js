@@ -10,22 +10,12 @@ Ext.define('Doctor.store.HtmlStore', {
         
         type: 'direct',
         
-        api: {
-            
-            read: 'Ext.remote.Html.read'
-            
-        },
+        directFn: 'Ext.remote.Html.read',
         
         reader: {
             type: 'json'
         }
         
-    }//,
-    
-//    data: [
-//        { id: 1, html: '<img src="resources/images/portret.png" />' },
-//        { id: 2, html: '<p>Lorem ipsum</p>' },
-//        { id: 3, html: '<p>ляляляля</p>' }
-//    ]
+    }
     
 });
