@@ -84709,6 +84709,393 @@ at http://www.sencha.com/contact.
 Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
 */
 /**
+ * Ext.direct.Provider is an abstract class meant to be extended.
+ *
+ * For example Ext JS implements the following subclasses:
+ *
+ *     Provider
+ *     |
+ *     +---{@link Ext.direct.JsonProvider JsonProvider}
+ *         |
+ *         +---{@link Ext.direct.PollingProvider PollingProvider}
+ *         |
+ *         +---{@link Ext.direct.RemotingProvider RemotingProvider}
+ *
+ * @abstract
+ */
+Ext.define('Ext.direct.Provider', {
+   alias: 'direct.provider',
+
+    mixins: {
+        observable:  Ext.util.Observable 
+    },
+    
+    isProvider: true,
+
+   /**
+     * @cfg {String} id
+     * The unique id of the provider (defaults to an {@link Ext#id auto-assigned id}).
+     * You should assign an id if you need to be able to access the provider later and you do
+     * not have an object reference available, for example:
+     *
+     *      Ext.direct.Manager.addProvider({
+     *          type: 'polling',
+     *          url:  'php/poll.php',
+     *          id:   'poll-provider'
+     *      });
+     *      var p = {@link Ext.direct.Manager}.{@link Ext.direct.Manager#getProvider getProvider}('poll-provider');
+     *     p.disconnect();
+     *
+     */
+    
+    /**
+     * @cfg {String[]} relayedEvents
+     * List of Provider events that should be relayed by {@link Ext.direct.Manager}.
+     * 'data' event is always relayed.
+     */
+    
+    constructor: function(config) {
+        var me = this;
+        
+        Ext.apply(me, config);
+        
+        Ext.applyIf(me, {
+            id: Ext.id(null, 'provider-')
+        });
+
+        me.addEvents(
+            /**
+             * @event connect
+             * Fires when the Provider connects to the server-side
+             *
+             * @param {Ext.direct.Provider} provider The {@link Ext.direct.Provider Provider}.
+             */
+            'connect',
+            
+            /**
+             * @event disconnect
+             * Fires when the Provider disconnects from the server-side
+             *
+             * @param {Ext.direct.Provider} provider The {@link Ext.direct.Provider Provider}.
+             */
+            'disconnect',
+            
+            /**
+             * @event data
+             * Fires when the Provider receives data from the server-side
+             *
+             * @param {Ext.direct.Provider} provider The {@link Ext.direct.Provider Provider}.
+             * @param {Ext.direct.Event} e The Ext.direct.Event type that occurred.
+             */
+            'data',
+            
+            /**
+             * @event exception
+             * Fires when the Provider receives an exception from the server-side
+             */
+            'exception'
+        );
+
+        me.mixins.observable.constructor.call(me, config);
+    },
+
+    /**
+     * Returns whether or not the server-side is currently connected.
+     * Abstract method for subclasses to implement.
+     * @template
+     */
+    isConnected: function() {
+        return false;
+    },
+
+    /**
+     * Abstract method for subclasses to implement.
+     * @template
+     */
+    connect: Ext.emptyFn,
+
+    /**
+     * Abstract method for subclasses to implement.
+     * @template
+     */
+    disconnect: Ext.emptyFn
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * This class implements the Ext.Direct event domain. All classes extending from
+ * {@link Ext.direct.Provider} are included in this domain. The selectors are simply provider
+ * id's or the wildcard "*" to match any provider.
+ *
+ * @protected
+ */
+
+Ext.define('Ext.app.domain.Direct', {
+    extend:  Ext.app.EventDomain ,
+    singleton: true,
+    
+               
+                             
+      
+    
+    type: 'direct',
+    idProperty: 'id',
+    
+    constructor: function() {
+        var me = this;
+        
+        me.callParent();
+        me.monitor(Ext.direct.Provider);
+    }
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * A specialized container representing the viewable application area (the browser viewport).
+ *
+ * The Viewport renders itself to the document body, and automatically sizes itself to the size of
+ * the browser viewport and manages window resizing. There may only be one Viewport created
+ * in a page.
+ *
+ * Like any {@link Ext.container.Container Container}, a Viewport will only perform sizing and positioning
+ * on its child Components if you configure it with a {@link #layout}.
+ *
+ * A Common layout used with Viewports is {@link Ext.layout.container.Border border layout}, but if the
+ * required layout is simpler, a different layout should be chosen.
+ *
+ * For example, to simply make a single child item occupy all available space, use
+ * {@link Ext.layout.container.Fit fit layout}.
+ *
+ * To display one "active" item at full size from a choice of several child items, use
+ * {@link Ext.layout.container.Card card layout}.
+ *
+ * Inner layouts are available because all {@link Ext.panel.Panel Panel}s
+ * added to the Viewport, either through its {@link #cfg-items}, or the {@link #method-add}
+ * method of any of its child Panels may themselves have a layout.
+ *
+ * The Viewport does not provide scrolling, so child Panels within the Viewport should provide
+ * for scrolling if needed using the {@link #autoScroll} config.
+ *
+ * An example showing a classic application border layout:
+ *
+ *     @example
+ *     Ext.create('Ext.container.Viewport', {
+ *         layout: 'border',
+ *         items: [{
+ *             region: 'north',
+ *             html: '<h1 class="x-panel-header">Page Title</h1>',
+ *             border: false,
+ *             margins: '0 0 5 0'
+ *         }, {
+ *             region: 'west',
+ *             collapsible: true,
+ *             title: 'Navigation',
+ *             width: 150
+ *             // could use a TreePanel or AccordionLayout for navigational items
+ *         }, {
+ *             region: 'south',
+ *             title: 'South Panel',
+ *             collapsible: true,
+ *             html: 'Information goes here',
+ *             split: true,
+ *             height: 100,
+ *             minHeight: 100
+ *         }, {
+ *             region: 'east',
+ *             title: 'East Panel',
+ *             collapsible: true,
+ *             split: true,
+ *             width: 150
+ *         }, {
+ *             region: 'center',
+ *             xtype: 'tabpanel', // TabPanel itself has no title
+ *             activeTab: 0,      // First tab active by default
+ *             items: {
+ *                 title: 'Default Tab',
+ *                 html: 'The first tab\'s content. Others may be added dynamically'
+ *             }
+ *         }]
+ *     });
+ */
+Ext.define('Ext.container.Viewport', {
+    extend:  Ext.container.Container ,
+    alias: 'widget.viewport',
+                                   
+    alternateClassName: 'Ext.Viewport',
+
+    // Privatize config options which, if used, would interfere with the
+    // correct operation of the Viewport as the sole manager of the
+    // layout of the document body.
+
+    /**
+     * @cfg {String/HTMLElement/Ext.Element} applyTo
+     * @private
+     */
+
+    /**
+     * @cfg {Boolean} allowDomMove
+     * @private
+     */
+
+    /**
+     * @cfg {String/HTMLElement/Ext.Element} renderTo
+     * Always renders to document body.
+     * @private
+     */
+
+    /**
+     * @cfg {Number} height
+     * Sets itself to viewport width.
+     * @private
+     */
+
+    /**
+     * @cfg {Number} width
+     * Sets itself to viewport height.
+     * @private
+     */
+
+    /**
+     * @property {Boolean} isViewport
+     * `true` in this class to identify an object as an instantiated Viewport, or subclass thereof.
+     */
+    isViewport: true,
+
+    ariaRole: 'application',
+    
+    preserveElOnDestroy: true,
+    
+    viewportCls: Ext.baseCSSPrefix + 'viewport',
+
+    initComponent : function() {
+        var me = this,
+            html = document.body.parentNode,
+            el = me.el = Ext.getBody();
+
+        // Get the DOM disruption over with before the Viewport renders and begins a layout
+        Ext.getScrollbarSize();
+        
+        // Clear any dimensions, we will size later on
+        me.width = me.height = undefined;
+
+        me.callParent(arguments);
+        Ext.fly(html).addCls(me.viewportCls);
+        if (me.autoScroll) {
+            Ext.fly(html).setStyle(me.getOverflowStyle());
+            delete me.autoScroll;
+        }
+        el.setHeight = el.setWidth = Ext.emptyFn;
+        el.dom.scroll = 'no';
+        me.allowDomMove = false;
+        me.renderTo = me.el;
+    },
+    
+    // override here to prevent an extraneous warning
+    applyTargetCls: function(targetCls) {
+        this.el.addCls(targetCls);
+    },
+    
+    onRender: function() {
+        var me = this;
+
+        me.callParent(arguments);
+
+        // Important to start life as the proper size (to avoid extra layouts)
+        // But after render so that the size is not stamped into the body
+        me.width = Ext.Element.getViewportWidth();
+        me.height = Ext.Element.getViewportHeight();
+    },
+
+    afterFirstLayout: function() {
+        var me = this;
+
+        me.callParent(arguments);
+        setTimeout(function() {
+            Ext.EventManager.onWindowResize(me.fireResize, me);
+        }, 1);
+    },
+
+    fireResize : function(width, height){
+        // In IE we can get resize events that have our current size, so we ignore them
+        // to avoid the useless layout...
+        if (width != this.width || height != this.height) {
+            this.setSize(width, height);
+        }
+    },
+
+    initHierarchyState: function(hierarchyState) {
+        this.callParent([this.hierarchyState = Ext.rootHierarchyState]);
+    },
+    
+    beforeDestroy: function(){
+        var me = this;
+        
+        me.removeUIFromElement();
+        me.el.removeCls(me.baseCls);
+        Ext.fly(document.body.parentNode).removeCls(me.viewportCls);
+        me.callParent();
+    }
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
  * @author Don Griffin
  *
  * This class is a base for all id generators. It also provides lookup of id generators by
@@ -93465,6 +93852,2199 @@ at http://www.sencha.com/contact.
 Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
 */
 /**
+ * Ext.Direct aims to streamline communication between the client and server by providing a single interface that
+ * reduces the amount of common code typically required to validate data and handle returned data packets (reading data,
+ * error conditions, etc).
+ *
+ * The Ext.direct namespace includes several classes for a closer integration with the server-side. The Ext.data
+ * namespace also includes classes for working with Ext.data.Stores which are backed by data from an Ext.Direct method.
+ *
+ * # Specification
+ *
+ * For additional information consult the [Ext.Direct Specification][1].
+ *
+ * # Providers
+ *
+ * Ext.Direct uses a provider architecture, where one or more providers are used to transport data to and from the
+ * server. There are several providers that exist in the core at the moment:
+ *
+ * - {@link Ext.direct.JsonProvider JsonProvider} for simple JSON operations
+ * - {@link Ext.direct.PollingProvider PollingProvider} for repeated requests
+ * - {@link Ext.direct.RemotingProvider RemotingProvider} exposes server side on the client.
+ *
+ * A provider does not need to be invoked directly, providers are added via {@link Ext.direct.Manager}.{@link #addProvider}.
+ *
+ * # Router
+ *
+ * Ext.Direct utilizes a "router" on the server to direct requests from the client to the appropriate server-side
+ * method. Because the Ext.Direct API is completely platform-agnostic, you could completely swap out a Java based server
+ * solution and replace it with one that uses C# without changing the client side JavaScript at all.
+ *
+ * # Server side events
+ *
+ * Custom events from the server may be handled by the client by adding listeners, for example:
+ *
+ *     {"type":"event","name":"message","data":"Successfully polled at: 11:19:30 am"}
+ *
+ *     // add a handler for a 'message' event sent by the server
+ *     Ext.direct.Manager.on('message', function(e){
+ *         out.append(String.format('<p><i>{0}</i></p>', e.data));
+ *         out.el.scrollTo('t', 100000, true);
+ *     });
+ *
+ *    [1]: http://sencha.com/products/extjs/extdirect
+ *
+ * @singleton
+ * @alternateClassName Ext.Direct
+ */
+
+Ext.define('Ext.direct.Manager', {
+    singleton: true,
+
+               
+                                   
+                               
+      
+
+    mixins: {
+        observable:  Ext.util.Observable 
+    },
+
+    /**
+     * Exception types.
+     */
+    exceptions: {
+        TRANSPORT: 'xhr',
+        PARSE: 'parse',
+        DATA: 'data',
+        LOGIN: 'login',
+        SERVER: 'exception'
+    },
+    
+    constructor: function() {
+        var me = this;
+
+        me.addEvents(
+            /**
+             * @event event
+             *
+             * Fires after an event.
+             *
+             * @param {Ext.direct.Event} event The Ext.direct.Event type that occurred.
+             * @param {Ext.direct.Provider} provider The {@link Ext.direct.Provider Provider}.
+             */
+            'event',
+            
+            /**
+             * @event exception
+             *
+             * Fires after an event exception.
+             *
+             * @param {Ext.direct.Event} event The event type that occurred.
+             */
+            'exception'
+        );
+        
+        me.transactions = new Ext.util.MixedCollection();
+        me.providers    = new Ext.util.MixedCollection();
+
+        me.mixins.observable.constructor.call(me);
+    },
+
+    /**
+     * Adds an Ext.Direct Provider and creates the proxy or stub methods to execute server-side methods. If the provider
+     * is not already connected, it will auto-connect.
+     *
+     *      var pollProv = new Ext.direct.PollingProvider({
+     *          url: 'php/poll2.php'
+     *      });
+     *
+     *      Ext.direct.Manager.addProvider({
+     *          type: 'remoting',           // create a {@link Ext.direct.RemotingProvider}
+     *          url:  'php/router.php',     // url to connect to the Ext.Direct server-side router.
+     *          actions: {                  // each property within the actions object represents a Class
+     *              TestAction: [{          // array of methods within each server side Class
+     *                  name: 'doEcho',     // name of method
+     *                  len:  1
+     *              }, {
+     *                  name: 'multiply',
+     *                  len:  1
+     *              }, {
+     *                  name: 'doForm',
+     *                  formHandler: true   // handle form on server with Ext.Direct.Transaction
+     *              }]
+     *          },
+     *          namespace: 'myApplication', // namespace to create the Remoting Provider in
+     *      }, {
+     *          type: 'polling',            // create a {@link Ext.direct.PollingProvider}
+     *          url:  'php/poll.php'
+     *      },
+     *      pollProv);                      // reference to previously created instance
+     *
+     * @param {Ext.direct.Provider/Object...} provider
+     * Accepts any number of Provider descriptions (an instance or config object for
+     * a Provider). Each Provider description instructs Ext.Direct how to create
+     * client-side stub methods.
+     */
+    addProvider: function(provider) {
+        var me = this,
+            args = arguments,
+            relayers = me.relayers || (me.relayers = {}),
+            i, len;
+
+        if (args.length > 1) {
+            for (i = 0, len = args.length; i < len; ++i) {
+                me.addProvider(args[i]);
+            }
+            
+            return;
+        }
+
+        // if provider has not already been instantiated
+        if (!provider.isProvider) {
+            provider = Ext.create('direct.' + provider.type + 'provider', provider);
+        }
+        
+        me.providers.add(provider);
+        provider.on('data', me.onProviderData, me);
+        
+        if (provider.relayedEvents) {
+            relayers[provider.id] = me.relayEvents(provider, provider.relayedEvents);
+        }
+
+        if (!provider.isConnected()) {
+            provider.connect();
+        }
+
+        return provider;
+    },
+
+    /**
+     * Retrieves a {@link Ext.direct.Provider provider} by the **{@link Ext.direct.Provider#id id}** specified when the
+     * provider is {@link #addProvider added}.
+     *
+     * @param {String/Ext.direct.Provider} id The id of the provider, or the provider instance.
+     */
+    getProvider: function(id) {
+        return id.isProvider ? id : this.providers.get(id);
+    },
+
+    /**
+     * Removes the provider.
+     *
+     * @param {String/Ext.direct.Provider} provider The provider instance or the id of the provider.
+     *
+     * @return {Ext.direct.Provider} The provider, null if not found.
+     */
+    removeProvider: function(provider) {
+        var me = this,
+            providers = me.providers,
+            relayers = me.relayers,
+            id;
+
+        provider = provider.isProvider ? provider : providers.get(provider);
+
+        if (provider) {
+            provider.un('data', me.onProviderData, me);
+
+            id = provider.id;
+            
+            if (relayers[id]) {
+                relayers[id].destroy();
+                delete relayers[id];
+            }
+            
+            providers.remove(provider);
+            
+            return provider;
+        }
+        
+        return null;
+    },
+
+    /**
+     * Adds a transaction to the manager.
+     *
+     * @param {Ext.direct.Transaction} transaction The transaction to add
+     *
+     * @return {Ext.direct.Transaction} transaction
+     *
+     * @private
+     */
+    addTransaction: function(transaction) {
+        this.transactions.add(transaction);
+        
+        return transaction;
+    },
+
+    /**
+     * Removes a transaction from the manager.
+     *
+     * @param {String/Ext.direct.Transaction} transaction The transaction/id of transaction to remove
+     *
+     * @return {Ext.direct.Transaction} transaction
+     *
+     * @private
+     */
+    removeTransaction: function(transaction) {
+        var me = this;
+        
+        transaction = me.getTransaction(transaction);
+        me.transactions.remove(transaction);
+        
+        return transaction;
+    },
+
+    /**
+     * Gets a transaction
+     *
+     * @param {String/Ext.direct.Transaction} transaction The transaction/id of transaction to get
+     *
+     * @return {Ext.direct.Transaction}
+     *
+     * @private
+     */
+    getTransaction: function(transaction) {
+        return typeof transaction === 'object' ? transaction : this.transactions.get(transaction);
+    },
+
+    onProviderData: function(provider, event) {
+        var me = this,
+            i, len;
+
+        if (Ext.isArray(event)) {
+            for (i = 0, len = event.length; i < len; ++i) {
+                me.onProviderData(provider, event[i]);
+            }
+            
+            return;
+        }
+        
+        if (event.name && event.name != 'event' && event.name != 'exception') {
+            me.fireEvent(event.name, event);
+        }
+        else if (event.status === false) {
+            me.fireEvent('exception', event);
+        }
+        
+        me.fireEvent('event', event, provider);
+    },
+    
+    /**
+     * Parses a direct function. It may be passed in a string format, for example:
+     * "MyApp.Person.read".
+     *
+     * @param {String/Function} fn The direct function
+     *
+     * @return {Function} The function to use in the direct call. Null if not found
+     *
+     * @protected
+     */
+    parseMethod: function(fn) {
+        if (Ext.isString(fn)) {
+            var parts = fn.split('.'),
+                i = 0,
+                len = parts.length,
+                current = Ext.global;
+                
+            while (current && i < len) {
+                current = current[parts[i]];
+                ++i;
+            }
+            
+            fn = Ext.isFunction(current) ? current : null;
+        }
+        
+        return fn || null;
+    }
+    
+}, function() {
+    // Backwards compatibility
+    Ext.Direct = Ext.direct.Manager;
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * This class is used to send requests to the server using {@link Ext.direct.Manager Ext.Direct}. When a
+ * request is made, the transport mechanism is handed off to the appropriate
+ * {@link Ext.direct.RemotingProvider Provider} to complete the call.
+ *
+ * # Specifying the function
+ *
+ * This proxy expects a Direct remoting method to be passed in order to be able to complete requests.
+ * This can be done by specifying the {@link #directFn} configuration. This will use the same direct
+ * method for all requests. Alternatively, you can provide an {@link #api} configuration. This
+ * allows you to specify a different remoting method for each CRUD action.
+ *
+ * # Parameters
+ *
+ * This proxy provides options to help configure which parameters will be sent to the server.
+ * By specifying the {@link #paramsAsHash} option, it will send an object literal containing each
+ * of the passed parameters. The {@link #paramOrder} option can be used to specify the order in which
+ * the remoting method parameters are passed.
+ *
+ * # Example Usage
+ *
+ *     Ext.define('User', {
+ *         extend: 'Ext.data.Model',
+ *         fields: ['firstName', 'lastName'],
+ *         proxy: {
+ *             type: 'direct',
+ *             directFn: MyApp.getUsers,
+ *             paramOrder: 'id' // Tells the proxy to pass the id as the first parameter to the remoting method.
+ *         }
+ *     });
+ *     User.load(1);
+ */
+Ext.define('Ext.data.proxy.Direct', {
+    /* Begin Definitions */
+
+    extend:  Ext.data.proxy.Server ,
+    alternateClassName: 'Ext.data.DirectProxy',
+
+    alias: 'proxy.direct',
+
+                                     
+
+    /* End Definitions */
+
+    /**
+     * @cfg {String/String[]} paramOrder
+     * Defaults to undefined. A list of params to be executed server side.  Specify the params in the order in
+     * which they must be executed on the server-side as either (1) an Array of String values, or (2) a String
+     * of params delimited by either whitespace, comma, or pipe. For example, any of the following would be
+     * acceptable:
+     *
+     *     paramOrder: ['param1','param2','param3']
+     *     paramOrder: 'param1 param2 param3'
+     *     paramOrder: 'param1,param2,param3'
+     *     paramOrder: 'param1|param2|param'
+     */
+    paramOrder: undefined,
+
+    /**
+     * @cfg {Boolean} paramsAsHash
+     * Send parameters as a collection of named arguments.
+     * Providing a {@link #paramOrder} nullifies this configuration.
+     */
+    paramsAsHash: true,
+
+    /**
+     * @cfg {Function/String} directFn
+     * Function to call when executing a request. directFn is a simple alternative to defining the api configuration-parameter
+     * for Store's which will not implement a full CRUD api. The directFn may also be a string reference to the fully qualified
+     * name of the function, for example: 'MyApp.company.GetProfile'. This can be useful when using dynamic loading. The string 
+     * will be looked up when the proxy is created.
+     */
+    directFn : undefined,
+
+    /**
+     * @cfg {Object} api
+     * The same as {@link Ext.data.proxy.Server#api}, however instead of providing urls, you should provide a direct
+     * function call. See {@link #directFn}.
+     */
+
+    /**
+     * @cfg {Object} extraParams
+     * Extra parameters that will be included on every read request. Individual requests with params
+     * of the same name will override these params when they are in conflict.
+     */
+
+    // private
+    paramOrderRe: /[\s,|]/,
+
+    constructor: function(config){
+        var me = this,
+            paramOrder;
+            
+        me.callParent(arguments);
+        
+        paramOrder = me.paramOrder;
+        if (Ext.isString(paramOrder)) {
+            me.paramOrder = paramOrder.split(me.paramOrderRe);
+        }
+    },
+    
+    resolveMethods: function() {
+        var me = this,
+            fn = me.directFn,
+            api = me.api,
+            Manager = Ext.direct.Manager,
+            method;
+        
+        if (fn) {
+            method = me.directFn = Manager.parseMethod(fn);
+            
+            if (!Ext.isFunction(method)) {
+                Ext.Error.raise('Cannot resolve directFn ' + fn);
+            }
+        }
+        else if (api) {
+            for (fn in api) {
+                if (api.hasOwnProperty(fn)) {
+                    method = api[fn];
+                    api[fn] = Manager.parseMethod(method);
+                    
+                    if (!Ext.isFunction(api[fn])) {
+                        Ext.Error.raise('Cannot resolve Direct api ' + fn + ' method ' + method);
+                    }
+                }
+            }
+        }
+        
+        me.methodsResolved = true;
+    },
+
+    doRequest: function(operation, callback, scope) {
+        var me = this,
+            writer = me.getWriter(),
+            request = me.buildRequest(operation),
+            params = request.params,
+            args = [],
+            fn, method;
+        
+        if (!me.methodsResolved) {
+            me.resolveMethods();
+        }
+
+        fn = me.api[request.action] || me.directFn;
+        
+        //<debug>
+        if (!fn) {
+            Ext.Error.raise('No direct function specified for this proxy');
+        }
+        //</debug>
+
+        if (operation.allowWrite()) {
+            request = writer.write(request);
+        }
+
+        if (operation.action == 'read') {
+            // We need to pass params
+            method = fn.directCfg.method;
+            args = method.getArgs(params, me.paramOrder, me.paramsAsHash);
+        } else {
+            args.push(request.jsonData);
+        }
+
+        Ext.apply(request, {
+            args: args,
+            directFn: fn
+        });
+        args.push(me.createRequestCallback(request, operation, callback, scope), me);
+        fn.apply(window, args);
+    },
+
+    /*
+     * Inherit docs. We don't apply any encoding here because
+     * all of the direct requests go out as jsonData
+     */
+    applyEncoding: Ext.identityFn,
+
+    createRequestCallback: function(request, operation, callback, scope){
+        var me = this;
+
+        return function(data, event){
+            me.processResponse(event.status, operation, request, event, callback, scope);
+        };
+    },
+
+    // inherit docs
+    extractResponseData: function(response){
+        return Ext.isDefined(response.result) ? response.result : response.data;
+    },
+
+    // inherit docs
+    setException: function(operation, response) {
+        operation.setException(response.message);
+    },
+
+    // inherit docs
+    buildUrl: function(){
+        return '';
+    }
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * This class is used as a set of methods that are applied to the prototype of a
+ * Model to decorate it with a Node API. This means that models used in conjunction with a tree
+ * will have all of the tree related methods available on the model. In general this class will
+ * not be used directly by the developer. This class also creates extra fields on the model if
+ * they do not exist, to help maintain the tree state and UI. These fields are documented as
+ * config options.
+ */
+Ext.define('Ext.data.NodeInterface', {
+               
+                         
+                              
+      
+
+    /**
+     * @cfg {String} parentId
+     * ID of parent node.
+     */
+
+    /**
+     * @cfg {Number} index
+     * The position of the node inside its parent. When parent has 4 children and the node is third amongst them,
+     * index will be 2.
+     */
+
+    /**
+     * @cfg {Number} depth
+     * The number of parents this node has. A root node has depth 0, a child of it depth 1, and so on...
+     */
+
+    /**
+     * @cfg {Boolean} [expanded=false]
+     * True if the node is expanded.
+     */
+
+    /**
+     * @cfg {Boolean} [expandable=false]
+     * Set to true to allow for expanding/collapsing of this node.
+     */
+
+    /**
+     * @cfg {Boolean} [checked=null]
+     * Set to true or false to show a checkbox alongside this node.
+     */
+
+    /**
+     * @cfg {Boolean} [leaf=false]
+     * Set to true to indicate that this child can have no children. The expand icon/arrow will then not be
+     * rendered for this node.
+     */
+
+    /**
+     * @cfg {String} cls
+     * CSS class to apply for this node.
+     */
+
+    /**
+     * @cfg {String} iconCls
+     * CSS class to apply for this node's icon.
+     */
+
+    /**
+     * @cfg {String} icon
+     * URL for this node's icon.
+     */
+
+    /**
+     * @cfg {Boolean} root
+     * True if this is the root node.
+     */
+
+    /**
+     * @cfg {Boolean} isLast
+     * True if this is the last node.
+     */
+
+    /**
+     * @cfg {Boolean} isFirst
+     * True if this is the first node.
+     */
+
+    /**
+     * @cfg {Boolean} [allowDrop=true]
+     * Set to false to deny dropping on this node.
+     */
+
+    /**
+     * @cfg {Boolean} [allowDrag=true]
+     * Set to false to deny dragging of this node.
+     */
+
+    /**
+     * @cfg {Boolean} [loaded=false]
+     * True if the node has finished loading.
+     */
+
+    /**
+     * @cfg {Boolean} [loading=false]
+     * True if the node is currently loading.
+     */
+
+    /**
+     * @cfg {String} href
+     * An URL for a link that's created when this config is specified.
+     */
+
+    /**
+     * @cfg {String} hrefTarget
+     * Target for link. Only applicable when {@link #href} also specified.
+     */
+
+    /**
+     * @cfg {String} qtip
+     * Tooltip text to show on this node.
+     */
+
+    /**
+     * @cfg {String} qtitle
+     * Tooltip title.
+     */
+
+    /**
+     * @cfg {Number} qshowDelay
+     * Tooltip showDelay.
+     */
+
+    /**
+     * @cfg {String} text
+     * The text to show on node label.
+     */
+
+    /**
+     * @cfg {Ext.data.NodeInterface[]} children
+     * Array of child nodes.
+     */
+
+
+    /**
+     * @property {Ext.data.NodeInterface} nextSibling
+     * A reference to this node's next sibling node. `null` if this node does not have a next sibling.
+     */
+
+    /**
+     * @property {Ext.data.NodeInterface} previousSibling
+     * A reference to this node's previous sibling node. `null` if this node does not have a previous sibling.
+     */
+
+    /**
+     * @property {Ext.data.NodeInterface} parentNode
+     * A reference to this node's parent node. `null` if this node is the root node.
+     */
+
+    /**
+     * @property {Ext.data.NodeInterface} lastChild
+     * A reference to this node's last child node. `null` if this node has no children.
+     */
+
+    /**
+     * @property {Ext.data.NodeInterface} firstChild
+     * A reference to this node's first child node. `null` if this node has no children.
+     */
+
+    /**
+     * @property {Ext.data.NodeInterface[]} childNodes
+     * An array of this nodes children.  Array will be empty if this node has no chidren.
+     */
+
+    statics: {
+        /**
+         * This method allows you to decorate a Model's class to implement the NodeInterface.
+         * This adds a set of methods, new events, new properties and new fields on every Record.
+         * @param {Ext.Class/Ext.data.Model} modelClass The Model class or an instance of the Model class you want to
+         * decorate the prototype of.
+         * @static
+         */
+        decorate: function(modelClass) {
+            var idName, idField, idType;
+            
+            // get the reference to the model class, in case the argument was a string or a record
+            if (typeof modelClass == 'string') {
+                modelClass = Ext.ModelManager.getModel(modelClass);
+            } else if (modelClass.isModel) {
+                modelClass = Ext.ModelManager.getModel(modelClass.modelName);
+            }
+            
+            // avoid unnecessary work in case the model was already decorated
+            if (modelClass.prototype.isNode) {
+                return;
+            }
+
+            idName  = modelClass.prototype.idProperty;
+            idField = modelClass.prototype.fields.get(idName);
+            idType  = modelClass.prototype.fields.get(idName).type.type;
+
+            modelClass.override(this.getPrototypeBody());
+            this.applyFields(modelClass, [
+                { name : 'parentId',   type : idType,    defaultValue : null,  useNull : idField.useNull },
+                { name : 'index',      type : 'int',     defaultValue : 0,     persist : false          , convert: null },
+                { name : 'depth',      type : 'int',     defaultValue : 0,     persist : false          , convert: null },
+                { name : 'expanded',   type : 'bool',    defaultValue : false, persist : false          , convert: null },
+                { name : 'expandable', type : 'bool',    defaultValue : true,  persist : false          , convert: null },
+                { name : 'checked',    type : 'auto',    defaultValue : null,  persist : false          , convert: null },
+                { name : 'leaf',       type : 'bool',    defaultValue : false                            },
+                { name : 'cls',        type : 'string',  defaultValue : '',    persist : false          , convert: null },
+                { name : 'iconCls',    type : 'string',  defaultValue : '',    persist : false          , convert: null },
+                { name : 'icon',       type : 'string',  defaultValue : '',    persist : false          , convert: null },
+                { name : 'root',       type : 'boolean', defaultValue : false, persist : false          , convert: null },
+                { name : 'isLast',     type : 'boolean', defaultValue : false, persist : false          , convert: null },
+                { name : 'isFirst',    type : 'boolean', defaultValue : false, persist : false          , convert: null },
+                { name : 'allowDrop',  type : 'boolean', defaultValue : true,  persist : false          , convert: null },
+                { name : 'allowDrag',  type : 'boolean', defaultValue : true,  persist : false          , convert: null },
+                { name : 'loaded',     type : 'boolean', defaultValue : false, persist : false          , convert: null },
+                { name : 'loading',    type : 'boolean', defaultValue : false, persist : false          , convert: null },
+                { name : 'href',       type : 'string',  defaultValue : '',    persist : false          , convert: null },
+                { name : 'hrefTarget', type : 'string',  defaultValue : '',    persist : false          , convert: null },
+                { name : 'qtip',       type : 'string',  defaultValue : '',    persist : false          , convert: null },
+                { name : 'qtitle',     type : 'string',  defaultValue : '',    persist : false          , convert: null },
+                { name : 'qshowDelay', type : 'int',     defaultValue : 0,     persist : false          , convert: null },
+                { name : 'children',   type : 'auto',    defaultValue : null,  persist : false          , convert: null }
+            ]);
+        },
+        
+        applyFields: function(modelClass, addFields) {
+            var modelPrototype = modelClass.prototype,
+                fields = modelPrototype.fields,
+                keys = fields.keys,
+                ln = addFields.length,
+                addField, i;
+
+            for (i = 0; i < ln; i++) {
+                addField = addFields[i];
+                if (!Ext.Array.contains(keys, addField.name)) {
+                    fields.add(new Ext.data.Field(addField));
+                }
+            }
+
+        },
+
+        getPrototypeBody: function() {
+            var bubbledEvents = {
+                idchanged     : true,
+                append        : true,
+                remove        : true,
+                move          : true,
+                insert        : true,
+                beforeappend  : true,
+                beforeremove  : true,
+                beforemove    : true,
+                beforeinsert  : true,
+                expand        : true,
+                collapse      : true,
+                beforeexpand  : true,
+                beforecollapse: true,
+                sort          : true,
+                rootchange    : true
+            };
+            return {
+                /**
+                 * @property {Boolean} isNode
+                 * `true` in this class to identify an object as an instantiated Node, or subclass thereof.
+                 */
+                isNode: true,
+                
+                constructor: function() {
+                    var me = this;
+                    me.callParent(arguments);
+                    me.firstChild = me.lastChild = me.parentNode = me.previousSibling = me.nextSibling = null;
+                    me.childNodes = [];
+
+                    // These events are fired on this node, and programatically bubble up the parentNode axis, ending up 
+                    // walking off the top and firing on the owning Ext.data.Tree structure, and its owning Ext.data.TreeStore
+                    /**
+                     * @event append
+                     * Fires when a new child node is appended
+                     * @param {Ext.data.NodeInterface} this This node
+                     * @param {Ext.data.NodeInterface} node The newly appended node
+                     * @param {Number} index The index of the newly appended node
+                     */
+                    /**
+                     * @event remove
+                     * Fires when a child node is removed
+                     * @param {Ext.data.NodeInterface} this This node
+                     * @param {Ext.data.NodeInterface} node The removed node
+                     * @param {Boolean} isMove `true` if the child node is being removed so it can be moved to another position in the tree.
+                     * (a side effect of calling {@link Ext.data.NodeInterface#appendChild appendChild} or
+                     * {@link Ext.data.NodeInterface#insertBefore insertBefore} with a node that already has a parentNode)
+                     */
+                    /**
+                     * @event move
+                     * Fires when this node is moved to a new location in the tree
+                     * @param {Ext.data.NodeInterface} this This node
+                     * @param {Ext.data.NodeInterface} oldParent The old parent of this node
+                     * @param {Ext.data.NodeInterface} newParent The new parent of this node
+                     * @param {Number} index The index it was moved to
+                     */
+                    /**
+                     * @event insert
+                     * Fires when a new child node is inserted.
+                     * @param {Ext.data.NodeInterface} this This node
+                     * @param {Ext.data.NodeInterface} node The child node inserted
+                     * @param {Ext.data.NodeInterface} refNode The child node the node was inserted before
+                     */
+                    /**
+                     * @event beforeappend
+                     * Fires before a new child is appended, return false to cancel the append.
+                     * @param {Ext.data.NodeInterface} this This node
+                     * @param {Ext.data.NodeInterface} node The child node to be appended
+                     */
+                    /**
+                     * @event beforeremove
+                     * Fires before a child is removed, return false to cancel the remove.
+                     * @param {Ext.data.NodeInterface} this This node
+                     * @param {Ext.data.NodeInterface} node The child node to be removed
+                     * @param {Boolean} isMove `true` if the child node is being removed so it can be moved to another position in the tree.
+                     * (a side effect of calling {@link Ext.data.NodeInterface#appendChild appendChild} or
+                     * {@link Ext.data.NodeInterface#insertBefore insertBefore} with a node that already has a parentNode)
+                     */
+                    /**
+                     * @event beforemove
+                     * Fires before this node is moved to a new location in the tree. Return false to cancel the move.
+                     * @param {Ext.data.NodeInterface} this This node
+                     * @param {Ext.data.NodeInterface} oldParent The parent of this node
+                     * @param {Ext.data.NodeInterface} newParent The new parent this node is moving to
+                     * @param {Number} index The index it is being moved to
+                     */
+                    /**
+                     * @event beforeinsert
+                     * Fires before a new child is inserted, return false to cancel the insert.
+                     * @param {Ext.data.NodeInterface} this This node
+                     * @param {Ext.data.NodeInterface} node The child node to be inserted
+                     * @param {Ext.data.NodeInterface} refNode The child node the node is being inserted before
+                     */
+                    /**
+                     * @event expand
+                     * Fires when this node is expanded.
+                     * @param {Ext.data.NodeInterface} this The expanding node
+                     */
+                    /**
+                     * @event collapse
+                     * Fires when this node is collapsed.
+                     * @param {Ext.data.NodeInterface} this The collapsing node
+                     */
+                    /**
+                     * @event beforeexpand
+                     * Fires before this node is expanded.
+                     * @param {Ext.data.NodeInterface} this The expanding node
+                     */
+                    /**
+                     * @event beforecollapse
+                     * Fires before this node is collapsed.
+                     * @param {Ext.data.NodeInterface} this The collapsing node
+                     */
+                    /**
+                     * @event sort
+                     * Fires when this node's childNodes are sorted.
+                     * @param {Ext.data.NodeInterface} this This node.
+                     * @param {Ext.data.NodeInterface[]} childNodes The childNodes of this node.
+                     */
+                    return me;
+                },
+                /**
+                 * Ensures that the passed object is an instance of a Record with the NodeInterface applied
+                 * @return {Ext.data.NodeInterface}
+                 */
+                createNode: function(node) {
+                    if (!node.isModel) {
+                        node = Ext.ModelManager.create(node, this.modelName);
+                    }
+                    // The node may already decorated, but may not have been
+                    // so when the model constructor was called. If not,
+                    // setup defaults here
+                    if (!node.childNodes) {
+                        node.firstChild = node.lastChild = node.parentNode = node.previousSibling = node.nextSibling = null;
+                        node.childNodes = [];
+                    }
+                    return node;
+                },
+
+                /**
+                 * Returns true if this node is a leaf
+                 * @return {Boolean}
+                 */
+                isLeaf : function() {
+                    return this.get('leaf') === true;
+                },
+
+                /**
+                 * Sets the first child of this node
+                 * @private
+                 * @param {Ext.data.NodeInterface} node
+                 */
+                setFirstChild : function(node) {
+                    this.firstChild = node;
+                },
+
+                /**
+                 * Sets the last child of this node
+                 * @private
+                 * @param {Ext.data.NodeInterface} node
+                 */
+                setLastChild : function(node) {
+                    this.lastChild = node;
+                },
+
+                /**
+                 * Updates general data of this node like isFirst, isLast, depth. This
+                 * method is internally called after a node is moved. This shouldn't
+                 * have to be called by the developer unless they are creating custom
+                 * Tree plugins.
+                 * @param {Boolean} commit
+                 * @param {Object} info The info to update. May contain any of the following
+                 *  @param {Object} info.isFirst
+                 *  @param {Object} info.isLast
+                 *  @param {Object} info.index
+                 *  @param {Object} info.depth
+                 *  @param {Object} info.parentId
+                 */
+                updateInfo: function(commit, info) {
+                    var me = this,
+                        oldDepth = me.data.depth,
+                        childInfo = {},
+                        children = me.childNodes,
+                        childCount = children.length,
+                        i,
+                        phantom = me.phantom,
+                        dataObject = me[me.persistenceProperty],
+                        propName, newValue,
+                        field;
+                        
+                    if (!info) {
+                        Ext.Error.raise('NodeInterface expects update info to be passed');
+                    }
+
+                    // Set the passed field values into the data object.
+                    // We do NOT need the expense of Model.set. We just need to ensure
+                    // that the dirty flag is set.
+                    for (propName in info) {
+                        field = me.fields.get(propName);
+                        newValue = info[propName];
+                        
+                        // Only flag dirty when persistent fields are modified
+                        if (field && field.persist) {
+                            me.dirty = me.dirty || !me.isEqual(dataObject[propName], newValue);
+                        }
+                        dataObject[propName] = newValue;
+                    }
+                    if (commit) {
+                        me.commit();
+                        me.phantom = phantom;
+                    }
+
+                    // The only way child data can be influenced is if this node has changed level in this update.
+                    if (me.data.depth !== oldDepth) {
+                        childInfo = {
+                            depth: me.data.depth + 1
+                        };
+                        for (i = 0; i < childCount; i++) {
+                            children[i].updateInfo(commit, childInfo);
+                        }
+                    }
+                },
+
+                /**
+                 * Returns true if this node is the last child of its parent
+                 * @return {Boolean}
+                 */
+                isLast : function() {
+                   return this.get('isLast');
+                },
+
+                /**
+                 * Returns true if this node is the first child of its parent
+                 * @return {Boolean}
+                 */
+                isFirst : function() {
+                   return this.get('isFirst');
+                },
+
+                /**
+                 * Returns true if this node has one or more child nodes, else false.
+                 * @return {Boolean}
+                 */
+                hasChildNodes : function() {
+                    return !this.isLeaf() && this.childNodes.length > 0;
+                },
+
+                /**
+                 * Returns true if this node has one or more child nodes, or if the <tt>expandable</tt>
+                 * node attribute is explicitly specified as true, otherwise returns false.
+                 * @return {Boolean}
+                 */
+                isExpandable : function() {
+                    var me = this;
+
+                    if (me.get('expandable')) {
+                        return !(me.isLeaf() || (me.isLoaded() && !me.hasChildNodes()));
+                    }
+                    return false;
+                },
+                
+                triggerUIUpdate: function() {
+                    // This isn't ideal, however none of the underlying fields have changed
+                    // but we still need to update the UI
+                    this.afterEdit([]);    
+                },
+
+                /**
+                 * Inserts node(s) as the last child node of this node.
+                 *
+                 * If the node was previously a child node of another parent node, it will be removed from that node first.
+                 *
+                 * @param {Ext.data.NodeInterface/Ext.data.NodeInterface[]/Object} node The node or Array of nodes to append
+                 * @param {Boolean} [suppressEvents=false] True to suppress firering of events.
+                 * @param {Boolean} [commit=false]
+                 * @return {Ext.data.NodeInterface} The appended node if single append, or null if an array was passed
+                 */
+                appendChild : function(node, suppressEvents, commit) {
+                    var me = this,
+                        i, ln,
+                        index,
+                        oldParent,
+                        previousSibling,
+                        childInfo = {
+                            isLast: true,
+                            parentId: me.getId(),
+                            depth: (me.data.depth||0) + 1
+                        };
+
+                    // if passed an array do them one by one
+                    if (Ext.isArray(node)) {
+                        // suspend auto syncing while we append all the nodes
+                        me.callStore('suspendAutoSync');
+                        for (i = 0, ln = node.length - 1; i < ln; i++) {
+                            me.appendChild(node[i], suppressEvents, commit);
+                        }
+                        // resume auto syncing before we append the last node
+                        me.callStore('resumeAutoSync');
+                        me.appendChild(node[ln], suppressEvents, commit);
+                    } else {
+                        // Make sure it is a record
+                        node = me.createNode(node);
+
+                        if (suppressEvents !== true && me.fireEventArgs("beforeappend", [me, node]) === false) {
+                            return false;
+                        }
+
+                        index = me.childNodes.length;
+                        oldParent = node.parentNode;
+
+                        // it's a move, make sure we move it cleanly
+                        if (oldParent) {
+                            if (suppressEvents !== true && node.fireEventArgs("beforemove", [node, oldParent, me, index]) === false) {
+                                return false;
+                            }
+                            oldParent.removeChild(node, false, false, true);
+                        }
+
+                        // Coalesce all layouts caused by node append
+                        Ext.suspendLayouts();
+
+                        index = me.childNodes.length;
+                        if (index === 0) {
+                            me.setFirstChild(node);
+                        }
+
+                        me.childNodes[index] = node;
+                        node.parentNode = me;
+                        node.nextSibling = null;
+
+                        me.setLastChild(node);
+
+                        previousSibling = me.childNodes[index - 1];
+                        if (previousSibling) {
+                            node.previousSibling = previousSibling;
+                            previousSibling.nextSibling = node;
+                            previousSibling.updateInfo(commit, {
+                                isLast: false
+                            });
+                            previousSibling.triggerUIUpdate();
+                        } else {
+                            node.previousSibling = null;
+                        }
+
+                        // Update the new child's info passing in info we already know
+                        childInfo.isFirst = index === 0;
+                        childInfo.index = index;
+                        node.updateInfo(commit, childInfo);
+
+                        // As soon as we append a child to this node, we are loaded
+                        if (!me.isLoaded()) {
+                            me.set('loaded', true);
+                        } else if (me.childNodes.length === 1) {
+                            me.triggerUIUpdate();
+                        }
+
+                        // Ensure connectors are correct by updating the UI on all intervening nodes (descendants) between last sibling and new node.
+                        if (index && me.childNodes[index - 1].isExpanded()) {
+                            me.childNodes[index - 1].cascadeBy(me.triggerUIUpdate);
+                        }
+
+                        if(!node.isLeaf() && node.phantom) {
+                            node.set('loaded', true);
+                        }
+
+                        // Flush layouts caused by updating of the UI
+                        Ext.resumeLayouts(true);
+
+                        if (suppressEvents !== true) {
+                            me.fireEventArgs("append", [me, node, index]);
+
+                            if (oldParent) {
+                                node.fireEventArgs("move", [node, oldParent, me, index]);
+                            }
+                        }
+
+                        return node;
+                    }
+                },
+
+                /**
+                * Returns the tree this node is in.
+                * @return {Ext.tree.Panel} The tree panel which owns this node.
+                */
+                getOwnerTree: function() {
+                    var node = this,
+                        store;
+                        
+                    while (node.parentNode) {
+                        node = node.parentNode;
+                    }
+                    store = node.store;
+                    if (store) {
+                        if (store.treeStore) {
+                            store = store.treeStore;
+                        }
+                        
+                        if (store.tree) {
+                            return store.ownerTree;
+                        }
+                    }
+                    return undefined;
+                },
+
+                /**
+                 * Removes a child node from this node.
+                 * @param {Ext.data.NodeInterface} node The node to remove
+                 * @param {Boolean} [destroy=false] True to destroy the node upon removal.
+                 * @return {Ext.data.NodeInterface} The removed node
+                 */
+                removeChild : function(node, destroy, suppressEvents, isMove) {
+                    var me = this,
+                        index = me.indexOf(node),
+                        i, childCount,
+                        previousSibling;
+
+                    if (index === -1 || (suppressEvents !== true && me.fireEventArgs("beforeremove", [me, node, !!isMove]) === false)) {
+                        return false;
+                    }
+
+                    // Coalesce all layouts caused by node removal
+                    Ext.suspendLayouts();
+
+                    // remove it from childNodes collection
+                    Ext.Array.erase(me.childNodes, index, 1);
+
+                    // update child refs
+                    if (me.firstChild === node) {
+                        me.setFirstChild(node.nextSibling);
+                    }
+                    if (me.lastChild === node) {
+                        me.setLastChild(node.previousSibling);
+                    }
+
+                    // Update previous sibling to point to its new next.
+                    // Note: the code below is an assignment statement. The value of which is tested for truthiness.
+                    if (previousSibling = node.previousSibling) {
+                        node.previousSibling.nextSibling = node.nextSibling;
+                    }
+                    
+                    // Update the next sibling to point to its new previous
+                    if (node.nextSibling) {
+                        node.nextSibling.previousSibling = node.previousSibling;
+
+                        // And if it's the new first child, let it know
+                        if (index === 0) {
+                            node.nextSibling.updateInfo(false, {
+                                isFirst: true
+                            });
+                        }
+
+                        // Update subsequent siblings' index values
+                        for (i = index, childCount = me.childNodes.length; i < childCount; i++) {
+                            me.childNodes[i].updateInfo(false, {
+                                index: i
+                            });
+                        }
+                    }
+
+                    // If the removed node had no next sibling, but had a previous,
+                    // update the previous sibling so it knows it's the last
+                    else if (previousSibling) {
+                        previousSibling.updateInfo(false, {
+                            isLast: true
+                        });
+
+                        // We're removing the last child.
+                        // Ensure connectors are correct by updating the UI on all intervening nodes (descendants) between previous sibling and new node.
+                        if (previousSibling.isExpanded()) {
+                            previousSibling.cascadeBy(me.triggerUIUpdate);
+                        }
+                        // No intervening descendant nodes, just update the previous sibling
+                        else {
+                            previousSibling.triggerUIUpdate();
+                        }
+                    }
+
+                    // If this node suddenly doesnt have childnodes anymore, update myself
+                    if (!me.childNodes.length) {
+                        me.triggerUIUpdate();
+                    }
+
+                    // Flush layouts caused by updating the UI
+                    Ext.resumeLayouts(true);
+
+                    if (suppressEvents !== true) {
+                        // Temporary property on the node to inform listeners of where the node used to be
+                        node.removeContext = {
+                            parentNode: node.parentNode,
+                            previousSibling: node.previousSibling,
+                            nextSibling: node.nextSibling
+                        };
+
+                        node.previousSibling = node.nextSibling = node.parentNode = null;
+                        me.fireEventArgs('remove', [me, node, !!isMove]);
+
+                        // This is a transient property for use only in remove listeners
+                        node.removeContext = null;
+                    }
+
+                    // Update removed node's pointers *after* firing event so that listsners
+                    // can tell where the removal took place
+                    if (destroy) {
+                        node.destroy(true);
+                    } else {
+                        node.clear();
+                    }
+
+                    return node;
+                },
+
+                /**
+                 * Creates a copy (clone) of this Node.
+                 * @param {String} [id] A new id, defaults to this Node's id.
+                 * @param {Boolean} [deep=false] True to recursively copy all child Nodes into the new Node.
+                 * False to copy without child Nodes.
+                 * @return {Ext.data.NodeInterface} A copy of this Node.
+                 */
+                copy: function(newId, deep) {
+                    var me = this,
+                        result = me.callParent(arguments),
+                        len = me.childNodes ? me.childNodes.length : 0,
+                        i;
+
+                    // Move child nodes across to the copy if required
+                    if (deep) {
+                        for (i = 0; i < len; i++) {
+                            result.appendChild(me.childNodes[i].copy(undefined, true));
+                        }
+                    }
+                    return result;
+                },
+
+                /**
+                 * Clears the node.
+                 * @private
+                 * @param {Boolean} [destroy=false] True to destroy the node.
+                 */
+                clear : function(destroy) {
+                    var me = this;
+
+                    // clear any references from the node
+                    me.parentNode = me.previousSibling = me.nextSibling = null;
+                    if (destroy) {
+                        me.firstChild = me.lastChild = null;
+                    }
+                },
+
+                /**
+                 * Destroys the node.
+                 */
+                destroy : function(silent) {
+                    /*
+                     * Silent is to be used in a number of cases
+                     * 1) When setRoot is called.
+                     * 2) When destroy on the tree is called
+                     * 3) For destroying child nodes on a node
+                     */
+                    var me      = this,
+                        options = me.destroyOptions,
+                        nodes   = me.childNodes,
+                        nLen    = nodes.length,
+                        n;
+
+                    if (silent === true) {
+                        me.clear(true);
+
+                        for (n = 0; n < nLen; n++) {
+                            nodes[n].destroy(true);
+                        }
+
+                        me.childNodes = null;
+                        delete me.destroyOptions;
+                        me.callParent([options]);
+                    } else {
+                        me.destroyOptions = silent;
+                        // overridden method will be called, since remove will end up calling destroy(true);
+                        me.remove(true);
+                    }
+                },
+
+                /**
+                 * Inserts the first node before the second node in this nodes childNodes collection.
+                 * @param {Ext.data.NodeInterface} node The node to insert
+                 * @param {Ext.data.NodeInterface} refNode The node to insert before (if null the node is appended)
+                 * @return {Ext.data.NodeInterface} The inserted node
+                 */
+                insertBefore : function(node, refNode, suppressEvents) {
+                    var me = this,
+                        index     = me.indexOf(refNode),
+                        oldParent = node.parentNode,
+                        refIndex  = index,
+                        childCount, previousSibling, i;
+
+                    if (!refNode) { // like standard Dom, refNode can be null for append
+                        return me.appendChild(node);
+                    }
+
+                    // nothing to do
+                    if (node === refNode) {
+                        return false;
+                    }
+
+                    // Make sure it is a record with the NodeInterface
+                    node = me.createNode(node);
+
+                    if (suppressEvents !== true && me.fireEventArgs("beforeinsert", [me, node, refNode]) === false) {
+                        return false;
+                    }
+
+                    // when moving internally, indexes will change after remove
+                    if (oldParent === me && me.indexOf(node) < index) {
+                        refIndex--;
+                    }
+
+                    // it's a move, make sure we move it cleanly
+                    if (oldParent) {
+                        if (suppressEvents !== true && node.fireEventArgs("beforemove", [node, oldParent, me, index, refNode]) === false) {
+                            return false;
+                        }
+                        oldParent.removeChild(node, false, false, true);
+                    }
+
+                    if (refIndex === 0) {
+                        me.setFirstChild(node);
+                    }
+
+                    Ext.Array.splice(me.childNodes, refIndex, 0, node);
+                    node.parentNode = me;
+
+                    node.nextSibling = refNode;
+                    refNode.previousSibling = node;
+
+                    previousSibling = me.childNodes[refIndex - 1];
+                    if (previousSibling) {
+                        node.previousSibling = previousSibling;
+                        previousSibling.nextSibling = node;
+                    } else {
+                        node.previousSibling = null;
+                    }
+
+                    // Integrate the new node into its new position.
+                    node.updateInfo(false, {
+                        parentId: me.getId(),
+                        index: refIndex,
+                        isFirst: refIndex === 0,
+                        isLast: false,
+                        depth: (me.data.depth||0) + 1
+                    });
+
+                    // Update the index for all following siblings.
+                    for (i = refIndex + 1, childCount = me.childNodes.length; i < childCount; i++) {
+                        me.childNodes[i].updateInfo(false, {
+                            index: i
+                        });
+                    }
+
+                    if (!me.isLoaded()) {
+                        me.set('loaded', true);
+                    }
+                    // If this node didnt have any childnodes before, update myself
+                    else if (me.childNodes.length === 1) {
+                        me.triggerUIUpdate();
+                    }
+
+                    if(!node.isLeaf() && node.phantom) {
+                        node.set('loaded', true);
+                    }
+
+                    if (suppressEvents !== true) {
+                        me.fireEventArgs("insert", [me, node, refNode]);
+
+                        if (oldParent) {
+                            node.fireEventArgs("move", [node, oldParent, me, refIndex, refNode]);
+                        }
+                    }
+
+                    return node;
+                },
+
+                /**
+                 * Inserts a node into this node.
+                 * @param {Number} index The zero-based index to insert the node at
+                 * @param {Ext.data.NodeInterface} node The node to insert
+                 * @return {Ext.data.NodeInterface} The node you just inserted
+                 */
+                insertChild: function(index, node) {
+                    var sibling = this.childNodes[index];
+                    if (sibling) {
+                        return this.insertBefore(node, sibling);
+                    }
+                    else {
+                        return this.appendChild(node);
+                    }
+                },
+
+                /**
+                 * Removes this node from its parent
+                 * @param {Boolean} [destroy=false] True to destroy the node upon removal.
+                 * @return {Ext.data.NodeInterface} this
+                 */
+                remove : function(destroy, suppressEvents) {
+                    var me = this,
+                        parentNode = me.parentNode;
+
+                    if (parentNode) {
+                        parentNode.removeChild(me, destroy, suppressEvents);
+                    } else if (destroy) {
+                        // If we don't have a parent, just destroy it
+                        me.destroy(true);
+                    }
+                    return me;
+                },
+
+                /**
+                 * Removes all child nodes from this node.
+                 * @param {Boolean} [destroy=false] True to destroy the node upon removal.
+                 * @return {Ext.data.NodeInterface} this
+                 */
+                removeAll : function(destroy, suppressEvents, fromParent) {
+                    // This method duplicates logic from removeChild for the sake of
+                    // speed since we can make a number of assumptions because we're
+                    // getting rid of everything
+                    var me = this,
+                        childNodes = me.childNodes,
+                        i = 0,
+                        len = childNodes.length,
+                        node;
+
+                    // Avoid all this if nothing to remove
+                    if (!len) {
+                        return;
+                    }
+
+                    // NodeStore listens for this and performs the same actions as a collapse - 
+                    // all descendant nodes are removed from the flat store.
+                    me.fireEventArgs('bulkremove', [me, childNodes, false]);
+
+                    for (; i < len; ++i) {
+                        node = childNodes[i];
+                        
+                        // Temporary property on the node to inform listeners of where the node used to be
+                        node.removeContext = {
+                            parentNode: node.parentNode,
+                            previousSibling: node.previousSibling,
+                            nextSibling: node.nextSibling
+                        };
+
+                        node.previousSibling = node.nextSibling = node.parentNode = null;
+                        me.fireEventArgs('remove', [me, node, false]);
+
+                        // This is a transient property for use only in remove listeners
+                        node.removeContext = null;
+
+                        // If destroy passed, destroy it
+                        if (destroy) {
+                            node.destroy(true);
+                        }
+                        // Otherwise.... apparently, removeAll is always recursive.
+                        else {
+                            node.removeAll(false, suppressEvents, true);
+                        }
+                    }
+
+                    me.firstChild = me.lastChild = null;
+
+                    // If in recursion, null out child array
+                    if (fromParent) {
+                        // Removing from parent, clear children
+                        me.childNodes = null;
+                    } else {
+                        // clear array
+                        me.childNodes.length = 0;
+                        me.triggerUIUpdate();
+                    }
+                    
+                    return me;
+                },
+
+                /**
+                 * Returns the child node at the specified index.
+                 * @param {Number} index
+                 * @return {Ext.data.NodeInterface}
+                 */
+                getChildAt : function(index) {
+                    return this.childNodes[index];
+                },
+
+                /**
+                 * Replaces one child node in this node with another.
+                 * @param {Ext.data.NodeInterface} newChild The replacement node
+                 * @param {Ext.data.NodeInterface} oldChild The node to replace
+                 * @return {Ext.data.NodeInterface} The replaced node
+                 */
+                replaceChild : function(newChild, oldChild, suppressEvents) {
+                    var s = oldChild ? oldChild.nextSibling : null;
+
+                    this.removeChild(oldChild, false, suppressEvents);
+                    this.insertBefore(newChild, s, suppressEvents);
+                    return oldChild;
+                },
+
+                /**
+                 * Returns the index of a child node
+                 * @param {Ext.data.NodeInterface} node
+                 * @return {Number} The index of the node or -1 if it was not found
+                 */
+                indexOf : function(child) {
+                    return Ext.Array.indexOf(this.childNodes, child);
+                },
+                
+                /**
+                 * Returns the index of a child node that matches the id
+                 * @param {String} id The id of the node to find
+                 * @return {Number} The index of the node or -1 if it was not found
+                 */
+                indexOfId: function(id) {
+                    var childNodes = this.childNodes,
+                        len = childNodes.length,
+                        i = 0;
+                        
+                    for (; i < len; ++i) {
+                        if (childNodes[i].getId() === id) {
+                            return i;
+                        }    
+                    }
+                    return -1;
+                },
+
+                /**
+                 * Gets the hierarchical path from the root of the current node.
+                 * @param {String} [field] The field to construct the path from. Defaults to the model idProperty.
+                 * @param {String} [separator="/"] A separator to use.
+                 * @return {String} The node path
+                 */
+                getPath: function(field, separator) {
+                    field = field || this.idProperty;
+                    separator = separator || '/';
+
+                    var path = [this.get(field)],
+                        parent = this.parentNode;
+
+                    while (parent) {
+                        path.unshift(parent.get(field));
+                        parent = parent.parentNode;
+                    }
+                    return separator + path.join(separator);
+                },
+
+                /**
+                 * Returns depth of this node (the root node has a depth of 0)
+                 * @return {Number}
+                 */
+                getDepth : function() {
+                    return this.get('depth');
+                },
+
+                /**
+                 * Bubbles up the tree from this node, calling the specified function with each node. The arguments to the function
+                 * will be the args provided or the current node. If the function returns false at any point,
+                 * the bubble is stopped.
+                 * @param {Function} fn The function to call
+                 * @param {Object} [scope] The scope (this reference) in which the function is executed. Defaults to the current Node.
+                 * @param {Array} [args] The args to call the function with. Defaults to passing the current Node.
+                 */
+                bubble : function(fn, scope, args) {
+                    var p = this;
+                    while (p) {
+                        if (fn.apply(scope || p, args || [p]) === false) {
+                            break;
+                        }
+                        p = p.parentNode;
+                    }
+                },
+
+                //<deprecated since=0.99>
+                cascade: function() {
+                    if (Ext.isDefined(Ext.global.console)) {
+                        Ext.global.console.warn('Ext.data.Node: cascade has been deprecated. Please use cascadeBy instead.');
+                    }
+                    return this.cascadeBy.apply(this, arguments);
+                },
+                //</deprecated>
+
+                /**
+                 * Cascades down the tree from this node, calling the specified function with each node. The arguments to the function
+                 * will be the args provided or the current node. If the function returns false at any point,
+                 * the cascade is stopped on that branch.
+                 * @param {Function} fn The function to call
+                 * @param {Object} [scope] The scope (this reference) in which the function is executed. Defaults to the current Node.
+                 * @param {Array} [args] The args to call the function with. Defaults to passing the current Node.
+                 */
+                cascadeBy : function(fn, scope, args) {
+                    if (fn.apply(scope || this, args || [this]) !== false) {
+                        var childNodes = this.childNodes,
+                            length     = childNodes.length,
+                            i;
+
+                        for (i = 0; i < length; i++) {
+                            childNodes[i].cascadeBy(fn, scope, args);
+                        }
+                    }
+                },
+
+                /**
+                 * Interates the child nodes of this node, calling the specified function with each node. The arguments to the function
+                 * will be the args provided or the current node. If the function returns false at any point,
+                 * the iteration stops.
+                 * @param {Function} fn The function to call
+                 * @param {Object} [scope] The scope (this reference) in which the function is executed. Defaults to the current Node in iteration.
+                 * @param {Array} [args] The args to call the function with. Defaults to passing the current Node.
+                 */
+                eachChild : function(fn, scope, args) {
+                    var childNodes = this.childNodes,
+                        length     = childNodes.length,
+                        i;
+
+                    for (i = 0; i < length; i++) {
+                        if (fn.apply(scope || this, args || [childNodes[i]]) === false) {
+                            break;
+                        }
+                    }
+                },
+
+                /**
+                 * Finds the first child that has the attribute with the specified value.
+                 * @param {String} attribute The attribute name
+                 * @param {Object} value The value to search for
+                 * @param {Boolean} [deep=false] True to search through nodes deeper than the immediate children
+                 * @return {Ext.data.NodeInterface} The found child or null if none was found
+                 */
+                findChild : function(attribute, value, deep) {
+                    return this.findChildBy(function() {
+                        return this.get(attribute) == value;
+                    }, null, deep);
+                },
+
+                /**
+                 * Finds the first child by a custom function. The child matches if the function passed returns true.
+                 * @param {Function} fn A function which must return true if the passed Node is the required Node.
+                 * @param {Object} [scope] The scope (this reference) in which the function is executed. Defaults to the Node being tested.
+                 * @param {Boolean} [deep=false] True to search through nodes deeper than the immediate children
+                 * @return {Ext.data.NodeInterface} The found child or null if none was found
+                 */
+                findChildBy : function(fn, scope, deep) {
+                    var cs = this.childNodes,
+                        len = cs.length,
+                        i = 0, n, res;
+
+                    for (; i < len; i++) {
+                        n = cs[i];
+                        if (fn.call(scope || n, n) === true) {
+                            return n;
+                        }
+                        else if (deep) {
+                            res = n.findChildBy(fn, scope, deep);
+                            if (res !== null) {
+                                return res;
+                            }
+                        }
+                    }
+
+                    return null;
+                },
+
+                /**
+                 * Returns true if this node is an ancestor (at any point) of the passed node.
+                 * @param {Ext.data.NodeInterface} node
+                 * @return {Boolean}
+                 */
+                contains : function(node) {
+                    return node.isAncestor(this);
+                },
+
+                /**
+                 * Returns true if the passed node is an ancestor (at any point) of this node.
+                 * @param {Ext.data.NodeInterface} node
+                 * @return {Boolean}
+                 */
+                isAncestor : function(node) {
+                    var p = this.parentNode;
+                    while (p) {
+                        if (p === node) {
+                            return true;
+                        }
+                        p = p.parentNode;
+                    }
+                    return false;
+                },
+
+                /**
+                 * Sorts this nodes children using the supplied sort function.
+                 * @param {Function} fn A function which, when passed two Nodes, returns -1, 0 or 1 depending upon required sort order.
+                 * @param {Boolean} [recursive=false] True to apply this sort recursively
+                 * @param {Boolean} [suppressEvent=false] True to not fire a sort event.
+                 */
+                sort : function(sortFn, recursive, suppressEvent) {
+                    var cs  = this.childNodes,
+                        ln = cs.length,
+                        i, n, info = {
+                            isFirst: true
+                        };
+
+                    if (ln > 0) {
+                        Ext.Array.sort(cs, sortFn);
+                        this.setFirstChild(cs[0]);
+                        this.setLastChild(cs[ln - 1]);
+
+                        for (i = 0; i < ln; i++) {
+                            n = cs[i];
+                            n.previousSibling = cs[i-1];
+                            n.nextSibling = cs[i+1];
+                            
+                            // Update the index and first/last status of children
+                            info.isLast = (i === ln - 1);
+                            info.index = i;
+                            n.updateInfo(false, info);
+                            info.isFirst = false;
+
+                            if (recursive && !n.isLeaf()) {
+                                n.sort(sortFn, true, true);
+                            }
+                        }
+
+                        if (suppressEvent !== true) {
+                            this.fireEventArgs('sort', [this, cs]);
+                        }
+                    }
+                },
+
+                /**
+                 * Returns true if this node is expaned
+                 * @return {Boolean}
+                 */
+                isExpanded: function() {
+                    return this.get('expanded');
+                },
+
+                /**
+                 * Returns true if this node is loaded
+                 * @return {Boolean}
+                 */
+                isLoaded: function() {
+                    return this.get('loaded');
+                },
+
+                /**
+                 * Returns true if this node is loading
+                 * @return {Boolean}
+                 */
+                isLoading: function() {
+                    return this.get('loading');
+                },
+
+                /**
+                 * Returns true if this node is the root node
+                 * @return {Boolean}
+                 */
+                isRoot: function() {
+                    return !this.parentNode;
+                },
+
+                /**
+                 * Returns true if this node is visible. Note that visibility refers to
+                 * the structure of the tree, the {@link Ext.tree.Panel#rootVisible}
+                 * configuration is not taken into account here. If this method is called
+                 * on the root node, it will always be visible.
+                 * @return {Boolean}
+                 */
+                isVisible: function() {
+                    var parent = this.parentNode;
+                    while (parent) {
+                        if (!parent.isExpanded()) {
+                            return false;
+                        }
+                        parent = parent.parentNode;
+                    }
+                    return true;
+                },
+
+                /**
+                 * Expand this node.
+                 * @param {Boolean} [recursive=false] True to recursively expand all the children
+                 * @param {Function} [callback] The function to execute once the expand completes
+                 * @param {Object} [scope] The scope to run the callback in
+                 */
+                expand: function(recursive, callback, scope) {
+                    var me = this,
+                        owner;
+
+                    // all paths must call the callback (eventually) or things like
+                    // selectPath fail
+
+                    // First we start by checking if this node is a parent
+                    if (!me.isLeaf()) {
+                        // If it's loading, wait until it loads before proceeding
+                        if (me.isLoading()) {
+                            me.on('expand', function() {
+                                me.expand(recursive, callback, scope);
+                            }, me, {single: true});
+                        } else {
+                            // Now we check if this record is already expanding or expanded
+                            if (!me.isExpanded()) {
+
+                                // The TreeStore actually listens for the beforeexpand method and checks
+                                // whether we have to asynchronously load the children from the server
+                                // first. Thats why we pass a callback function to the event that the
+                                // store can call once it has loaded and appended all the children.
+                                me.fireEventArgs('beforeexpand', [me, me.onChildNodesAvailable, me, [recursive, callback, scope]]);
+                            } else if (recursive) {
+                                // If it is is already expanded but we want to recursively expand then call expandChildren
+                                owner = me.getOwnerTree();
+                                me.expandChildren(true, owner ? owner.singleExpand : false, callback, scope);
+                            } else {
+                                Ext.callback(callback, scope || me, [me.childNodes]);
+                            }
+                        }
+                    } else {
+                        // If it's not then we fire the callback right away
+                        Ext.callback(callback, scope || me); // leaf = no childNodes
+                    }
+                },
+
+                /**
+                 * @private
+                 * Called as a callback from the beforeexpand listener fired by {@link #method-expand} when the child nodes have been loaded and appended.
+                 */
+                onChildNodesAvailable: function(records, recursive, callback, scope) {
+                    var me = this,
+                        owner;
+
+                    // Bracket expansion with layout suspension.
+                    // In optimum case, when recursive, child node data are loaded and expansion is synchronous within the suspension.
+                    Ext.suspendLayouts();
+
+                    // Not structural. The TreeView's onUpdate listener just updates the [+] icon to [-] in response.
+                    me.set('expanded', true);
+
+                    // Listened for by NodeStore.onNodeExpand.
+                    me.fireEventArgs('expand', [me, me.childNodes, false]);
+
+                    // Call the expandChildren method if recursive was set to true
+                    if (recursive) {
+                        owner = me.getOwnerTree();
+                        me.expandChildren(true, owner ? owner.singleExpand : false, callback, scope);
+                    } else {
+                        Ext.callback(callback, scope || me, [me.childNodes]);
+                    }
+
+                    Ext.resumeLayouts(true);
+                },
+
+                /**
+                 * Expand all the children of this node.
+                 * @param {Boolean} [recursive=false] True to recursively expand all the children
+                 * @param {Function} [callback] The function to execute once all the children are expanded
+                 * @param {Object} [scope] The scope to run the callback in
+                 */
+                expandChildren: function(recursive, singleExpand, callback, scope) {
+                    var me = this,
+                        i,
+                        allNodes = me.childNodes,
+                        expandNodes = [],
+                        ln = singleExpand ? Math.min(allNodes.length, 1) : allNodes.length,
+                        node;
+
+                    for (i = 0; i < ln; ++i) {
+                        node = allNodes[i];
+                        if (!node.isLeaf()) {
+                            expandNodes[expandNodes.length] = node;
+                        }
+                    }
+                    ln = expandNodes.length;
+
+                    for (i = 0; i < ln; ++i) {
+                        expandNodes[i].expand(recursive);
+                    }
+
+                    if (callback) {
+                        Ext.callback(callback, scope || me, [me.childNodes]);
+                    }
+                },
+
+                /**
+                 * Collapse this node.
+                 * @param {Boolean} [recursive=false] True to recursively collapse all the children
+                 * @param {Function} [callback] The function to execute once the collapse completes
+                 * @param {Object} [scope] The scope to run the callback in
+                 */
+                collapse: function(recursive, callback, scope) {
+                    var me = this,
+                        expanded = me.isExpanded(),
+                        len = me.childNodes.length,
+                        i, collapseChildren;
+
+                    // If this is a parent and
+                    //      already collapsed but the recursive flag is passed to target child nodes
+                    //   or
+                    //      the collapse is not vetoed by a listener
+                    if (!me.isLeaf() && ((!expanded && recursive) || me.fireEventArgs('beforecollapse', [me]) !== false)) {
+
+                        // Bracket collapsing with layout suspension.
+                        // Collapsing is synchronous within the suspension.
+                        Ext.suspendLayouts();
+
+                        // Inform listeners of a collapse event if we are still expanded.
+                        if (me.isExpanded()) {
+                            
+                            // Set up the callback to set non-leaf descendants to collapsed if necessary.
+                            // If recursive, we just need to set all non-leaf descendants to collapsed state.
+                            // We *DO NOT* call collapse on them. That would attempt to remove their descendants
+                            // from the UI, and that is done: THIS node is collapsed - ALL descendants are removed from the UI.
+                            // Descendant non-leaves just silently change state.
+                            if (recursive) {
+                                collapseChildren = function() {
+                                    for (i = 0; i < len; i++) {
+                                        me.childNodes[i].setCollapsed(true);
+                                    }
+                                };
+                                if (callback) {
+                                    callback = Ext.Function.createSequence(collapseChildren, callback);
+                                } else {
+                                    callback = collapseChildren;
+                                }
+                            }
+
+                            // Not structural. The TreeView's onUpdate listener just updates the [+] icon to [-] in response.
+                            me.set('expanded', false);
+
+                            // Listened for by NodeStore.onNodeCollapse which removes all descendant nodes to achieve UI collapse
+                            // and passes callback on in its beforecollapse event which is poked into the animWrap for
+                            // final calling in the animation callback.
+                            me.fireEventArgs('collapse', [me, me.childNodes, false, callback ? Ext.Function.bind(callback, scope, [me.childNodes]) : null, null]);
+
+                            // So that it's not called at the end
+                            callback = null;
+                        }
+
+                        // If recursive, we just need to set all non-leaf descendants to collapsed state.
+                        // We *DO NOT* call collapse on them. That would attempt to remove their descendants
+                        // from the UI, and that is done: THIS node is collapsed - ALL descendants are removed from the UI.
+                        // Descendant non-leaves just silently change state.
+                        else if (recursive) {
+                            for (i = 0; i < len; i++) {
+                                me.childNodes[i].setCollapsed(true);
+                            }
+                        }
+
+                        Ext.resumeLayouts(true);
+                    }
+
+                    // Call the passed callback
+                    Ext.callback(callback, scope || me, [me.childNodes]);
+                },
+
+                /**
+                 * @private Sets the node into the collapsed state without affecting the UI.
+                 * 
+                 * This is called when a node is collapsed with the recursive flag. All the descendant
+                 * nodes will have been removed from the store, but descendant non-leaf nodes still
+                 * need to be set to the collapsed state without affecting the UI.
+                 */
+                setCollapsed: function(recursive) {
+                    var me = this,
+                        len = me.childNodes.length,
+                        i;
+
+                    // Only if we are not a leaf node and the collapse was not vetoed by a listener.
+                    if (!me.isLeaf() && me.fireEventArgs('beforecollapse', [me, Ext.emptyFn]) !== false) {
+
+                        // Update the state directly.
+                        me.data.expanded = false;
+
+                        // Listened for by NodeStore.onNodeCollapse, but will do nothing except pass on the
+                        // documented events because the records have already been removed from the store when
+                        // the ancestor node was collapsed.
+                        me.fireEventArgs('collapse', [me, me.childNodes, false, null, null]);
+
+                        if (recursive) {
+                            for (i = 0; i < len; i++) {
+                                me.childNodes[i].setCollapsed(true);
+                            }
+                        }
+                    }
+                },
+
+                /**
+                 * Collapse all the children of this node.
+                 * @param {Function} [recursive=false] True to recursively collapse all the children
+                 * @param {Function} [callback] The function to execute once all the children are collapsed
+                 * @param {Object} [scope] The scope to run the callback in
+                 */
+                collapseChildren: function(recursive, callback, scope) {
+                    var me = this,
+                        i,
+                        allNodes = me.childNodes,
+                        ln = allNodes.length,
+                        collapseNodes = [],
+                        node;
+
+                    // Only bother with loaded, expanded, non-leaf nodes
+                    for (i = 0; i < ln; ++i) {
+                        node = allNodes[i];
+                        if (!node.isLeaf() && node.isLoaded() && node.isExpanded()) {
+                            collapseNodes.push(node);
+                        }
+                    }
+                    ln = collapseNodes.length;
+
+                    // Collapse the collapsible children.
+                    // Pass our callback to the last one.
+                    for (i = 0; i < ln; ++i) {
+                        node = collapseNodes[i];
+                        if (i === ln - 1) {
+                            node.collapse(recursive, callback, scope);
+                        } else {
+                            node.collapse(recursive);
+                        }
+                    }
+                },
+
+                // Node events always bubble, but events which bubble are always created, so bubble in a loop and
+                // only fire when there are listeners at each level.
+                // bubbled events always fire because they cannot tell if there is a listener at each level.
+                fireEventArgs: function(eventName, args) {
+                    // Use the model prototype directly. If we have a BaseModel and then a SubModel,
+                    // if we access the superclass fireEventArgs it will just refer to the same method
+                    // and we end up in an infinite loop.
+                    var fireEventArgs = Ext.data.Model.prototype.fireEventArgs,
+                        result, eventSource, tree, treeStore, rootNode;
+
+                    // The event bubbles (all native NodeInterface events do)...
+                    if (bubbledEvents[eventName]) {
+                        for (eventSource = this; result !== false && eventSource; eventSource = (rootNode = eventSource).parentNode) {
+                            if (eventSource.hasListeners[eventName]) {
+                                result = fireEventArgs.call(eventSource, eventName, args);
+                            }
+                        }
+
+                        // When we reach the root node, go up to the Ext.data.TreeStore, and then the Ext.data.Tree
+                        tree = rootNode.rootOf;
+                        if (result !== false && tree) {
+                            treeStore = tree.treeStore;
+                            if (treeStore && treeStore.hasListeners[eventName]) {
+                                result = treeStore.fireEventArgs.call(treeStore, eventName, args);
+                            }
+                            if (result !== false && tree.hasListeners[eventName]) {
+                                result = tree.fireEventArgs.call(tree, eventName, args);
+                            }
+                        }
+                        return result;
+                    }
+                    // Event does not bubble - call superclass fireEventArgs method
+                    else {
+                        return fireEventArgs.apply(this, arguments)
+                    }
+                },
+
+                /**
+                 * Creates an object representation of this node including its children.
+                 */
+                serialize: function() {
+                    var result = Ext.data.writer.Json.prototype.getRecordData(this),
+                        childNodes = this.childNodes,
+                        len = childNodes.length,
+                        children, i;
+
+                    if (len > 0) {
+                        children = [];
+                        for (i = 0; i < len; i++) {
+                            children.push(childNodes[i].serialize());
+                        }
+                        result.children = children;
+                    }
+                    return result;
+                }
+            };
+        }
+    }
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
  * @author Ed Spencer
  * 
  * Simple class that represents a Request that will be made by any {@link Ext.data.proxy.Server} subclass.
@@ -93504,6 +96084,1065 @@ Ext.define('Ext.data.Request', {
         Ext.apply(this, config);
     }
 });
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * @class Ext.data.Tree
+ *
+ * This class is used as a container for a series of nodes. The nodes themselves maintain
+ * the relationship between parent/child. The tree itself acts as a manager. It gives functionality
+ * to retrieve a node by its identifier: {@link #getNodeById}.
+ *
+ * The tree also relays events from any of it's child nodes, allowing them to be handled in a
+ * centralized fashion. In general this class is not used directly, rather used internally
+ * by other parts of the framework.
+ *
+ */
+Ext.define('Ext.data.Tree', {
+    alias: 'data.tree',
+
+    mixins: {
+        observable:  Ext.util.Observable 
+    },
+
+    /**
+     * @property {Ext.data.NodeInterface}
+     * The root node for this tree
+     */
+    root: null,
+
+    /**
+     * Creates new Tree object.
+     * @param {Ext.data.NodeInterface} root (optional) The root node
+     */
+    constructor: function(root) {
+        var me = this;
+
+        me.mixins.observable.constructor.call(me);
+
+        if (root) {
+            me.setRootNode(root);
+        }
+        
+        // All these events from tree nodes bubbble up and fire on this Tree
+        me.on({
+            scope: me,
+            idchanged: me.onNodeIdChanged,
+            insert: me.onNodeInsert,
+            append: me.onNodeAppend,
+            remove: me.onNodeRemove
+        });
+    },
+
+    /**
+     * Returns the root node for this tree.
+     * @return {Ext.data.NodeInterface}
+     */
+    getRootNode : function() {
+        return this.root;
+    },
+
+    /**
+     * Sets the root node for this tree.
+     * @param {Ext.data.NodeInterface} node
+     * @return {Ext.data.NodeInterface} The root node
+     */
+    setRootNode : function(node) {
+        var me = this;
+
+        me.root = node;
+
+        // If the passed node is currently the root of another Tree, remove it.
+        if (node.rootOf) {
+            node.rootOf.removeRootNode();
+        }
+
+        // If the passed node is owned by some other node, remove it.
+        else if (node.parentNode) {
+            node.parentNode.removeChild(node);
+        }
+
+        // Insert upward link to owning Tree
+        node.rootOf = me;
+
+        if (node.fireEventArgs('beforeappend', [null, node]) !== false) {
+            node.set('root', true);
+            // root node should never be phantom or dirty, so commit it
+            node.updateInfo(true, {
+                isFirst: true,
+                isLast: true,
+                depth: 0,
+                index: 0,
+                parentId: null
+            });
+
+            // The following events are fired on this TreePanel by the bubbling from NodeInterface.fireEvent
+            /**
+             * @event append
+             * @inheritdoc Ext.data.NodeInterface#append
+             */
+            /**
+             * @event remove
+             * @inheritdoc Ext.data.NodeInterface#remove
+             */
+            /**
+             * @event move
+             * @inheritdoc Ext.data.NodeInterface#move
+             */
+            /**
+             * @event insert
+             * @inheritdoc Ext.data.NodeInterface#insert
+             */
+            /**
+             * @event beforeappend
+             * @inheritdoc Ext.data.NodeInterface#beforeappend
+             */
+            /**
+             * @event beforeremove
+             * @inheritdoc Ext.data.NodeInterface#beforeremove
+             */
+            /**
+             * @event beforemove
+             * @inheritdoc Ext.data.NodeInterface#beforemove
+             */
+            /**
+             * @event beforeinsert
+             * @inheritdoc Ext.data.NodeInterface#beforeinsert
+             */
+            /**
+             * @event expand
+             * @inheritdoc Ext.data.NodeInterface#expand
+             */
+            /**
+             * @event collapse
+             * @inheritdoc Ext.data.NodeInterface#collapse
+             */
+            /**
+             * @event beforeexpand
+             * @inheritdoc Ext.data.NodeInterface#beforeexpand
+             */
+            /**
+             * @event beforecollapse
+             * @inheritdoc Ext.data.NodeInterface#beforecollapse
+             */
+            /**
+             * @event sort
+             * @inheritdoc Ext.data.NodeInterface#event-sort
+             */
+            /**
+             * @event rootchange
+             * Fires whenever the root node is changed in the tree.
+             * @param {Ext.data.Model} root The new root
+            */
+
+            me.nodeHash = {};
+            node.fireEvent('append', null, node);
+            node.fireEvent('rootchange', node);
+        }
+
+        return node;
+    },
+
+    /**
+     * Removes the root node from this tree.
+     * @return {Ext.data.NodeInterface} The root node
+     */
+    removeRootNode: function() {
+        var me = this,
+            root = me.root;
+
+        root.set('root', false);
+        root.fireEvent('remove', null, root, false);
+        root.fireEvent('rootchange', null);
+
+        // Unlink root after events so that the required bubbling propagates to all handlers.
+        // This unregisters the node and its descendants.
+        root.rootOf = me.root = null;
+        return root;
+    },
+
+    /**
+     * Flattens all the nodes in the tree into an array.
+     * @private
+     * @return {Ext.data.NodeInterface[]} The flattened nodes.
+     */
+    flatten: function(){
+        return Ext.Object.getValues(this.nodeHash);
+    },
+
+    /**
+     * Fired when a node is inserted into the root or one of it's children
+     * @private
+     * @param {Ext.data.NodeInterface} parent The parent node
+     * @param {Ext.data.NodeInterface} node The inserted node
+     */
+    onNodeInsert: function(parent, node) {
+        this.registerNode(node, true);
+    },
+
+    /**
+     * Fired when a node is appended into the root or one of it's children
+     * @private
+     * @param {Ext.data.NodeInterface} parent The parent node
+     * @param {Ext.data.NodeInterface} node The appended node
+     */
+    onNodeAppend: function(parent, node) {
+        this.registerNode(node, true);
+    },
+
+    /**
+     * Fired when a node is removed from the root or one of it's children
+     * @private
+     * @param {Ext.data.NodeInterface} parent The parent node
+     * @param {Ext.data.NodeInterface} node The removed node
+     */
+    onNodeRemove: function(parent, node) {
+        this.unregisterNode(node, true);
+    },
+
+    /**
+     * Fired when a node's id changes.  Updates the node's id in the node hash.
+     * @private
+     * @param {Ext.data.NodeInterface} node 
+     * @param {Number} oldId The old id
+     * @param {Number} newId The new id
+     */
+    onNodeIdChanged: function(node, oldId, newId, oldInternalId) {
+        var nodeHash = this.nodeHash;
+    
+        nodeHash[node.internalId] = node;
+        delete nodeHash[oldInternalId];
+    },
+
+    /**
+     * Gets a node in this tree by its id.
+     * @param {String} id
+     * @return {Ext.data.NodeInterface} The match node.
+     */
+    getNodeById : function(id) {
+        return this.nodeHash[id];
+    },
+
+    /**
+     * Registers a node with the tree
+     * @private
+     * @param {Ext.data.NodeInterface} node The node to register
+     * @param {Boolean} [includeChildren] True to unregister any child nodes
+     */
+    registerNode : function(node, includeChildren) {
+        var me = this,
+            children, length, i;
+
+        me.nodeHash[node.internalId] = node;
+        if (includeChildren === true) {
+            children = node.childNodes;
+            length = children.length;
+            for (i = 0; i < length; i++) {
+                me.registerNode(children[i], true);
+            }
+        }
+    },
+
+    /**
+     * Unregisters a node with the tree
+     * @private
+     * @param {Ext.data.NodeInterface} node The node to unregister
+     * @param {Boolean} [includeChildren] True to unregister any child nodes
+     */
+    unregisterNode : function(node, includeChildren) {
+        var me = this,
+            children, length, i;
+
+        delete me.nodeHash[node.internalId];
+        if (includeChildren === true) {
+            children = node.childNodes;
+            length = children.length;
+            for (i = 0; i < length; i++) {
+                me.unregisterNode(children[i], true);
+            }
+        }
+    },
+
+    /**
+     * Sorts this tree
+     * @private
+     * @param {Function} sorterFn The function to use for sorting
+     * @param {Boolean} recursive True to perform recursive sorting
+     */
+    sort: function(sorterFn, recursive) {
+        this.getRootNode().sort(sorterFn, recursive);
+    },
+
+     /**
+     * Filters this tree
+     * @private
+     * @param {Function} sorterFn The function to use for filtering
+     * @param {Boolean} recursive True to perform recursive filtering
+     */
+    filter: function(filters, recursive) {
+        this.getRootNode().filter(filters, recursive);
+    }
+});
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * The TreeStore is a store implementation that is backed by by an {@link Ext.data.Tree}.
+ * It provides convenience methods for loading nodes, as well as the ability to use
+ * the hierarchical tree structure combined with a store. This class is generally used
+ * in conjunction with {@link Ext.tree.Panel}. This class also relays many events from
+ * the Tree for convenience.
+ *
+ * # Using Models
+ *
+ * If no Model is specified, an implicit model will be created that implements {@link Ext.data.NodeInterface}.
+ * The standard Tree fields will also be copied onto the Model for maintaining their state. These fields are listed
+ * in the {@link Ext.data.NodeInterface} documentation.
+ *
+ * # Reading Nested Data
+ *
+ * For the tree to read nested data, the {@link Ext.data.reader.Reader} must be configured with a root property,
+ * so the reader can find nested data for each node (if a root is not specified, it will default to
+ * 'children'). This will tell the tree to look for any nested tree nodes by the same keyword, i.e., 'children'.
+ * If a root is specified in the config make sure that any nested nodes with children have the same name.
+ * Note that setting {@link #defaultRootProperty} accomplishes the same thing.
+ */
+Ext.define('Ext.data.TreeStore', {
+    extend:  Ext.data.AbstractStore ,
+    alias: 'store.tree',
+               
+                          
+                        
+                                
+      
+
+    /**
+     * @cfg {Ext.data.Model/Ext.data.NodeInterface/Object} root
+     * The root node for this store. For example:
+     *
+     *     root: {
+     *         expanded: true,
+     *         text: "My Root",
+     *         children: [
+     *             { text: "Child 1", leaf: true },
+     *             { text: "Child 2", expanded: true, children: [
+     *                 { text: "GrandChild", leaf: true }
+     *             ] }
+     *         ]
+     *     }
+     *
+     * Setting the `root` config option is the same as calling {@link #setRootNode}.
+     */
+
+    /**
+     * @cfg {Boolean} [clearOnLoad=true]
+     * Remove previously existing child nodes before loading. 
+     */
+    clearOnLoad : true,
+
+    /**
+     * @cfg {Boolean} [clearRemovedOnLoad=true]
+     * If `true`, when a node is reloaded, any records in the {@link #removed} record collection that were previously descendants of the node being reloaded will be cleared from the {@link #removed} collection.
+     * Only applicable if {@link #clearOnLoad} is `true`.
+     */
+    clearRemovedOnLoad: true,
+
+    /**
+     * @cfg {String} [nodeParam="node"]
+     * The name of the parameter sent to the server which contains the identifier of the node.
+     */
+    nodeParam: 'node',
+
+    /**
+     * @cfg {String} [defaultRootId="root"]
+     * The default root id.
+     */
+    defaultRootId: 'root',
+    
+    /**
+     * @cfg {String} [defaultRootText="Root"]
+     * The default root text (if not specified)/
+     */
+    defaultRootText: 'Root',
+
+    /**
+     * @cfg {String} [defaultRootProperty="children"]
+     * The root property to specify on the reader if one is not explicitly defined.
+     */
+    defaultRootProperty: 'children',
+    
+    // Keep a copy of the default so we know if it's been changed in a subclass/config
+    rootProperty: 'children',
+    
+    fillCount: 0,
+
+    /**
+     * @cfg {Boolean} [folderSort=false]
+     * Set to true to automatically prepend a leaf sorter.
+     */
+    folderSort: false,
+
+    constructor: function(config) {
+        var me = this,
+            root,
+            fields,
+            defaultRoot;
+
+        config = Ext.apply({}, config);
+
+        /**
+         * If we have no fields declare for the store, add some defaults.
+         * These will be ignored if a model is explicitly specified.
+         */
+        fields = config.fields || me.fields;
+        if (!fields) {
+            config.fields = [
+                {name: 'text', type: 'string'}
+            ];
+            defaultRoot = config.defaultRootProperty || me.defaultRootProperty;
+            if (defaultRoot !== me.defaultRootProperty) {
+                config.fields.push({
+                    name: defaultRoot,   
+                    type: 'auto',   
+                    defaultValue: null, 
+                    persist: false
+                });
+            }
+        }
+
+        me.callParent([config]);
+
+        // We create our data tree.
+        me.tree = new Ext.data.Tree();
+        
+        // data tree has an upward link
+        me.tree.treeStore = me;
+
+        // The following events are fired on this TreeStore by the bubbling from NodeInterface.fireEvent
+        /**
+         * @event append
+         * @inheritdoc Ext.data.Tree#append
+         */
+        /**
+         * @event remove
+         * @inheritdoc Ext.data.Tree#remove
+         */
+        /**
+         * @event move
+         * @inheritdoc Ext.data.Tree#move
+         */
+        /**
+         * @event insert
+         * @inheritdoc Ext.data.Tree#insert
+         */
+        /**
+         * @event beforeappend
+         * @inheritdoc Ext.data.Tree#beforeappend
+         */
+        /**
+         * @event beforeremove
+         * @inheritdoc Ext.data.Tree#beforeremove
+         */
+        /**
+         * @event beforemove
+         * @inheritdoc Ext.data.Tree#beforemove
+         */
+        /**
+         * @event beforeinsert
+         * @inheritdoc Ext.data.Tree#beforeinsert
+         */
+        /**
+         * @event expand
+         * @inheritdoc Ext.data.Tree#expand
+         */
+        /**
+         * @event collapse
+         * @inheritdoc Ext.data.Tree#collapse
+         */
+        /**
+         * @event beforeexpand
+         * @inheritdoc Ext.data.Tree#beforeexpand
+         */
+        /**
+         * @event beforecollapse
+         * @inheritdoc Ext.data.Tree#beforecollapse
+         */
+        /**
+         * @event sort
+         * @inheritdoc Ext.data.Tree#sort
+         */
+
+        me.tree.on({
+            scope: me,
+            remove: me.onNodeRemove,
+            // this event must follow the relay to beforeitemexpand to allow users to
+            // cancel the expand:
+            beforeexpand: me.onBeforeNodeExpand,
+            append: me.onNodeAdded,
+            insert: me.onNodeAdded,
+            sort: me.onNodeSort
+        });
+
+        me.onBeforeSort();
+
+        root = me.root;
+        if (root) {
+            delete me.root;
+            me.setRootNode(root);
+        }
+
+        //<deprecated since=0.99>
+        if (Ext.isDefined(me.nodeParameter)) {
+            if (Ext.isDefined(Ext.global.console)) {
+                Ext.global.console.warn('Ext.data.TreeStore: nodeParameter has been deprecated. Please use nodeParam instead.');
+            }
+            me.nodeParam = me.nodeParameter;
+            delete me.nodeParameter;
+        }
+        //</deprecated>
+    },
+
+    // inherit docs
+    setProxy: function(proxy) {
+        var reader,
+            needsRoot;
+
+        if (proxy instanceof Ext.data.proxy.Proxy) {
+            // proxy instance, check if a root was set
+            needsRoot = Ext.isEmpty(proxy.getReader().root);
+        } else if (Ext.isString(proxy)) {
+            // string type, means a reader can't be set
+            needsRoot = true;
+        } else {
+            // object, check if a reader and a root were specified.
+            reader = proxy.reader;
+            needsRoot = !(reader && !Ext.isEmpty(reader.root));
+        }
+        proxy = this.callParent(arguments);
+
+        // The proxy sets a parameter to carry the entity ID based upon the Operation's id
+        // That partameter name defaults to "id".
+        // TreeStore however uses a nodeParam configuration to specify the entity id
+        proxy.idParam = this.nodeParam;
+
+        if (needsRoot) {
+            reader = proxy.getReader();
+            reader.root = this.defaultRootProperty;
+            // force rebuild
+            reader.buildExtractors(true);
+        }
+        return proxy;
+    },
+
+    // inherit docs
+    onBeforeSort: function() {
+        if (this.folderSort) {
+            this.sort({
+                property: 'leaf',
+                direction: 'ASC'
+            }, 'prepend', false);
+        }
+    },
+
+    /**
+     * Fired by the root node.
+     *
+     * Called before a node is expanded.
+     *
+     * This ensures that the child nodes are available before calling the passed callback.
+     * @private
+     * @param {Ext.data.NodeInterface} node The node being expanded.
+     * @param {Function} callback The function to run after the expand finishes
+     * @param {Object} scope The scope in which to run the callback function
+     * @param {Array} args The extra args to pass to the callback after the new child nodes
+     */
+    onBeforeNodeExpand: function(node, callback, scope, args) {
+        var me = this,
+            reader, dataRoot, data,
+            callbackArgs;
+        
+        // Children are loaded go ahead with expand
+        if (node.isLoaded()) {
+            callbackArgs = [node.childNodes];
+            if (args) {
+                callbackArgs.push.apply(callbackArgs, args);
+            }
+            Ext.callback(callback, scope || node, callbackArgs);
+        }
+        // There are unloaded child nodes in the raw data because of the lazy configuration, load them then call back.
+        else if (dataRoot = (data = (node.raw || node[node.persistenceProperty])[(reader = me.getProxy().getReader()).root])) {
+            me.fillNode(node, reader.extractData(dataRoot));
+            delete data[reader.root];
+            callbackArgs = [node.childNodes];
+            if (args) {
+                callbackArgs.push.apply(callbackArgs, args);
+            }
+            Ext.callback(callback, scope || node, callbackArgs);
+        }
+        // The node is loading
+        else if (node.isLoading()) {
+            me.on('load', function() {
+                callbackArgs = [node.childNodes];
+                if (args) {
+                    callbackArgs.push.apply(callbackArgs, args);
+                }
+                Ext.callback(callback, scope || node, callbackArgs);
+            }, me, {single: true});
+        }
+        // Node needs loading
+        else {
+            me.read({
+                node: node,
+                callback: function() {
+                    // Clear the callback, since if we're introducing a custom one,
+                    // it may be re-used on reload
+                    delete me.lastOptions.callback;
+                    callbackArgs = [node.childNodes];
+                    if (args) {
+                        callbackArgs.push.apply(callbackArgs, args);
+                    }
+                    Ext.callback(callback, scope || node, callbackArgs);
+                }
+            });
+        }
+    },
+
+    //inherit docs
+    getNewRecords: function() {
+        return Ext.Array.filter(this.tree.flatten(), this.filterNew);
+    },
+
+    //inherit docs
+    getUpdatedRecords: function() {
+        return Ext.Array.filter(this.tree.flatten(), this.filterUpdated);
+    },
+
+    onNodeRemove: function(parent, node, isMove) {
+        var me = this;
+
+        node.unjoin(me);
+        // Phantom nodes should never be included in the removed collection.
+        // Also, if we're moving a node a remove will be fired, however we'll
+        // be inserting it again, so don't push it into the removed collection
+        if (!node.phantom && !isMove) {
+            Ext.Array.include(me.removed, node);
+        }
+
+        if (me.autoSync && !me.autoSyncSuspended && !isMove) {
+            me.sync();
+        }
+    },
+
+    onNodeAdded: function(parent, node) {
+        var me = this,
+            proxy = me.getProxy(),
+            reader = proxy.getReader(),
+            data = node.raw || node[node.persistenceProperty],
+            dataRoot;
+
+        Ext.Array.remove(me.removed, node);
+        node.join(me);
+
+        // If node has raw data, load the child nodes from it.
+        if (!node.isLeaf() && !me.lazyFill) {
+            dataRoot = reader.getRoot(data);
+            if (dataRoot) {
+                me.fillNode(node, reader.extractData(dataRoot));
+                delete data[reader.root];
+            }
+        }
+
+        if (me.autoSync && !me.autoSyncSuspended && (node.phantom || node.dirty)) {
+            me.sync();
+        }
+    },
+
+    onNodeSort: function() {
+        if (this.autoSync && !this.autoSyncSuspended) {
+            this.sync();
+        }
+    },
+
+    /**
+     * Sets the root node for this store.  See also the {@link #root} config option.
+     * @param {Ext.data.Model/Ext.data.NodeInterface/Object} root
+     * @return {Ext.data.NodeInterface} The new root
+     */
+    setRootNode: function(root, /* private */ preventLoad) {
+        var me = this,
+            model = me.model,
+            idProperty = model.prototype.idProperty
+
+        root = root || {};
+        if (!root.isModel) {
+            root = Ext.apply({}, root);
+            // create a default rootNode and create internal data struct.
+            Ext.applyIf(root, {
+                id: me.defaultRootId,
+                text: me.defaultRootText,
+                allowDrag: false
+            });
+            if (root[idProperty] === undefined) {
+                root[idProperty] = me.defaultRootId;
+            }
+            Ext.data.NodeInterface.decorate(model);
+            root = Ext.ModelManager.create(root, model);
+        } else if (root.isModel && !root.isNode) {
+            Ext.data.NodeInterface.decorate(model);
+        }
+
+
+        // Because we have decorated the model with new fields,
+        // we need to build new extactor functions on the reader.
+        me.getProxy().getReader().buildExtractors(true);
+
+        // When we add the root to the tree, it will automaticaly get the NodeInterface
+        me.tree.setRootNode(root);
+
+        // If the user has set expanded: true on the root, we want to call the expand function to kick off
+        // an expand process, so clear the expanded status and call expand.
+        // Upon receipt, the expansion process is the most efficient way of processing the
+        // returned nodes and putting them into the NodeStore in one block.
+        // Appending a node to an expanded node is expensive - the NodeStore and UI are updated.
+        if (preventLoad !== true && !root.isLoaded() && (me.autoLoad === true || root.isExpanded())) {
+            root.data.expanded = false;
+            root.expand();
+        }
+
+        return root;
+    },
+
+    /**
+     * Returns the root node for this tree.
+     * @return {Ext.data.NodeInterface}
+     */
+    getRootNode: function() {
+        return this.tree.getRootNode();
+    },
+
+    /**
+     * Returns the record node by id
+     * @return {Ext.data.NodeInterface}
+     */
+    getNodeById: function(id) {
+        return this.tree.getNodeById(id);
+    },
+    
+    // inherit docs
+    getById: function(id) {
+        return this.getNodeById(id);    
+    },
+
+    /**
+     * Loads the Store using its configured {@link #proxy}.
+     * @param {Object} options (Optional) config object. This is passed into the {@link Ext.data.Operation Operation}
+     * object that is created and then sent to the proxy's {@link Ext.data.proxy.Proxy#read} function.
+     * The options can also contain a node, which indicates which node is to be loaded. If not specified, it will
+     * default to the root node.
+     */
+    load: function(options) {
+        options = options || {};
+        options.params = options.params || {};
+
+        var me = this,
+            node = options.node || me.tree.getRootNode();
+
+        // If there is not a node it means the user hasnt defined a rootnode yet. In this case lets just
+        // create one for them.
+        if (!node) {
+            node = me.setRootNode({
+                expanded: true
+            }, true);
+        }
+        
+        // Assign the ID of the Operation so that a ServerProxy can set its idParam parameter,
+        // or a REST proxy can create the correct URL
+        options.id = node.getId();
+
+        if (me.clearOnLoad) {
+            if(me.clearRemovedOnLoad) {
+                // clear from the removed array any nodes that were descendants of the node being reloaded so that they do not get saved on next sync.
+                me.clearRemoved(node);
+            }
+            // temporarily remove the onNodeRemove event listener so that when removeAll is called, the removed nodes do not get added to the removed array
+            me.tree.un('remove', me.onNodeRemove, me);
+            // remove all the nodes
+            node.removeAll(false);
+            // reattach the onNodeRemove listener
+            me.tree.on('remove', me.onNodeRemove, me);
+        }
+
+        Ext.applyIf(options, {
+            node: node
+        });
+
+        me.callParent([options]);
+        
+        if (me.loading && node) {
+            node.set('loading', true);
+        }
+        
+        return me;
+    },
+
+    /**
+     * Removes all records that used to be descendants of the passed node from the removed array
+     * @private
+     * @param {Ext.data.NodeInterface} node
+     */
+    clearRemoved: function(node) {
+        var me = this,
+            removed = me.removed,
+            id = node.getId(),
+            removedLength = removed.length,
+            i = removedLength,
+            recordsToClear = {},
+            newRemoved = [],
+            removedHash = {},
+            removedNode,
+            targetNode,
+            targetId;
+
+        if(node === me.getRootNode()) {
+            // if the passed node is the root node, just reset the removed array
+            me.removed = [];
+            return;
+        }
+
+        // add removed records to a hash so they can be easily retrieved by id later
+        for(; i--;) {
+            removedNode = removed[i];
+            removedHash[removedNode.getId()] = removedNode;
+        }
+
+        for(i = removedLength; i--;) {
+            removedNode = removed[i];
+            targetNode = removedNode;
+            while(targetNode && targetNode.getId() !== id) {
+                // walk up the parent hierarchy until we find the passed node or until we get to the root node
+                targetId = targetNode.get('parentId');
+                targetNode = targetNode.parentNode || me.getNodeById(targetId) || removedHash[targetId];
+            }
+            if(targetNode) {
+                // removed node was previously a descendant of the passed node - add it to the records to clear from "removed" later
+                recordsToClear[removedNode.getId()] = removedNode;
+            }
+        }
+
+        // create a new removed array containing only the records that are not in recordsToClear
+        for(i = 0; i < removedLength; i++) {
+            removedNode = removed[i];
+            if(!recordsToClear[removedNode.getId()]) {
+                newRemoved.push(removedNode);
+            }
+        }
+
+        me.removed = newRemoved;
+    },
+
+    /**
+     * Fills a node with a series of child records.
+     * @private
+     * @param {Ext.data.NodeInterface} node The node to fill
+     * @param {Ext.data.Model[]} newNodes The records to add
+     */
+    fillNode: function(node, newNodes) {
+        var me = this,
+            ln = newNodes ? newNodes.length : 0,
+            sorters = me.sorters,
+            i, sortCollection,
+            needsIndexSort = false,
+            performLocalSort = ln && me.sortOnLoad && !me.remoteSort && sorters && sorters.items && sorters.items.length,
+            node1, node2, rootFill;
+
+        // See if there are any differing index values in the new nodes. If not, then we do not have to sortByIndex
+        for (i = 1; i < ln; i++) {
+            node1 = newNodes[i];
+            node2 = newNodes[i - 1];
+            needsIndexSort = node1[node1.persistenceProperty].index != node2[node2.persistenceProperty].index;
+            if (needsIndexSort) {
+                break;
+            }
+        }
+
+        // If there is a set of local sorters defined.
+        if (performLocalSort) {
+            // If sorting by index is needed, sort by index first
+            if (needsIndexSort) {
+                me.sorters.insert(0, me.indexSorter);
+            }
+            sortCollection = new Ext.util.MixedCollection();
+            sortCollection.addAll(newNodes);
+            sortCollection.sort(me.sorters.items);
+            newNodes = sortCollection.items;
+
+            // Remove the index sorter
+            me.sorters.remove(me.indexSorter);
+        } else if (needsIndexSort) {
+            Ext.Array.sort(newNodes, me.sortByIndex);
+        }
+
+        node.set('loaded', true);
+        
+        // Fill node gets called recursively (indirectly) as we're populating the
+        // nodes via a load or when appending a new child. As such, when we hit
+        // the top most node, we fire an event to let the view know we'll be doing
+        // a bulk operation so it can take appropriate action
+        rootFill = me.fillCount === 0;
+        if (rootFill) {
+            // internal event
+            me.fireEvent('beforefill', me, node, newNodes);
+        }
+        ++me.fillCount;
+
+        if (newNodes.length) {
+            node.appendChild(newNodes, undefined, true);
+        }
+        
+        if (rootFill) {
+            // internal event
+            me.fireEvent('fillcomplete', me, node, newNodes);
+        }
+        --me.fillCount;
+        
+        return newNodes;
+    },
+
+    /**
+     * Sorter function for sorting records in index order
+     * @private
+     * @param {Ext.data.NodeInterface} node1
+     * @param {Ext.data.NodeInterface} node2
+     * @return {Number}
+     */
+    sortByIndex: function(node1, node2) {
+        return node1[node1.persistenceProperty].index - node2[node2.persistenceProperty].index;
+    },
+    
+    onIdChanged: function(model, oldId, newId, oldInternalId){
+        this.tree.onNodeIdChanged(model, oldId, newId, oldInternalId);
+        this.callParent(arguments);    
+    },
+
+    // inherit docs
+    onProxyLoad: function(operation) {
+        var me = this,
+            successful = operation.wasSuccessful(),
+            records = operation.getRecords(),
+            node = operation.node;
+
+        me.loading = false;
+        node.set('loading', false);
+        if (successful) {
+            if (!me.clearOnLoad) {
+                records = me.cleanRecords(node, records);
+            }
+            records = me.fillNode(node, records);
+        }
+        // The load event has an extra node parameter
+        // (differing from the load event described in AbstractStore)
+        /**
+         * @event load
+         * Fires whenever the store reads data from a remote data source.
+         * @param {Ext.data.TreeStore} this
+         * @param {Ext.data.NodeInterface} node The node that was loaded.
+         * @param {Ext.data.Model[]} records An array of records.
+         * @param {Boolean} successful True if the operation was successful.
+         */
+        // deprecate read?
+        me.fireEvent('read', me, operation.node, records, successful);
+        me.fireEvent('load', me, operation.node, records, successful);
+        //this is a callback that would have been passed to the 'read' function and is optional
+        Ext.callback(operation.callback, operation.scope || me, [records, operation, successful]);
+    },
+    
+    cleanRecords: function(node, records){
+        var nodeHash = {},
+            childNodes = node.childNodes,
+            i = 0,
+            len  = childNodes.length,
+            out = [],
+            rec;
+            
+        // build a hash of all the childNodes under the current node for performance
+        for (; i < len; ++i) {
+            nodeHash[childNodes[i].getId()] = true;
+        }
+        
+        for (i = 0, len = records.length; i < len; ++i) {
+            rec = records[i];
+            if (!nodeHash[rec.getId()]) {
+                out.push(rec);    
+            }
+        }
+        
+        return out;
+    },
+
+    // inherit docs
+    removeAll: function() {
+        var root = this.getRootNode();
+        if (root) {
+            root.destroy(true);
+        }
+        this.fireEvent('clear', this);
+    },
+
+    // inherit docs
+    doSort: function(sorterFn) {
+        var me = this;
+        if (me.remoteSort) {
+            //the load function will pick up the new sorters and request the sorted data from the proxy
+            me.load();
+        } else {
+            me.tree.sort(sorterFn, true);
+            me.fireEvent('datachanged', me);
+            me.fireEvent('refresh', me);
+        }
+        me.fireEvent('sort', me, me.sorters.getRange());
+    }
+}, function() {
+    var proto = this.prototype;
+    proto.indexSorter = new Ext.util.Sorter({
+        sorterFn: proto.sortByIndex
+    });
+});
+
 /*
 This file is part of Ext JS 4.2
 
@@ -98885,6 +102524,1395 @@ at http://www.sencha.com/contact.
 Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
 */
 /**
+ * Base class for all Ext.direct events. An event is
+ * created after some kind of interaction with the server.
+ * The event class is essentially just a data structure
+ * to hold a Direct response.
+ */
+Ext.define('Ext.direct.Event', {
+    alias: 'direct.event',
+
+    status: true,
+
+    /**
+     * Creates new Event.
+     * @param {Object} [config] Config object.
+     */
+    constructor: function(config) {
+        Ext.apply(this, config);
+    },
+    
+    /**
+     * Return the name for this event.
+     * @return {String} The name of event
+     */
+    getName: function() {
+        return this.name;
+    },
+
+    /**
+     * Return the raw data for this event.
+     * @return {Mixed} The data from the event
+     */
+    getData: function() {
+        return this.data;
+    }
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * An event that is fired when data is received from a 
+ * {@link Ext.direct.RemotingProvider}. Contains a method to the
+ * related transaction for the direct request, see {@link #getTransaction}
+ */
+Ext.define('Ext.direct.RemotingEvent', {
+    extend:  Ext.direct.Event ,
+    alias:  'direct.rpc',
+    
+    /**
+     * Get the transaction associated with this event.
+     * @return {Ext.direct.Transaction} The transaction
+     */
+    getTransaction: function() {
+        var me = this;
+        
+        return me.transaction || Ext.direct.Manager.getTransaction(me.tid);
+    }
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * An event that is fired when an exception is received from a {@link Ext.direct.RemotingProvider}
+ */
+Ext.define('Ext.direct.ExceptionEvent', {
+    extend:  Ext.direct.RemotingEvent ,
+    alias:  'direct.exception',
+   
+   status: false
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * A base provider for communicating using JSON. This is an abstract class
+ * and should not be instanced directly.
+ *
+ * @abstract
+ */
+
+Ext.define('Ext.direct.JsonProvider', {
+    extend:  Ext.direct.Provider ,
+    alias:  'direct.jsonprovider',
+
+           
+                                    
+                            
+      
+
+   /**
+    * Parse the JSON response
+    * @private
+    *
+    * @param {Object} response The XHR response object
+    *
+    * @return {Object} The data in the response.
+    */
+   parseResponse: function(response) {
+        if (!Ext.isEmpty(response.responseText)) {
+            if (Ext.isObject(response.responseText)) {
+                return response.responseText;
+            }
+
+            return Ext.decode(response.responseText);
+        }
+
+        return null;
+    },
+
+    /**
+     * Creates a set of events based on the XHR response
+     *
+     * @param {Object} response The XHR response
+     *
+     * @return {Ext.direct.Event[]} An array of Ext.direct.Event
+     */
+    createEvents: function(response) {
+        var me = this,
+            data = null,
+            events = [],
+            event, i, len;
+
+        try {
+            data = me.parseResponse(response);
+        }
+        catch (e) {
+            event = new Ext.direct.ExceptionEvent({
+                data: e,
+                xhr: response,
+                code: Ext.direct.Manager.exceptions.PARSE,
+                message: 'Error parsing json response: \n\n ' + e
+            });
+
+            return [event];
+        }
+
+        if (Ext.isArray(data)) {
+            for (i = 0, len = data.length; i < len; ++i) {
+                events.push(me.createEvent(data[i]));
+            }
+        }
+        else if (Ext.isObject(data)) {
+            events.push(me.createEvent(data));
+        }
+
+        return events;
+    },
+
+    /**
+     * Create an event from a response object
+     *
+     * @param {Object} response Response object
+     *
+     * @return {Ext.direct.Event} The event
+     */
+    createEvent: function(response) {
+        if (typeof response !== 'object'|| !('type' in response)) {
+            return new Ext.direct.ExceptionEvent({
+                data: response,
+                code: Ext.direct.Manager.exceptions.DATA,
+                message: 'Invalid data: event type is not specified'
+            });
+        }
+    
+        return Ext.create('direct.' + response.type, response);
+    }
+});
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * Provides for repetitive polling of the server at distinct {@link #interval intervals}.
+ * The initial request for data originates from the client, and then is responded to by the
+ * server.
+ * 
+ * Configuration for the PollingProvider can be generated by the server-side
+ * API portion of the Ext.Direct stack.
+ *
+ * An instance of PollingProvider may be created directly via the new keyword or by simply
+ * specifying `type = 'polling'`. For example:
+ *
+ *      var pollA = new Ext.direct.PollingProvider({
+ *          type:'polling',
+ *          url: 'php/pollA.php',
+ *      });
+ *      Ext.direct.Manager.addProvider(pollA);
+ *      pollA.disconnect();
+ *      
+ *      Ext.direct.Manager.addProvider({
+ *          type:'polling',
+ *          url: 'php/pollB.php',
+ *          id: 'pollB-provider'
+ *      });
+ *      var pollB = Ext.direct.Manager.getProvider('pollB-provider');
+ *
+ */
+Ext.define('Ext.direct.PollingProvider', {
+    extend:  Ext.direct.JsonProvider ,
+    alias:  'direct.pollingprovider',
+    
+               
+                   
+                              
+      
+    
+           
+                                    
+                            
+      
+    
+    /**
+     * @cfg {Number} [interval=3000]
+     * How often to poll the server-side in milliseconds. Defaults to every 3 seconds.
+     */
+    interval: 3000,
+
+    /**
+     * @cfg {Object} [baseParams]
+     * An object containing properties which are to be sent as parameters on every polling request
+     */
+    
+    /**
+     * @cfg {String/Function} url
+     * The url which the PollingProvider should contact with each request. This can also be
+     * an imported Ext.Direct method which will accept the baseParams as its only argument.
+     */
+
+    constructor: function(config) {
+        var me = this;
+        
+        me.callParent(arguments);
+        
+        me.addEvents(
+            /**
+             * @event beforepoll
+             * @preventable
+             * Fired immediately before a poll takes place.
+             *
+             * @param {Ext.direct.PollingProvider} this
+             */
+            'beforepoll',
+            
+            /**
+             * @event poll
+             * Fired immediately after a poll takes place.
+             *
+             * @param {Ext.direct.PollingProvider} this
+             */
+            'poll'
+        );
+    },
+
+    /**
+     * @inheritdoc
+     */
+    isConnected: function() {
+        return !!this.pollTask;
+    },
+
+    /**
+     * Connect to the server-side and begin the polling process. To handle each
+     * response subscribe to the data event.
+     */
+    connect: function() {
+        var me = this,
+            url = me.url;
+        
+        if (url && !me.pollTask) {
+            me.pollTask = Ext.TaskManager.start({
+                run: me.runPoll,
+                interval: me.interval,
+                scope: me
+            });
+            
+            me.fireEvent('connect', me);
+        }
+        //<debug>
+        else if (!url) {
+            Ext.Error.raise('Error initializing PollingProvider, no url configured.');
+        }
+        //</debug>
+    },
+
+    /**
+     * Disconnect from the server-side and stop the polling process. The disconnect
+     * event will be fired on a successful disconnect.
+     */
+    disconnect: function() {
+        var me = this;
+        
+        if (me.pollTask) {
+            Ext.TaskManager.stop(me.pollTask);
+            delete me.pollTask;
+            me.fireEvent('disconnect', me);
+        }
+    },
+    
+    /**
+     * @private
+     */
+    runPoll: function() {
+        var me = this,
+            url = me.url;
+        
+        if (me.fireEvent('beforepoll', me) !== false) {
+            if (Ext.isFunction(url)) {
+                url(me.baseParams);
+            }
+            else {
+                Ext.Ajax.request({
+                    url: url,
+                    callback: me.onData,
+                    scope: me,
+                    params: me.baseParams
+                });
+            }
+            
+            me.fireEvent('poll', me);
+        }
+    },
+
+    /**
+     * @private
+     */
+    onData: function(opt, success, response) {
+        var me = this, 
+            i, len, events;
+        
+        if (success) {
+            events = me.createEvents(response);
+            
+            for (i = 0, len = events.length; i < len; ++i) {
+                me.fireEvent('data', me, events[i]);
+            }
+        }
+        else {
+            events = new Ext.direct.ExceptionEvent({
+                data: null,
+                code: Ext.direct.Manager.exceptions.TRANSPORT,
+                message: 'Unable to connect to the server.',
+                xhr: response
+            });
+            
+            me.fireEvent('data', me, events);
+        }
+    }
+});
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * @private
+ * Small utility class used internally to represent a Direct method.
+ */
+Ext.define('Ext.direct.RemotingMethod', {
+
+    constructor: function(config) {
+        var me = this,
+            params = Ext.isDefined(config.params) ? config.params : config.len,
+            name, pLen, p, param;
+
+        me.name = config.name;
+        me.formHandler = config.formHandler;
+
+        if (Ext.isNumeric(params)) {
+            // given only the number of parameters
+            me.len = params;
+            me.ordered = true;
+        }
+        else {
+            /*
+             * Given an array of either
+             * a) String
+             * b) Objects with a name property. We may want to encode extra info in here later
+             */
+            me.params = {};
+			pLen = params.length;
+
+            for (p = 0; p < pLen; p++) {
+                param = params[p];
+                name  = Ext.isObject(param) ? param.name : param;
+                me.params[name] = true;
+            }
+        }
+    },
+    
+    getArgs: function(params, paramOrder, paramsAsHash) {
+        var me = this,
+            args = [],
+            i, len;
+        
+        if (me.ordered) {
+            if (me.len > 0) {
+                // If a paramOrder was specified, add the params into the argument list in that order.
+                if (paramOrder) {
+                    for (i = 0, len = paramOrder.length; i < len; i++) {
+                        args.push(params[paramOrder[i]]);
+                    }
+                }
+                else if (paramsAsHash) {
+                    // If paramsAsHash was specified, add all the params as a single object argument.
+                    args.push(params);
+                }
+            }
+        }
+        else {
+            args.push(params);
+        } 
+        
+        return args;
+    },
+
+    /**
+     * Takes the arguments for the Direct function and splits the arguments
+     * from the scope and the callback.
+     *
+     * @param {Array} args The arguments passed to the direct call
+     *
+     * @return {Object} An object with 3 properties: args, callback & scope.
+     */
+    getCallData: function(args) {
+        var me = this,
+            data = null,
+            len  = me.len,
+            params = me.params,
+            callback, scope, name, options;
+
+        if (me.ordered) {
+            callback = args[len];
+            scope    = args[len + 1];
+            options  = args[len + 2];
+            
+            if (len !== 0) {
+                data = args.slice(0, len);
+            }
+        }
+        else {
+            data     = Ext.apply({}, args[0]);
+            callback = args[1];
+            scope    = args[2];
+            options  = args[3];
+
+            // filter out any non-existent properties
+            for (name in data) {
+                if (data.hasOwnProperty(name) && !params[name]) {
+                    delete data[name];
+                }
+            }
+        }
+
+        return {
+            data: data,
+            callback: callback,
+            scope: scope,
+            options: options
+        };
+    }
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * Supporting Class for Ext.Direct (not intended to be used directly).
+ */
+Ext.define('Ext.direct.Transaction', {
+    alias: 'direct.transaction',
+    alternateClassName: 'Ext.Direct.Transaction',
+   
+    statics: {
+        TRANSACTION_ID: 0
+    },
+    
+    /**
+     * @cfg {Ext.direct.Provider} provider Provider to use with this Transaction.
+     */
+   
+    /**
+     * Creates new Transaction.
+     * @param {Object} [config] Config object.
+     */
+    constructor: function(config) {
+        var me = this;
+        
+        Ext.apply(me, config);
+
+        me.id = me.tid = ++me.self.TRANSACTION_ID;
+        me.retryCount = 0;
+    },
+   
+    send: function() {
+        var me = this;
+        
+        me.provider.queueTransaction(me);
+    },
+
+    retry: function() {
+        var me = this;
+        
+        me.retryCount++;
+        me.send();
+    },
+
+    getProvider: function() {
+        return this.provider;
+    }
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * The {@link Ext.direct.RemotingProvider RemotingProvider} exposes access to
+ * server side methods on the client (a remote procedure call (RPC) type of
+ * connection where the client can initiate a procedure on the server).
+ * 
+ * This allows for code to be organized in a fashion that is maintainable,
+ * while providing a clear path between client and server, something that is
+ * not always apparent when using URLs.
+ * 
+ * To accomplish this the server-side needs to describe what classes and methods
+ * are available on the client-side. This configuration will typically be
+ * outputted by the server-side Ext.Direct stack when the API description is built.
+ */
+Ext.define('Ext.direct.RemotingProvider', {
+    extend:  Ext.direct.JsonProvider , 
+    alias:  'direct.remotingprovider',
+    
+               
+                                    
+                                
+                                 
+                                   
+      
+   
+   /**
+     * @cfg {Object} actions
+     *
+     * Object literal defining the server side actions and methods. For example, if
+     * the Provider is configured with:
+     *
+     *      // each property within the 'actions' object represents a server side Class
+     *      actions: {
+     *          TestAction: [   // array of methods within each server side Class to be   
+     *          {               // stubbed out on client
+     *              name: 'doEcho',   // stub method will be TestAction.doEcho
+     *              len:  1            
+     *          }, {
+     *              name: 'multiply', // name of method
+     *              len:  2           // The number of parameters that will be used to create an
+     *                                // array of data to send to the server side function.
+     *          }, {
+     *              name: 'doForm',
+     *              formHandler: true // tells the client that this method handles form calls
+     *          }],
+     *          
+     *          // These methods will be created in nested namespace TestAction.Foo
+     *          'TestAction.Foo': [{
+     *              name: 'ordered',  // stub method will be TestAction.Foo.ordered
+     *              len:  1
+     *          }, {
+     *              name: 'noParams', // this method does not accept any parameters
+     *              len:  0
+     *          }, {
+     *              name: 'named',    // stub method will be TestAction.Foo.named
+     *              params: ['foo', 'bar']    // parameters are passed by name
+     *          }]
+     *      }
+     *
+     * Note that starting with 4.2, dotted Action names will generate nested objects.
+     * If you wish to reverse to previous behavior, set {@link #cfg-disableNestedActions}
+     * to `true`.
+     *
+     * In the following example a *client side* handler is used to call the
+     * server side method "multiply" in the server-side "TestAction" Class:
+     *
+     *      TestAction.multiply(
+     *          // pass two arguments to server, so specify len=2
+     *          2, 4,
+     *          
+     *          // callback function after the server is called
+     *          //  result: the result returned by the server
+     *          //       e: Ext.direct.RemotingEvent object
+     *          // success: true or false
+     *          // options: options to be applied to method call and passed to callback
+     *          function (result, e, success, options) {
+     *              var t, action, method;
+     *              
+     *              t = e.getTransaction();
+     *              action = t.action; // server side Class called
+     *              method = t.method; // server side method called
+     *              
+     *              if (e.status) {
+     *                  var answer = Ext.encode(result); // 8
+     *              }
+     *              else {
+     *                  var msg = e.message; // failure message
+     *              }
+     *          },
+     *          
+     *          // Scope to call the callback in (optional)
+     *          window,
+     *          
+     *          // Options to apply to this method call. This can include
+     *          // Ajax.request() options; only `timeout` is supported at this time.
+     *          // When timeout is set for a method call, it will be executed immediately
+     *          // without buffering.
+     *          // The same options object is passed to the callback so it's possible
+     *          // to "forward" some data when needed.
+     *          {
+     *              timeout: 60000, // milliseconds
+     *              foo: 'bar'
+     *          }
+     *      );
+     *
+     * In the example above, the server side "multiply" function will be passed two
+     * arguments (2 and 4). The "multiply" method should return the value 8 which will be
+     * available as the `result` in the callback example above. 
+     */
+    
+    /**
+     * @cfg {Boolean} [disableNestedActions=false]
+     * In versions prior to 4.2, using dotted Action names was not really meaningful,
+     * because it generated flat {@link #cfg-namespace} object with dotted property names.
+     * For example, take this API declaration:
+     *
+     *      {
+     *          actions: {
+     *              TestAction: {
+     *                  name: 'foo',
+     *                  len:  1
+     *              },
+     *              'TestAction.Foo' {
+     *                  name: 'bar',
+     *                  len: 1
+     *              }
+     *          },
+     *          namespace: 'MyApp'
+     *      }
+     *
+     * Before 4.2, that would generate the following API object:
+     *
+     *      window.MyApp = {
+     *          TestAction: {
+     *              foo: function() { ... }
+     *          },
+     *          'TestAction.Foo': {
+     *              bar: function() { ... }
+     *          }
+     *      }
+     *
+     * In Ext JS 4.2, we introduced new namespace handling behavior. Now the same API object
+     * will be like this:
+     *
+     *      window.MyApp = {
+     *          TestAction: {
+     *              foo: function() { ... },
+     *
+     *              Foo: {
+     *                  bar: function() { ... }
+     *              }
+     *          }
+     *      }
+     *
+     * Instead of addressing Action methods array-style `MyApp['TestAction.Foo'].bar()`,
+     * now it is possible to use object addressing: `MyApp.TestAction.Foo.bar()`.
+     *
+     * If you find this behavior undesirable, set this config option to `true`.
+     */
+    
+    /**
+     * @cfg {String/Object} namespace
+     *
+     * Namespace for the Remoting Provider (defaults to `Ext.global`).
+     * Explicitly specify the namespace Object, or specify a String to have a
+     * {@link Ext#namespace namespace} created implicitly.
+     */
+    
+    /**
+     * @cfg {String} url
+     *
+     * **Required**. The url to connect to the {@link Ext.direct.Manager} server-side router. 
+     */
+    
+    /**
+     * @cfg {String} [enableUrlEncode=data]
+     *
+     * Specify which param will hold the arguments for the method.
+     */
+    
+    /**
+     * @cfg {Number/Boolean} [enableBuffer=10]
+     *
+     * `true` or `false` to enable or disable combining of method
+     * calls. If a number is specified this is the amount of time in milliseconds
+     * to wait before sending a batched request.
+     *
+     * Calls which are received within the specified timeframe will be
+     * concatenated together and sent in a single request, optimizing the
+     * application by reducing the amount of round trips that have to be made
+     * to the server. To cancel buffering for some particular invocations, pass
+     * `timeout` parameter in `options` object for that method call.
+     */
+    enableBuffer: 10,
+    
+    /**
+     * @cfg {Number} [maxRetries=1]
+     *
+     * Number of times to re-attempt delivery on failure of a call.
+     */
+    maxRetries: 1,
+    
+    /**
+     * @cfg {Number} [timeout]
+     *
+     * The timeout to use for each request.
+     */
+    
+    constructor: function(config) {
+        var me = this;
+
+        me.callParent(arguments);
+
+        me.addEvents(
+            /**
+             * @event beforecall
+             * @preventable
+             *
+             * Fires immediately before the client-side sends off the RPC call. By returning
+             * `false` from an event handler you can prevent the call from being made.
+             *
+             * @param {Ext.direct.RemotingProvider} provider
+             * @param {Ext.direct.Transaction} transaction
+             * @param {Object} meta The meta data
+             */            
+            'beforecall',
+
+            /**
+             * @event call
+             *
+             * Fires immediately after the request to the server-side is sent. This does
+             * NOT fire after the response has come back from the call.
+             *
+             * @param {Ext.direct.RemotingProvider} provider
+             * @param {Ext.direct.Transaction} transaction
+             * @param {Object} meta The meta data
+             */            
+            'call',
+
+            /**
+             * @event beforecallback
+             * @preventable
+             *
+             * Fires before callback function is executed. By returning `false` from an event handler
+             * you can prevent the callback from executing.
+             *
+             * @param {Ext.direct.RemotingProvider} provider
+             * @param {Ext.direct.Transaction} transaction
+             */
+            'beforecallback'
+        );
+
+        me.namespace = (Ext.isString(me.namespace)) ? Ext.ns(me.namespace) : me.namespace || Ext.global;
+        me.transactions = new Ext.util.MixedCollection();
+        me.callBuffer = [];
+    },
+    
+    /**
+     * Get nested namespace by property.
+     *
+     * @private
+     */
+    getNamespace: function(root, action) {
+        var parts, ns, i, l;
+        
+        root  = root || Ext.global;
+        parts = action.toString().split('.');
+
+        for (i = 0, l = parts.length; i < l; i++) {
+            ns   = parts[i];
+            root = root[ns];
+
+            if (typeof root === 'undefined') {
+                return root;
+            }
+        }
+
+        return root;
+    },
+
+    /**
+     * Create nested namespaces. Unlike {@link Ext#ns} this method supports
+     * nested objects as root of the namespace, not only Ext.global (window).
+     *
+     * @private
+     */
+    createNamespaces: function(root, action) {
+        var parts, ns;
+        
+        root  = root || Ext.global;
+        parts = action.toString().split('.');
+        
+        for ( var i = 0, l = parts.length; i < l; i++ ) {
+            ns = parts[i];
+            
+            root[ns] = root[ns] || {};
+            root     = root[ns];
+        };
+        
+        return root;
+    },
+    
+    /**
+     * Initialize the API
+     *
+     * @private
+     */
+    initAPI: function() {
+        var me = this,
+            actions = me.actions,
+            namespace = me.namespace,
+            action, cls, methods, i, len, method;
+            
+        for (action in actions) {
+            if (actions.hasOwnProperty(action)) {
+                if (me.disableNestedActions) {
+                    cls = namespace[action];
+                    
+                    if (!cls) {
+                        cls = namespace[action] = {};
+                    }
+                }
+                else {
+                    cls = me.getNamespace(namespace, action);
+
+                    if (!cls) {
+                        cls = me.createNamespaces(namespace, action);
+                    }
+                }
+
+                methods = actions[action];
+
+                for (i = 0, len = methods.length; i < len; ++i) {
+                    method = new Ext.direct.RemotingMethod(methods[i]);
+                    cls[method.name] = me.createHandler(action, method);
+                }
+            }
+        }
+    },
+    
+    /**
+     * Create a handler function for a direct call.
+     *
+     * @param {String} action The action the call is for
+     * @param {Object} method The details of the method
+     *
+     * @return {Function} A JS function that will kick off the call
+     *
+     * @private
+     */
+    createHandler: function(action, method) {
+        var me = this,
+            slice = Array.prototype.slice,
+            handler;
+        
+        if (!method.formHandler) {
+            handler = function() {
+                me.configureRequest(action, method, slice.call(arguments, 0));
+            };
+        }
+        else {
+            handler = function(form, callback, scope) {
+                me.configureFormRequest(action, method, form, callback, scope);
+            };
+        }
+
+        handler.directCfg = {
+            action: action,
+            method: method
+        };
+
+        return handler;
+    },
+    
+    /**
+     * @inheritdoc
+     */
+    isConnected: function() {
+        return !!this.connected;
+    },
+
+    /**
+     * @inheritdoc
+     */
+    connect: function() {
+        var me = this;
+        
+        if (me.url) {
+            me.initAPI();
+            me.connected = true;
+            me.fireEvent('connect', me);
+        }
+        //<debug>
+        else if (!me.url) {
+            Ext.Error.raise('Error initializing RemotingProvider "' + me.id +
+                            '", no url configured.');
+        }
+        //</debug>
+    },
+
+    /**
+     * @inheritdoc
+     */
+    disconnect: function() {
+        var me = this;
+        
+        if (me.connected) {
+            me.connected = false;
+            me.fireEvent('disconnect', me);
+        }
+    },
+    
+    /**
+     * Run any callbacks related to the transaction.
+     *
+     * @param {Ext.direct.Transaction} transaction The transaction
+     * @param {Ext.direct.Event} event The event
+     *
+     * @private
+     */
+    runCallback: function(transaction, event) {
+        var success = !!event.status,
+            funcName = success ? 'success' : 'failure',
+            callback, options, result;
+        
+        if (transaction && transaction.callback) {
+            callback = transaction.callback;
+            options  = transaction.callbackOptions;
+            result   = typeof event.result !== 'undefined' ? event.result : event.data;
+
+            if (Ext.isFunction(callback)) {
+                callback(result, event, success, options);
+            }
+            else {
+                Ext.callback(callback[funcName], callback.scope, [result, event, success, options]);
+                Ext.callback(callback.callback,  callback.scope, [result, event, success, options]);
+            }
+        }
+    },
+    
+    /**
+     * React to the ajax request being completed
+     *
+     * @private
+     */
+    onData: function(options, success, response) {
+        var me = this,
+            i, len, events, event, transaction, transactions;
+            
+        if (success) {
+            events = me.createEvents(response);
+
+            for (i = 0, len = events.length; i < len; ++i) {
+                event = events[i];
+                transaction = me.getTransaction(event);
+                me.fireEvent('data', me, event);
+
+                if (transaction && me.fireEvent('beforecallback', me, event, transaction) !== false) {
+                    me.runCallback(transaction, event, true);
+                    Ext.direct.Manager.removeTransaction(transaction);
+                }
+            }
+        }
+        else {
+            transactions = [].concat(options.transaction);
+            
+            for (i = 0, len = transactions.length; i < len; ++i) {
+                transaction = me.getTransaction(transactions[i]);
+
+                if (transaction && transaction.retryCount < me.maxRetries) {
+                    transaction.retry();
+                }
+                else {
+                    event = new Ext.direct.ExceptionEvent({
+                        data: null,
+                        transaction: transaction,
+                        code: Ext.direct.Manager.exceptions.TRANSPORT,
+                        message: 'Unable to connect to the server.',
+                        xhr: response
+                    });
+
+                    me.fireEvent('data', me, event);
+
+                    if (transaction && me.fireEvent('beforecallback', me, transaction) !== false) {
+                        me.runCallback(transaction, event, false);
+                        Ext.direct.Manager.removeTransaction(transaction);
+                    }
+                }
+            }
+        }
+    },
+    
+    /**
+     * Get transaction from XHR options
+     *
+     * @param {Object} options The options sent to the Ajax request
+     *
+     * @return {Ext.direct.Transaction} The transaction, null if not found
+     *
+     * @private
+     */
+    getTransaction: function(options) {
+        return options && options.tid ? Ext.direct.Manager.getTransaction(options.tid) : null;
+    },
+    
+    /**
+     * Configure a direct request
+     *
+     * @param {String} action The action being executed
+     * @param {Object} method The being executed
+     *
+     * @private
+     */
+    configureRequest: function(action, method, args) {
+        var me = this,
+            callData, data, callback, scope, opts, transaction, params;
+
+        callData = method.getCallData(args);
+        data     = callData.data;
+        callback = callData.callback;
+        scope    = callData.scope;
+        opts     = callData.options || {};
+
+        params = Ext.apply({}, {
+            provider: me,
+            args: args,
+            action: action,
+            method: method.name,
+            data: data,
+            callbackOptions: opts,
+            callback: scope && Ext.isFunction(callback) ? Ext.Function.bind(callback, scope) : callback
+        });
+
+        if (opts.timeout) {
+            Ext.applyIf(params, {
+                timeout: opts.timeout
+            });
+        };
+
+        transaction = new Ext.direct.Transaction(params);
+
+        if (me.fireEvent('beforecall', me, transaction, method) !== false) {
+            Ext.direct.Manager.addTransaction(transaction);
+            me.queueTransaction(transaction);
+            me.fireEvent('call', me, transaction, method);
+        }
+    },
+    
+    /**
+     * Gets the Ajax call info for a transaction
+     *
+     * @param {Ext.direct.Transaction} transaction The transaction
+     *
+     * @return {Object} The call params
+     *
+     * @private
+     */
+    getCallData: function(transaction) {
+        return {
+            action: transaction.action,
+            method: transaction.method,
+            data: transaction.data,
+            type: 'rpc',
+            tid: transaction.id
+        };
+    },
+    
+    /**
+     * Sends a request to the server
+     *
+     * @param {Object/Array} data The data to send
+     *
+     * @private
+     */
+    sendRequest: function(data) {
+        var me = this,
+            request, callData, params,
+            enableUrlEncode = me.enableUrlEncode,
+            i, len;
+
+        request = {
+            url: me.url,
+            callback: me.onData,
+            scope: me,
+            transaction: data,
+            timeout: me.timeout
+        };
+
+        // Explicitly specified timeout for Ext.Direct call overrides defaults
+        if (data.timeout) {
+            request.timeout = data.timeout;
+        }
+
+        if (Ext.isArray(data)) {
+            callData = [];
+
+            for (i = 0, len = data.length; i < len; ++i) {
+                callData.push(me.getCallData(data[i]));
+            }
+        }
+        else {
+            callData = me.getCallData(data);
+        }
+
+        if (enableUrlEncode) {
+            params = {};
+            params[Ext.isString(enableUrlEncode) ? enableUrlEncode : 'data'] = Ext.encode(callData);
+            request.params = params;
+        }
+        else {
+            request.jsonData = callData;
+        }
+
+        Ext.Ajax.request(request);
+    },
+    
+    /**
+     * Add a new transaction to the queue
+     *
+     * @param {Ext.direct.Transaction} transaction The transaction
+     *
+     * @private
+     */
+    queueTransaction: function(transaction) {
+        var me = this,
+            enableBuffer = me.enableBuffer;
+        
+        if (transaction.form) {
+            me.sendFormRequest(transaction);
+            return;
+        }
+
+        if (enableBuffer === false || typeof transaction.timeout !== 'undefined') {
+            me.sendRequest(transaction);
+            return;
+        }
+        
+        me.callBuffer.push(transaction);
+
+        if (enableBuffer) {
+            if (!me.callTask) {
+                me.callTask = new Ext.util.DelayedTask(me.combineAndSend, me);
+            }
+
+            me.callTask.delay(Ext.isNumber(enableBuffer) ? enableBuffer : 10);
+        }
+        else {
+            me.combineAndSend();
+        }
+    },
+    
+    /**
+     * Combine any buffered requests and send them off
+     *
+     * @private
+     */
+    combineAndSend : function() {
+        var me = this,
+            buffer = me.callBuffer,
+            len = buffer.length;
+            
+        if (len > 0) {
+            me.sendRequest(len == 1 ? buffer[0] : buffer);
+            me.callBuffer = [];
+        }
+    },
+    
+    /**
+     * Configure a form submission request
+     *
+     * @param {String} action The action being executed
+     * @param {Object} method The method being executed
+     * @param {HTMLElement} form The form being submitted
+     * @param {Function} [callback] A callback to run after the form submits
+     * @param {Object} [scope] A scope to execute the callback in
+     *
+     * @private
+     */
+    configureFormRequest: function(action, method, form, callback, scope) {
+        var me = this,
+            transaction, isUpload, params;
+            
+        transaction = new Ext.direct.Transaction({
+            provider: me,
+            action: action,
+            method: method.name,
+            args: [form, callback, scope],
+            callback: scope && Ext.isFunction(callback) ? Ext.Function.bind(callback, scope) : callback,
+            isForm: true
+        });
+
+        if (me.fireEvent('beforecall', me, transaction, method) !== false) {
+            Ext.direct.Manager.addTransaction(transaction);
+            isUpload = String(form.getAttribute("enctype")).toLowerCase() == 'multipart/form-data';
+            
+            params = {
+                extTID: transaction.id,
+                extAction: action,
+                extMethod: method.name,
+                extType: 'rpc',
+                extUpload: String(isUpload)
+            };
+            
+            // change made from typeof callback check to callback.params
+            // to support addl param passing in DirectSubmit EAC 6/2
+            Ext.apply(transaction, {
+                form: Ext.getDom(form),
+                isUpload: isUpload,
+                params: callback && Ext.isObject(callback.params) ? Ext.apply(params, callback.params) : params
+            });
+
+            me.fireEvent('call', me, transaction, method);
+            me.sendFormRequest(transaction);
+        }
+    },
+    
+    /**
+     * Sends a form request
+     *
+     * @param {Ext.direct.Transaction} transaction The transaction to send
+     *
+     * @private
+     */
+    sendFormRequest: function(transaction) {
+        var me = this;
+
+        Ext.Ajax.request({
+            url: me.url,
+            params: transaction.params,
+            callback: me.onData,
+            scope: me,
+            form: transaction.form,
+            isUpload: transaction.isUpload,
+            transaction: transaction
+        });
+    }
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
  * An extended {@link Ext.Element} object that supports a shadow and shim, constrain to viewport and
  * automatic maintaining of shadow/shim positions.
  */
@@ -100522,6 +105550,393 @@ at http://www.sencha.com/contact.
 Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
 */
 /**
+ * This is a layout that enables anchoring of contained elements relative to the container's dimensions.
+ * If the container is resized, all anchored items are automatically rerendered according to their
+ * `{@link #anchor}` rules.
+ *
+ * This class is intended to be extended or created via the {@link Ext.container.AbstractContainer#layout layout}: 'anchor' 
+ * config, and should generally not need to be created directly via the new keyword.
+ * 
+ * AnchorLayout does not have any direct config options (other than inherited ones). By default,
+ * AnchorLayout will calculate anchor measurements based on the size of the container itself. However, the
+ * container using the AnchorLayout can supply an anchoring-specific config property of `anchorSize`.
+ *
+ * If anchorSize is specifed, the layout will use it as a virtual container for the purposes of calculating
+ * anchor measurements based on it instead, allowing the container to be sized independently of the anchoring
+ * logic if necessary.
+ *
+ *     @example
+ *     Ext.create('Ext.Panel', {
+ *         width: 500,
+ *         height: 400,
+ *         title: "AnchorLayout Panel",
+ *         layout: 'anchor',
+ *         renderTo: Ext.getBody(),
+ *         items: [
+ *             {
+ *                 xtype: 'panel',
+ *                 title: '75% Width and 20% Height',
+ *                 anchor: '75% 20%'
+ *             },
+ *             {
+ *                 xtype: 'panel',
+ *                 title: 'Offset -300 Width & -200 Height',
+ *                 anchor: '-300 -200'		
+ *             },
+ *             {
+ *                 xtype: 'panel',
+ *                 title: 'Mixed Offset and Percent',
+ *                 anchor: '-250 20%'
+ *             }
+ *         ]
+ *     });
+ */
+Ext.define('Ext.layout.container.Anchor', {
+
+    /* Begin Definitions */
+
+    alias: 'layout.anchor',
+    extend:  Ext.layout.container.Auto ,
+    alternateClassName: 'Ext.layout.AnchorLayout',
+
+    /* End Definitions */
+
+    type: 'anchor',
+
+    /**
+     * @cfg {String} anchor
+     *
+     * This configuation option is to be applied to **child `items`** of a container managed by
+     * this layout (ie. configured with `layout:'anchor'`).
+     *
+     * This value is what tells the layout how an item should be anchored to the container. `items`
+     * added to an AnchorLayout accept an anchoring-specific config property of **anchor** which is a string
+     * containing two values: the horizontal anchor value and the vertical anchor value (for example, '100% 50%').
+     * The following types of anchor values are supported:
+     *
+     * - **Percentage** : Any value between 1 and 100, expressed as a percentage.
+     *
+     *   The first anchor is the percentage width that the item should take up within the container, and the
+     *   second is the percentage height.  For example:
+     *
+     *       // two values specified
+     *       anchor: '100% 50%' // render item complete width of the container and
+     *                          // 1/2 height of the container
+     *       // one value specified
+     *       anchor: '100%'     // the width value; the height will default to auto
+     *
+     * - **Offsets** : Any positive or negative integer value.
+     *
+     *   This is a raw adjustment where the first anchor is the offset from the right edge of the container,
+     *   and the second is the offset from the bottom edge. For example:
+     *
+     *       // two values specified
+     *       anchor: '-50 -100' // render item the complete width of the container
+     *                          // minus 50 pixels and
+     *                          // the complete height minus 100 pixels.
+     *       // one value specified
+     *       anchor: '-50'      // anchor value is assumed to be the right offset value
+     *                          // bottom offset will default to 0
+     *
+     * - **Sides** : Valid values are `right` (or `r`) and `bottom` (or `b`).
+     *
+     *   Either the container must have a fixed size or an anchorSize config value defined at render time in
+     *   order for these to have any effect.
+     *   
+     * - **Mixed** :
+     *
+     *   Anchor values can also be mixed as needed.  For example, to render the width offset from the container
+     *   right edge by 50 pixels and 75% of the container's height use:
+     *   
+     *       anchor:   '-50 75%'
+     */
+
+    /**
+     * @cfg {String} defaultAnchor
+     * Default anchor for all child **container** items applied if no anchor or specific width is set on the child item.
+     */
+    defaultAnchor: '100%',
+
+    parseAnchorRE: /^(r|right|b|bottom)$/i,
+
+    manageOverflow: true,
+
+    beginLayoutCycle: function (ownerContext) {
+        var me = this,
+            dimensions = 0,
+            anchorSpec, childContext, childItems, i, length, target;
+
+        me.callParent(arguments);
+
+        childItems = ownerContext.childItems; // populated by callParent
+        length = childItems.length;
+
+        for (i = 0; i < length; ++i) {
+            childContext = childItems[i];
+            anchorSpec = childContext.target.anchorSpec;
+
+            if (anchorSpec) {
+                if (childContext.widthModel.calculated && anchorSpec.right) {
+                    dimensions |= 1;
+                }
+                if (childContext.heightModel.calculated && anchorSpec.bottom) {
+                    dimensions |= 2;
+                }
+
+                if (dimensions == 3) { // if (both dimensions in play)
+                    break;
+                }
+            }
+        }
+
+        ownerContext.anchorDimensions = dimensions;
+
+        //<debug>
+        me.sanityCheck(ownerContext);
+        //</debug>
+    },
+
+    calculateItems: function (ownerContext, containerSize) {
+        var me = this,
+            childItems = ownerContext.childItems,
+            length = childItems.length,
+            gotHeight = containerSize.gotHeight,
+            gotWidth = containerSize.gotWidth,
+            ownerHeight = containerSize.height,
+            ownerWidth = containerSize.width,
+            knownDimensions = (gotWidth ? 1 : 0) | (gotHeight ? 2 : 0),
+            anchorDimensions = ownerContext.anchorDimensions,
+            anchorSpec, childContext, childMargins, height, i, width;
+
+        if (!anchorDimensions) {
+            return true;
+        }
+
+        for (i = 0; i < length; i++) {
+            childContext = childItems[i];
+            childMargins = childContext.getMarginInfo();
+            anchorSpec = childContext.target.anchorSpec;
+
+            // Check widthModel in case "defaults" has applied an anchor to a component
+            // that also has width (which must win). If we did not make this check in this
+            // way, we would attempt to calculate a width where it had been configured.
+            //
+            if (gotWidth && childContext.widthModel.calculated) {
+                width = anchorSpec.right(ownerWidth) - childMargins.width;
+                width = me.adjustWidthAnchor(width, childContext);
+
+                childContext.setWidth(width);
+            }
+
+            // Repeat for height
+            if (gotHeight && childContext.heightModel.calculated) {
+                height = anchorSpec.bottom(ownerHeight) - childMargins.height;
+                height = me.adjustHeightAnchor(height, childContext);
+
+                childContext.setHeight(height);
+            }
+        }
+
+        // If all required dimensions are known, we're done
+        return (knownDimensions & anchorDimensions) === anchorDimensions;
+    },
+
+    //<debug>
+    sanityCheck: function (ownerContext) {
+        var shrinkWrapWidth = ownerContext.widthModel.shrinkWrap,
+            shrinkWrapHeight = ownerContext.heightModel.shrinkWrap,
+            children = ownerContext.childItems,
+            anchorSpec, comp, childContext,
+            i, length;
+
+        for (i = 0, length = children.length; i < length; ++i) {
+            childContext = children[i];
+            comp = childContext.target;
+            anchorSpec = comp.anchorSpec;
+
+            if (anchorSpec) {
+                if (childContext.widthModel.calculated && anchorSpec.right) {
+                    if (shrinkWrapWidth) {
+                        Ext.log({
+                            level: 'warn',
+                            msg: 'Right anchor on '+comp.id+' in shrinkWrap width container'
+                        });
+                    }
+                }
+
+                if (childContext.heightModel.calculated && anchorSpec.bottom) {
+                    if (shrinkWrapHeight) {
+                        Ext.log({
+                            level: 'warn',
+                            msg: 'Bottom anchor on '+comp.id+' in shrinkWrap height container'
+                        });
+                    }
+                }
+            }
+        }
+    },
+    //</debug>
+
+    // private
+    anchorFactory: {
+        offset: function (delta) {
+            return function(v) {
+                return v + delta;
+            };
+        },
+        ratio: function (ratio) {
+            return function(v) {
+                return Math.floor(v * ratio);
+            };
+        },
+        standard: function (diff) {
+            return function(v) {
+                return v - diff;
+            };
+        }
+    },
+
+    parseAnchor: function(a, start, cstart) {
+        if (a && a != 'none') {
+            var factory = this.anchorFactory,
+                delta;
+
+            if (this.parseAnchorRE.test(a)) {
+                return factory.standard(cstart - start);
+            }    
+            if (a.indexOf('%') != -1) {
+                return factory.ratio(parseFloat(a.replace('%', '')) * 0.01);
+            }    
+            delta = parseInt(a, 10);
+            if (!isNaN(delta)) {
+                return factory.offset(delta);
+            }
+        }
+        return null;
+    },
+
+    // private
+    adjustWidthAnchor: function(value, childContext) {
+        return value;
+    },
+
+    // private
+    adjustHeightAnchor: function(value, childContext) {
+        return value;
+    },
+
+    configureItem: function(item) {
+        var me = this,
+            owner = me.owner,
+            anchor= item.anchor,
+            anchorsArray,
+            anchorWidth,
+            anchorHeight;
+
+        me.callParent(arguments);
+
+        if (!item.anchor && item.items && !Ext.isNumber(item.width) && !(Ext.isIE6 && Ext.isStrict)) {
+            item.anchor = anchor = me.defaultAnchor;
+        }
+
+        /**
+         * @cfg {Number/Object} anchorSize
+         * Defines the anchoring size of container.
+         * Either a number to define the width of the container or an object with `width` and `height` fields.
+         * @member Ext.container.Container
+         */ 
+        if (owner.anchorSize) {
+            if (typeof owner.anchorSize == 'number') {
+                anchorWidth = owner.anchorSize;
+            } else {
+                anchorWidth = owner.anchorSize.width;
+                anchorHeight = owner.anchorSize.height;
+            }
+        } else {
+            anchorWidth = owner.initialConfig.width;
+            anchorHeight = owner.initialConfig.height;
+        }
+
+        if (anchor) {
+            // cache all anchor values
+            anchorsArray = anchor.split(' ');
+            item.anchorSpec = {
+                right: me.parseAnchor(anchorsArray[0], item.initialConfig.width, anchorWidth),
+                bottom: me.parseAnchor(anchorsArray[1], item.initialConfig.height, anchorHeight)
+            };
+        }
+    },
+
+    sizePolicy: {
+        $: {
+            readsWidth: 1,
+            readsHeight: 1,
+            setsWidth: 0,
+            setsHeight: 0
+        },
+        b: {
+            readsWidth: 1,
+            readsHeight: 0,
+            setsWidth: 0,
+            setsHeight: 1
+        },
+        r: {
+            $: {
+                readsWidth: 0,
+                readsHeight: 1,
+                setsWidth: 1,
+                setsHeight: 0
+            },
+            b: {
+                readsWidth: 0,
+                readsHeight: 0,
+                setsWidth: 1,
+                setsHeight: 1
+            }
+        }
+    },
+
+    getItemSizePolicy: function (item) {
+        var anchorSpec = item.anchorSpec,
+            key = '$',
+            policy = this.sizePolicy,
+            sizeModel;
+
+        if (anchorSpec) {
+            sizeModel = this.owner.getSizeModel();
+            if (anchorSpec.right && !sizeModel.width.shrinkWrap) {
+                policy = policy.r;
+            }
+            if (anchorSpec.bottom && !sizeModel.height.shrinkWrap) {
+                key = 'b';
+            }
+        }
+
+        return policy[key];
+    }
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
  * A simple class that renders text directly into a toolbar.
  *
  *     @example
@@ -101379,6 +106794,598 @@ Ext.define('Ext.layout.component.Body', {
     }
 });
 
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * This is a layout that inherits the anchoring of {@link Ext.layout.container.Anchor} and adds the
+ * ability for x/y positioning using the standard x and y component config options.
+ *
+ * This class is intended to be extended or created via the {@link Ext.container.Container#layout layout}
+ * configuration property.  See {@link Ext.container.Container#layout} for additional details.
+ *
+ *     @example
+ *     Ext.create('Ext.form.Panel', {
+ *         title: 'Absolute Layout',
+ *         width: 300,
+ *         height: 275,
+ *         layout: {
+ *             type: 'absolute'
+ *             // layout-specific configs go here
+ *             //itemCls: 'x-abs-layout-item',
+ *         },
+ *         url:'save-form.php',
+ *         defaultType: 'textfield',
+ *         items: [{
+ *             x: 10,
+ *             y: 10,
+ *             xtype:'label',
+ *             text: 'Send To:'
+ *         },{
+ *             x: 80,
+ *             y: 10,
+ *             name: 'to',
+ *             anchor:'90%'  // anchor width by percentage
+ *         },{
+ *             x: 10,
+ *             y: 40,
+ *             xtype:'label',
+ *             text: 'Subject:'
+ *         },{
+ *             x: 80,
+ *             y: 40,
+ *             name: 'subject',
+ *             anchor: '90%'  // anchor width by percentage
+ *         },{
+ *             x:0,
+ *             y: 80,
+ *             xtype: 'textareafield',
+ *             name: 'msg',
+ *             anchor: '100% 100%'  // anchor width and height
+ *         }],
+ *         renderTo: Ext.getBody()
+ *     });
+ */
+Ext.define('Ext.layout.container.Absolute', {
+
+    /* Begin Definitions */
+
+    alias: 'layout.absolute',
+    extend:  Ext.layout.container.Anchor ,
+    alternateClassName: 'Ext.layout.AbsoluteLayout',
+
+    /* End Definitions */
+
+    targetCls: Ext.baseCSSPrefix + 'abs-layout-ct',
+    itemCls: Ext.baseCSSPrefix + 'abs-layout-item',
+
+    /**
+     * @cfg {Boolean} ignoreOnContentChange
+     * True indicates that changes to one item in this layout do not effect the layout in
+     * general. This may need to be set to false if {@link Ext.Component#autoScroll}
+     * is enabled for the container.
+     */
+    ignoreOnContentChange: true,
+
+    type: 'absolute',
+
+    // private
+    adjustWidthAnchor: function(value, childContext) {
+        var padding = this.targetPadding,
+            x = childContext.getStyle('left');
+
+        return value - x + padding.left;
+    },
+
+    // private
+    adjustHeightAnchor: function(value, childContext) {
+        var padding = this.targetPadding,
+            y = childContext.getStyle('top');
+
+        return value - y + padding.top;
+    },
+
+    isItemLayoutRoot: function (item) {
+        return this.ignoreOnContentChange || this.callParent(arguments);
+    },
+
+    isItemShrinkWrap: function (item) {
+        return true;
+    },
+
+    beginLayout: function (ownerContext) {
+        var me = this,
+            target = me.getTarget();
+
+        me.callParent(arguments);
+
+        // Do not set position: relative; when the absolute layout target is the body
+        if (target.dom !== document.body) {
+            target.position();
+        }
+
+        me.targetPadding = ownerContext.targetContext.getPaddingInfo();
+    },
+
+    isItemBoxParent: function (itemContext) {
+        return true;
+    },
+
+    onContentChange: function () {
+        if (this.ignoreOnContentChange) {
+            return false;
+        }
+        return this.callParent(arguments);
+    },
+
+    calculateContentSize: function (ownerContext, dimensions) {
+        var me = this,
+            containerDimensions = (dimensions || 0) |
+                   ((ownerContext.widthModel.shrinkWrap ? 1 : 0) |
+                    (ownerContext.heightModel.shrinkWrap ? 2 : 0)),
+            calcWidth = (containerDimensions & 1) || undefined,
+            calcHeight = (containerDimensions & 2) || undefined,
+            childItems = ownerContext.childItems,
+            length = childItems.length,
+            contentHeight = 0,
+            contentWidth = 0,
+            needed = 0,
+            props = ownerContext.props,
+            targetPadding, child, childContext, height, i, margins, width;
+
+        if (calcWidth) {
+            if (isNaN(props.contentWidth)) {
+                ++needed;
+            } else {
+                calcWidth = undefined;
+            }
+        }
+        if (calcHeight) {
+            if (isNaN(props.contentHeight)) {
+                ++needed;
+            } else {
+                calcHeight = undefined;
+            }
+        }
+
+        if (needed) {
+            for (i = 0; i < length; ++i) {
+                childContext = childItems[i];
+                child = childContext.target;
+                height = calcHeight && childContext.getProp('height');
+                width = calcWidth && childContext.getProp('width');
+                margins = childContext.getMarginInfo();
+
+                height += margins.bottom;
+                width  += margins.right;
+
+                contentHeight = Math.max(contentHeight, (child.y || 0) + height);
+                contentWidth = Math.max(contentWidth, (child.x || 0) + width);
+
+                if (isNaN(contentHeight) && isNaN(contentWidth)) {
+                    me.done = false;
+                    return;
+                }
+            }
+
+            if (calcWidth || calcHeight) {
+                targetPadding = ownerContext.targetContext.getPaddingInfo();
+            }
+            if (calcWidth && !ownerContext.setContentWidth(contentWidth + targetPadding.width)) {
+                me.done = false;
+            }
+            if (calcHeight && !ownerContext.setContentHeight(contentHeight + targetPadding.height)) {
+                me.done = false;
+            }
+
+            /* add a '/' to turn on this log ('//* enables, '/*' disables)
+            if (me.done) {
+                var el = ownerContext.targetContext.el.dom;
+                Ext.log(this.owner.id, '.contentSize: ', contentWidth, 'x', contentHeight,
+                    ' => scrollSize: ', el.scrollWidth, 'x', el.scrollHeight);
+            }/**/
+        }
+    }
+});
+
+/*
+This file is part of Ext JS 4.2
+
+Copyright (c) 2011-2013 Sencha Inc
+
+Contact:  http://www.sencha.com/contact
+
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
+
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
+
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
+
+Build date: 2013-05-16 14:36:50 (f9be68accb407158ba2b1be2c226a6ce1f649314)
+*/
+/**
+ * This is a layout that manages multiple Panels in an expandable accordion style such that by default only
+ * one Panel can be expanded at any given time (set {@link #multi} config to have more open). Each Panel has
+ * built-in support for expanding and collapsing.
+ *
+ * Note: Only Ext Panels and all subclasses of Ext.panel.Panel may be used in an accordion layout Container.
+ *
+ *     @example
+ *     Ext.create('Ext.panel.Panel', {
+ *         title: 'Accordion Layout',
+ *         width: 300,
+ *         height: 300,
+ *         defaults: {
+ *             // applied to each contained panel
+ *             bodyStyle: 'padding:15px'
+ *         },
+ *         layout: {
+ *             // layout-specific configs go here
+ *             type: 'accordion',
+ *             titleCollapse: false,
+ *             animate: true,
+ *             activeOnTop: true
+ *         },
+ *         items: [{
+ *             title: 'Panel 1',
+ *             html: 'Panel content!'
+ *         },{
+ *             title: 'Panel 2',
+ *             html: 'Panel content!'
+ *         },{
+ *             title: 'Panel 3',
+ *             html: 'Panel content!'
+ *         }],
+ *         renderTo: Ext.getBody()
+ *     });
+ */
+Ext.define('Ext.layout.container.Accordion', {
+    extend:  Ext.layout.container.VBox ,
+    alias: ['layout.accordion'],
+    alternateClassName: 'Ext.layout.AccordionLayout',
+
+    targetCls: Ext.baseCSSPrefix + 'accordion-layout-ct',
+    itemCls: [Ext.baseCSSPrefix + 'box-item', Ext.baseCSSPrefix + 'accordion-item'],
+
+    align: 'stretch',
+
+    /**
+     * @cfg {Boolean} fill
+     * True to adjust the active item's height to fill the available space in the container, false to use the
+     * item's current height, or auto height if not explicitly set.
+     */
+    fill : true,
+
+    /**
+     * @cfg {Boolean} autoWidth
+     * Child Panels have their width actively managed to fit within the accordion's width.
+     * @removed This config is ignored in ExtJS 4
+     */
+
+    /**
+     * @cfg {Boolean} titleCollapse
+     * True to allow expand/collapse of each contained panel by clicking anywhere on the title bar, false to allow
+     * expand/collapse only when the toggle tool button is clicked.  When set to false,
+     * {@link #hideCollapseTool} should be false also. An explicit {@link Ext.panel.Panel#titleCollapse} declared
+     * on the panel will override this setting.
+     */
+    titleCollapse : true,
+
+    /**
+     * @cfg {Boolean} hideCollapseTool
+     * True to hide the contained Panels' collapse/expand toggle buttons, false to display them.
+     * When set to true, {@link #titleCollapse} is automatically set to true.
+     */
+    hideCollapseTool : false,
+
+    /**
+     * @cfg {Boolean} collapseFirst
+     * True to make sure the collapse/expand toggle button always renders first (to the left of) any other tools
+     * in the contained Panels' title bars, false to render it last. By default, this will use the 
+     * {@link Ext.panel.Panel#collapseFirst} setting on the panel. If the config option is specified on the layout,
+     * it will override the panel value.
+     */
+    collapseFirst : undefined,
+
+    /**
+     * @cfg {Boolean} animate
+     * True to slide the contained panels open and closed during expand/collapse using animation, false to open and
+     * close directly with no animation. Note: The layout performs animated collapsing
+     * and expanding, *not* the child Panels.
+     */
+    animate : true,
+    /**
+     * @cfg {Boolean} activeOnTop
+     * Only valid when {@link #multi} is `false` and {@link #animate} is `false`.
+     *
+     * True to swap the position of each panel as it is expanded so that it becomes the first item in the container,
+     * false to keep the panels in the rendered order.
+     */
+    activeOnTop : false,
+    /**
+     * @cfg {Boolean} multi
+     * Set to true to enable multiple accordion items to be open at once.
+     */
+    multi: false,
+    
+    defaultAnimatePolicy: {
+        y: true,
+        height: true
+    },
+
+    constructor: function() {
+        var me = this;
+
+        me.callParent(arguments);
+
+        if (!me.multi && me.animate) {
+            me.animatePolicy = Ext.apply({}, me.defaultAnimatePolicy);
+        } else {
+            me.animatePolicy = null;
+        }
+    },
+
+    beforeRenderItems: function (items) {
+        var me = this,
+            ln = items.length,
+            i = 0,
+            owner = me.owner,
+            collapseFirst = me.collapseFirst,
+            hasCollapseFirst = Ext.isDefined(collapseFirst),
+            expandedItem = me.getExpanded(true)[0],
+            multi = me.multi,
+            comp;
+
+        for (; i < ln; i++) {
+            comp = items[i];
+            if (!comp.rendered) {
+                // Set up initial properties for Panels in an accordion.
+                if (!multi || comp.collapsible !== false) {
+                    comp.collapsible = true;
+                }
+                
+                if (comp.collapsible) {
+                    if (hasCollapseFirst) {
+                        comp.collapseFirst = collapseFirst;
+                    }
+                    if (me.hideCollapseTool) {
+                        comp.hideCollapseTool = me.hideCollapseTool;
+                        comp.titleCollapse = true;
+                    } else if (me.titleCollapse && comp.titleCollapse === undefined) {
+                        // Only force titleCollapse if we don't explicitly
+                        // set one on the child panel
+                        comp.titleCollapse = me.titleCollapse;
+                    }
+                }
+                
+                delete comp.hideHeader;
+                delete comp.width;
+                comp.title = comp.title || '&#160;';
+                comp.addBodyCls(Ext.baseCSSPrefix + 'accordion-body');
+
+                // If only one child Panel is allowed to be expanded
+                // then collapse all except the first one found with collapsed:false
+                // If we have hasExpanded set, we've already done this
+                if (!multi) {
+                    if (expandedItem) {
+                        comp.collapsed = expandedItem !== comp;
+                    } else if (comp.hasOwnProperty('collapsed') && comp.collapsed === false) {
+                        expandedItem = comp;
+                    } else {
+                        comp.collapsed = true;
+                    }
+
+                    // If only one child Panel may be expanded, then intercept expand/show requests.
+                    owner.mon(comp, {
+                        show: me.onComponentShow,
+                        beforeexpand: me.onComponentExpand,
+                        beforecollapse: me.onComponentCollapse,
+                        scope: me
+                    });
+                }
+                // Need to still check this outside multi because we don't want
+                // a single item to be able to collapse
+                owner.mon(comp, 'beforecollapse', me.onComponentCollapse, me);
+                comp.headerOverCls = Ext.baseCSSPrefix + 'accordion-hd-over';
+            }
+        }
+
+        // If no collapsed:false Panels found, make the first one expanded.
+        if (!multi) {
+            if (!expandedItem) {
+                if (ln) {
+                    items[0].collapsed = false;
+                }
+            } else if (me.activeOnTop) {
+                expandedItem.collapsed = false;
+                me.configureItem(expandedItem);
+                if (owner.items.indexOf(expandedItem) > 0) {
+                    owner.insert(0, expandedItem);
+                }
+            }
+        }
+    },
+
+    getItemsRenderTree: function(items) {
+        this.beforeRenderItems(items);
+        return this.callParent(arguments);
+    },
+
+    renderItems : function(items, target) {
+        this.beforeRenderItems(items);
+
+        this.callParent(arguments);
+    },
+
+    configureItem: function(item) {
+        this.callParent(arguments);
+
+        // We handle animations for the expand/collapse of items.
+        // Items do not have individual borders
+        item.animCollapse = item.border = false;
+
+        // If filling available space, all Panels flex.
+        if (this.fill) {
+            item.flex = 1;
+        }
+    },
+
+    beginLayout: function (ownerContext) {
+        this.callParent(arguments);
+        this.updatePanelClasses(ownerContext);
+    },
+
+    updatePanelClasses: function(ownerContext) {
+        var children = ownerContext.visibleItems,
+            ln = children.length,
+            siblingCollapsed = true,
+            i, child, header;
+
+        for (i = 0; i < ln; i++) {
+            child = children[i];
+            header = child.header;
+            header.addCls(Ext.baseCSSPrefix + 'accordion-hd');
+
+            if (siblingCollapsed) {
+                header.removeCls(Ext.baseCSSPrefix + 'accordion-hd-sibling-expanded');
+            } else {
+                header.addCls(Ext.baseCSSPrefix + 'accordion-hd-sibling-expanded');
+            }
+
+            if (i + 1 == ln && child.collapsed) {
+                header.addCls(Ext.baseCSSPrefix + 'accordion-hd-last-collapsed');
+            } else {
+                header.removeCls(Ext.baseCSSPrefix + 'accordion-hd-last-collapsed');
+            }
+
+            siblingCollapsed = child.collapsed;
+        }
+    },
+
+    // When a Component expands, adjust the heights of the other Components to be just enough to accommodate
+    // their headers.
+    // The expanded Component receives the only flex value, and so gets all remaining space.
+    onComponentExpand: function(toExpand) {
+        var me = this,
+            owner = me.owner,
+            multi = me.multi,
+            animate = me.animate,
+            moveToTop = !multi && !me.animate && me.activeOnTop,
+            expanded,
+            expandedCount, i,
+            previousValue;
+
+        if (!me.processing) {
+            me.processing = true;
+            previousValue = owner.deferLayouts;
+            owner.deferLayouts = true;
+            expanded = multi ? [] : me.getExpanded();
+            expandedCount = expanded.length;
+            
+            // Collapse all other expanded child items (Won't loop if multi is true)
+            for (i = 0; i < expandedCount; i++) {
+                expanded[i].collapse();
+            }
+            
+            if (moveToTop) {
+                // Prevent extra layout when moving the item
+                Ext.suspendLayouts();
+                owner.insert(0, toExpand);
+                Ext.resumeLayouts();
+            }
+            
+            owner.deferLayouts = previousValue;
+            me.processing = false;
+        }
+    },
+
+    onComponentCollapse: function(comp) {
+        var me = this,
+            owner = me.owner,
+            toExpand,
+            expanded,
+            previousValue;
+
+        if (me.owner.items.getCount() === 1) {
+            // do not allow collapse if there is only one item
+            return false;
+        }
+
+        if (!me.processing) {
+            me.processing = true;
+            previousValue = owner.deferLayouts;
+            owner.deferLayouts = true;
+            toExpand = comp.next() || comp.prev();
+
+            // If we are allowing multi, and the "toCollapse" component is NOT the only expanded Component,
+            // then ask the box layout to collapse it to its header.
+            if (me.multi) {
+                expanded = me.getExpanded();
+
+                // If the collapsing Panel is the only expanded one, expand the following Component.
+                // All this is handling fill: true, so there must be at least one expanded,
+                if (expanded.length === 1) {
+                    toExpand.expand();
+                }
+
+            } else if (toExpand) {
+                toExpand.expand();
+            }
+            owner.deferLayouts = previousValue;
+            me.processing = false;
+        }
+    },
+
+    onComponentShow: function(comp) {
+        // Showing a Component means that you want to see it, so expand it.
+        this.onComponentExpand(comp);
+    },
+    
+    getExpanded: function(explicitCheck){
+        var items = this.owner.items.items,
+            len = items.length,
+            i = 0,
+            out = [],
+            add,
+            item;
+            
+        for (; i < len; ++i) {
+            item = items[i];
+            if (explicitCheck) {
+                add = item.hasOwnProperty('collapsed') && item.collapsed === false;
+            } else {
+                add = !item.collapsed;
+            }
+            if (add) {
+                out.push(item);
+            }
+        }
+        return out;
+            
+    }
+});
 /*
 This file is part of Ext JS 4.2
 
@@ -104627,39 +110634,592 @@ Ext.define('Ext.util.Grouper', {
         return instance.get(this.property);
     }
 });
-Ext.define('doctor.Application', {
-    name: 'doctor',
+Ext.define('Doctor.controller.ViewportController', {
+    
+    extend:  Ext.app.Controller ,
+    
+    selectors: {
+        viewport: 'app-viewport',
+        menuContainer: 'panel[ItemId="menu-container"]',
+        contentContainer: 'panel[ItemId="content-container"]'
+    },
 
-    extend:  Ext.app.Application ,
+    init: function () {
 
-    views: [
-        // TODO: add views here
-    ],
+        var eventPool = {
+            component: {}
+        };
 
-    controllers: [
-        // TODO: add controllers here
-    ],
+        eventPool.component[this.selectors.viewport] = {
+            afterrender: this.afterRender
+        }
 
-    stores: [
-        // TODO: add stores here
-    ]
+        this.listen(eventPool);
+        
+    },
+
+    afterRender: function(viewport) {
+
+        var menuContainer = this.fetchMenuContainer(viewport);
+        var contentContainer = this.fetchContentContainer(viewport);
+        
+        var length = menuContainer.getWidth();
+        var duration = 2000;
+        
+        menuContainer.animate({
+            to: {
+                x: 0
+            },
+            duration: duration
+        });
+        
+        contentContainer.animate({
+            from: {
+                opacity: 0
+            },
+            to: {
+                x: length,
+                opacity: 0
+            },
+            duration: duration,
+            callback: function() {
+                contentContainer.ownerCt.doComponentLayout(); // устраняем заход за правый край экрана
+            }
+        });
+        
+        contentContainer.animate({
+            from: {
+                opacity: 0
+            },
+            to: {
+                opacity: 1
+            },
+            duration: duration
+        });
+
+    },
+    
+    fetchMenuContainer: function(viewport) {
+        
+        return viewport.down(this.selectors.menuContainer);
+        
+    },
+    
+    fetchContentContainer: function(viewport) {
+        
+        return viewport.down(this.selectors.contentContainer);
+        
+    }    
+    
 });
 
-Ext.define('doctor.Application', {
-    name: 'doctor',
+Ext.define('Doctor.controller.MenuController', {
+    
+    extend:  Ext.app.Controller ,
+    
+    init: function () {
+
+        this.listen({
+            component: {
+                'app-menu [ItemId="app-menu-list"]': {
+                    expand: this.onListExpand
+                },
+                'app-menu [ItemId="app-menu-item"]': {
+                    click: this.onItemClick
+                }
+            }
+        });
+        
+    },
+    
+    onListExpand: function(menuItemList) {
+        
+        this.fireEvent('menu-division-expanded', menuItemList.node);
+        
+    },
+    
+    onItemClick: function(menuItem) {
+
+        this.fireEvent('menu-item-selected', menuItem.node);
+        
+    }
+    
+    
+});
+
+Ext.define('Doctor.controller.HtmlPanelController', {
+    
+    extend:  Ext.app.Controller ,
+    
+    init: function () {
+        
+        this.store = Ext.create('Doctor.store.HtmlStore');
+        this.store.load();
+        
+        this.listen({
+            controller: {
+                '*': {
+                    'menu-item-selected': this.onMenuItemSelected,
+                    'menu-division-expanded': this.onMenuDivisionSelected
+                }
+            }
+        });
+        
+    },
+    
+    onMenuItemSelected: function(menuRecord) {
+        
+        if (menuRecord.get('link_type') != 'html') {
+            return;
+        }
+
+        var htmlRecord = this.store.findRecord('id', menuRecord.get('link_id'));
+        
+        var htmlPanel = Ext.ComponentQuery.query('app-html-panel')[0];
+        
+        htmlPanel.animate({
+            to: {
+                opacity: 0
+            }, 
+            duration: htmlPanel.isUpdated ? 1000 : 0, // устраняем задержку первого показа
+            callback: function() {
+                
+                htmlPanel.update(htmlRecord.get('html'));
+                
+                htmlPanel.isUpdated = true;
+ 
+                htmlPanel.animate({
+                    from: {
+                        opacity: 1,
+                        x: 1000
+                    },
+                    to: {
+                        opacity: 1,
+                        x: 250
+                    },
+                    duration: 2000
+                });
+                
+            }
+        });
+        
+
+        
+    },
+    
+    onMenuDivisionSelected: function(menuRecord) {
+        
+        var htmlPanel = Ext.ComponentQuery.query('app-html-panel')[0];
+        
+        htmlPanel.animate({
+            to: {
+                opacity: 0
+            },
+            duration: htmlPanel.isUpdated ? 800 : 0, // устраняем задержку первого показа
+            callback: function() {
+                
+                htmlPanel.update('<div style="width: 50%; margin: 10% auto; text-align: center; font-size: 7em;">' + menuRecord.get('text') + '</div>');
+                
+                htmlPanel.isUpdated = true;
+                
+                htmlPanel.animate({
+                    from: {
+                        opacity: 0
+                    },
+                    to: {
+                        opacity: 1
+                    },
+                    duration: 1000
+                });
+                
+            }
+        });
+        
+    }
+    
+});
+/**
+ * Модель для элементов меню
+ */
+Ext.define('Doctor.model.MenuModel', {
+    
+    extend:  Ext.data.Model ,
+    
+    idProperty: 'id',
+
+    fields: [
+        
+        { name:'id', type: 'int', useNull: true }, 
+        { name:'text', type: 'string' }, 
+        { name:'link_id', type: 'int', useNull: true },
+        { name:'link_type_id', type: 'int', useNull: true },
+        { name:'link_type', type: 'string' },
+        { name:'leaf', type: 'boolean', defaultValue: false }
+        
+    ]
+
+});
+Ext.define('Doctor.model.HtmlModel', {
+    
+    extend:  Ext.data.Model ,
+    
+    idProperty: 'id',
+
+    fields: [
+        
+        { name:'id', type: 'int', useNull: true }, 
+        { name:'html', type: 'string' }
+        
+    ]
+
+});
+Ext.define('Doctor.store.MenuStore', {
+    
+    extend:  Ext.data.TreeStore ,
+    
+    alias: 'store.app-menu-store',
+
+    model: 'Doctor.model.MenuModel',
+
+    proxy: {
+        
+        type: 'direct',
+        
+        directFn: 'Ext.remote.Menu.readMenu',
+        
+        reader: {
+            type: 'json',
+            root: 'children' // ответ сервера должен содержать такой ключ, чтобы клиент смог прочитать его
+        }
+        
+    }
+    
+});
+Ext.define('Doctor.store.HtmlStore', {
+    
+    extend:  Ext.data.Store ,
+    
+    alias: 'store.app-html-store',
+
+    model: 'Doctor.model.HtmlModel',
+    
+    proxy: {
+        
+        type: 'direct',
+        
+        directFn: 'Ext.remote.Html.read',
+        
+        reader: {
+            type: 'json'
+        }
+        
+    }
+    
+});
+Ext.define('Doctor.view.Menu', {
+    
+    extend:  Ext.panel.Panel ,
+    
+    alias: 'widget.app-menu',
+
+    layout: {
+        type: 'accordion',
+        titleCollapse: false,
+        animate: true,
+        activeOnTop: false
+    },
+
+    initComponent: function() {
+        
+        if (Ext.isString(this.store)  || (Ext.isObject(this.store) && !this.store.isStore)) {
+            
+            this.store = Ext.StoreMgr.lookup(this.store);
+
+        }
+        
+        this.store.load({
+            callback: function() {
+                
+                var parentNode;
+                if (!this.initialConfig.parentNodeId) {
+                    parentNode = this.store.getRootNode();
+                } else {
+                    parentNode = this.store.getNodeById(this.initialConfig.parentNodeId);
+                }
+
+                var items = this.buildItems(parentNode);
+
+                this.add(items);
+                
+            },
+            scope: this
+        });
+
+
+        
+        
+        this.callParent(arguments);
+        
+    },
+    
+    buildItems: function(parentNode) {
+
+        var items = [];
+        
+        parentNode.eachChild(function(node) {
+
+            var nodeId = node.get('id');
+            var nodeText = node.get('text');
+            var parentNodeId = node.parentNode.get('id');
+            
+            if (!node.get('leaf')) {
+                
+                if (node.hasChildNodes()) {
+                    
+                    var firstChild = node.getChildAt(0);
+                    
+                    if (!firstChild.get('leaf')) {
+                        
+                        // вставляем аккордион
+                        items.push({
+                            xtype: 'app-menu',
+                            title:  Ext.String.repeat('-', node.getDepth()-1) + nodeText,
+                            parentNodeId: nodeId,
+                            store: this.store,
+                            node: node
+                        });
+                        
+                    } else {
+                        
+                        // вставляем панель с кнопками
+                        var panel = {
+                            xtype: 'panel',
+                            ItemId: 'app-menu-list',
+                            title:  Ext.String.repeat('-', node.getDepth()-1) + nodeText,
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
+                            node: node
+                        };
+                        
+                        // создаём кнопки
+                        if (node.hasChildNodes()) {
+                            panel.items = [];
+                            node.eachChild(function(leafNode) {
+                                panel.items.push({
+                                    xtype: 'button',
+                                    ItemId: 'app-menu-item',
+                                    text: leafNode.get('text'),
+                                    node: leafNode
+                                });
+                            });
+                        }
+                        
+                        items.push(panel);
+                        
+                    }
+                    
+                }
+
+            }
+            
+        });
+
+        return items;
+        
+    },
+    
+    getStore: function() {
+        
+        return this.store;
+        
+    }
+
+});
+Ext.define('Doctor.view.HtmlPanel', {
+    
+    extend:  Ext.panel.Panel ,
+    
+    alias: 'widget.app-html-panel',
+    
+    layout: 'fit',
+    
+    initComponent: function() {
+        
+        this.isUpdated = false;
+        
+        if (Ext.isString(this.store) || (Ext.isObject(this.store) && !this.store.isStore) ) {
+            this.store = Ext.StoreMgr.lookup(this.store);
+        }
+        
+        this.callParent(arguments);
+        
+    }
+    
+});
+Ext.define('Doctor.view.Viewport', {
+    
+    extend:  Ext.container.Viewport ,
+    
+    alias: 'widget.app-viewport',
+
+    layout: {
+        type: 'absolute'
+    },
+
+    items: [{
+        xtype: 'panel',
+        ItemId: 'menu-container',
+        width: 250, 
+        x: -250, // скрываем, чтобы показать с анимацией
+        anchor: 'auto 0', 
+        layout: 'fit',
+        items: [{
+            xtype: 'app-menu',
+            store: {
+                type: 'app-menu-store'
+            }
+        }]
+    },{
+        border: 10,
+        ItemId: 'content-container',
+        anchor: '0 0', 
+        x: 0,
+        animCollapse: true,
+        layout: 'fit',
+        items: [
+            {
+                xtype: 'app-html-panel'
+            }
+        ]
+    }]
+
+});
+
+Ext.define('Doctor.Application', {
+    name: 'Doctor',
 
     extend:  Ext.app.Application ,
 
+    autoCreateViewport: true,
+    
+               
+                                                                                  
+      
+    
+    constructor: function(config) {
+        
+        config = config || {};
+
+        // Даём возможность вызывать методы серверной части приложения
+        // Выполняется в конструкторе, т.к. он запускается до создания каких-либо хранилищ, моделей и контроллеров
+        // В противном случае вызов удалённых процедур будет невозможен.
+        // Работает как в режиме динамической загрузки, так и после компиляции в Sencha Cmd
+        (function applyMultipleNamespacesOfRemoteApi (apiNamespace){
+
+            Ext.Object.each(apiNamespace, function(key, value, object) {
+
+                if (key == 'REMOTING_API') {
+                    Ext.direct.Manager.addProvider(value);
+                } else {
+                    applyMultipleNamespacesOfRemoteApi(value); // recursive call
+                }
+
+
+            });
+
+        })(Ext.remote);
+
+
+        this.callParent([config]);
+
+    },
+
     views: [
-        // TODO: add views here
+        'Doctor.view.Viewport',
+        'Doctor.view.Menu',
+        'Doctor.view.HtmlPanel'
     ],
 
     controllers: [
-        // TODO: add controllers here
+        'Doctor.controller.ViewportController',
+        'Doctor.controller.MenuController',
+        'Doctor.controller.HtmlPanelController'
     ],
 
     stores: [
-        // TODO: add stores here
+        'Doctor.store.MenuStore',
+        'Doctor.store.HtmlStore'
+    ],
+    
+    models: [
+        'Doctor.model.MenuModel',
+        'Doctor.model.HtmlModel'
     ]
+    
+});
+
+Ext.define('Doctor.Application', {
+    name: 'Doctor',
+
+    extend:  Ext.app.Application ,
+
+    autoCreateViewport: true,
+    
+               
+                                                                                  
+      
+    
+    constructor: function(config) {
+        
+        config = config || {};
+
+        // Даём возможность вызывать методы серверной части приложения
+        // Выполняется в конструкторе, т.к. он запускается до создания каких-либо хранилищ, моделей и контроллеров
+        // В противном случае вызов удалённых процедур будет невозможен.
+        // Работает как в режиме динамической загрузки, так и после компиляции в Sencha Cmd
+        (function applyMultipleNamespacesOfRemoteApi (apiNamespace){
+
+            Ext.Object.each(apiNamespace, function(key, value, object) {
+
+                if (key == 'REMOTING_API') {
+                    Ext.direct.Manager.addProvider(value);
+                } else {
+                    applyMultipleNamespacesOfRemoteApi(value); // recursive call
+                }
+
+
+            });
+
+        })(Ext.remote);
+
+
+        this.callParent([config]);
+
+    },
+
+    views: [
+        'Doctor.view.Viewport',
+        'Doctor.view.Menu',
+        'Doctor.view.HtmlPanel'
+    ],
+
+    controllers: [
+        'Doctor.controller.ViewportController',
+        'Doctor.controller.MenuController',
+        'Doctor.controller.HtmlPanelController'
+    ],
+
+    stores: [
+        'Doctor.store.MenuStore',
+        'Doctor.store.HtmlStore'
+    ],
+    
+    models: [
+        'Doctor.model.MenuModel',
+        'Doctor.model.HtmlModel'
+    ]
+    
 });
 
