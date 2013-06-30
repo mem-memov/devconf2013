@@ -5,6 +5,7 @@ Ext.define('doctor.controller.HtmlPanelController', {
     init: function () {
         
         this.store = Ext.create('doctor.store.HtmlStore');
+        this.store.load();
         
         this.listen({
             controller: {
@@ -22,7 +23,7 @@ Ext.define('doctor.controller.HtmlPanelController', {
         if (menuRecord.get('link_type') != 'html') {
             return;
         }
-        
+
         var htmlRecord = this.store.findRecord('id', menuRecord.get('link_id'));
         
         var htmlPanel = Ext.ComponentQuery.query('app-html-panel')[0];

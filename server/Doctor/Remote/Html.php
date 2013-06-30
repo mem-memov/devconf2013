@@ -27,12 +27,9 @@ class Doctor_Remote_Html extends Doctor_Remote_Abstract_Controller {
         
     }
     
-    public function read(stdClass $request) {
+    public function read() {
 
-         return $this->dataAccessFactory->makeAssessment()->read(
-                 $request->studentId, 
-                 $request->subjectId
-         );
+         return $this->dataAccessFactory->makeHtml()->read();
     }
     
     public function update(stdClass $request) {

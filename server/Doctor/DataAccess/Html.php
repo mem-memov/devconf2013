@@ -22,25 +22,14 @@ class Doctor_DataAccess_Html extends Doctor_DataAccess_Abstract_Provider {
         
     }
     
-    public function read($studentId, $subjectId) {
+    public function read() {
         
         return $this->db->fetchRows('
             SELECT 
-                assessment.id,
-                assessment.date,
-                assessment.grade_id,
-                grade.grade,
-                assessment.subject_id,
-                assessment.student_id,
-                assessment.teacher_id
+                id,
+                html
             FROM
-                assessment
-                LEFT JOIN grade ON (grade.id = assessment.grade_id)
-            WHERE
-                assessment.student_id = '.(int)$studentId.'
-                AND assessment.subject_id = '.(int)$subjectId.'
-            ORDER BY
-                assessment.date DESC
+                html
             ;
         ');
         

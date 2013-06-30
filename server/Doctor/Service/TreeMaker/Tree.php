@@ -56,10 +56,6 @@ class Doctor_Service_TreeMaker_Tree {
                 $array['children'][] = $child->toArray();
             }
             
-        } else {
-            
-            $array['leaf'] = true;
-            
         }
 
         return $array;

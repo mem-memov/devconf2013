@@ -9,7 +9,7 @@ class Doctor_DataAccess_Menu extends Doctor_DataAccess_Abstract_Provider {
                 menu.text           AS text, 
                 menu.parent_id      AS parent_id, 
                 menu.order_num      AS order_num,
-                menu.is_leaf        AS is_leaf,
+                menu.leaf           AS leaf,
                 menu.link_id        AS link_id,
                 menu.link_type_id   AS link_type_id,
                 link.type           AS link_type

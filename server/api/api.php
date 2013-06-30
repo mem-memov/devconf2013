@@ -13,10 +13,9 @@
       ),
       'read' => 
       array (
-        'length' => 1,
+        'length' => 0,
         'parameters' => 
         array (
-          'request' => NULL,
         ),
       ),
       'update' => 

@@ -12,7 +12,7 @@ Ext.remote.REMOTING_API = {
 			},
 			{
 				"name": "read",
-				"len": 1,
+				"len": 0,
 				"formHandler": false
 			},
 			{
