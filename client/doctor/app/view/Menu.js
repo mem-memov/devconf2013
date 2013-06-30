@@ -16,43 +16,7 @@ Ext.define('doctor.view.Menu', {
         if (Ext.isString(this.store)  || (Ext.isObject(this.store) && !this.store.isStore)) {
             
             this.store = Ext.StoreMgr.lookup(this.store);
-            
-            this.store.setRootNode({
-                id: 1,
-                text: '.',
-                children: [
-                    {
-                        id: 2,
-                        text: 'Alma Mater',
-                        children: [
-                            {
-                                id: 5,
-                                text: 'Факультеты',
-                                linkType: 'html',
-                                linkId: 2,
-                                leaf: true
-                            }, {
-                                id: 7,
-                                text: 'Прфессора',
-                                linkType: 'html',
-                                linkId: 1,
-                                leaf: true
-                            }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        text: 'Научная работа',
-                        children: [
-                            {
-                                id: 10,
-                                text: 'Дисертация',
-                                leaf: true
-                            }
-                        ]
-                    }
-                ]
-            });
+
         }
         
         this.store.load({

@@ -19,11 +19,11 @@ Ext.define('doctor.controller.HtmlPanelController', {
     
     onMenuItemSelected: function(menuRecord) {
         
-        if (menuRecord.get('linkType') != 'html') {
+        if (menuRecord.get('link_type') != 'html') {
             return;
         }
         
-        var htmlRecord = this.store.findRecord('id', menuRecord.get('linkId'));
+        var htmlRecord = this.store.findRecord('id', menuRecord.get('link_id'));
         
         var htmlPanel = Ext.ComponentQuery.query('app-html-panel')[0];
         

@@ -124,6 +124,8 @@ implements
         if ($this->connection->connect_error) {
             throw new Doctor_Service_SqlDatabase_Exception_ConnectionFailed($this->connection->connect_error);
         }
+        
+        $this->query('SET NAMES utf8;'); // устраняем проблемы с кодировкой
 
     }
     

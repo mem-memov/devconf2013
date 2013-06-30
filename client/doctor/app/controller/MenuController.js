@@ -24,7 +24,7 @@ Ext.define('doctor.controller.MenuController', {
     },
     
     onItemClick: function(menuItem) {
-        
+
         this.fireEvent('menu-item-selected', menuItem.node);
         
     }
