@@ -1,4 +1,4 @@
-Ext.define('doctor.controller.MenuController', {
+Ext.define('Doctor.controller.MenuController', {
     
     extend: 'Ext.app.Controller',
     

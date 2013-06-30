@@ -1,4 +1,4 @@
-Ext.define('doctor.view.HtmlPanel', {
+Ext.define('Doctor.view.HtmlPanel', {
     
     extend: 'Ext.panel.Panel',
     

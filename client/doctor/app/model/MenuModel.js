@@ -1,7 +1,7 @@
 /**
  * Модель для элементов меню
  */
-Ext.define('doctor.model.MenuModel', {
+Ext.define('Doctor.model.MenuModel', {
     
     extend: 'Ext.data.Model',
     

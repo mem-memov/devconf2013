@@ -1,4 +1,4 @@
-Ext.define('doctor.controller.ViewportController', {
+Ext.define('Doctor.controller.ViewportController', {
     
     extend: 'Ext.app.Controller',
     

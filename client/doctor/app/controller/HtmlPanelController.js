@@ -1,10 +1,10 @@
-Ext.define('doctor.controller.HtmlPanelController', {
+Ext.define('Doctor.controller.HtmlPanelController', {
     
     extend: 'Ext.app.Controller',
     
     init: function () {
         
-        this.store = Ext.create('doctor.store.HtmlStore');
+        this.store = Ext.create('Doctor.store.HtmlStore');
         this.store.load();
         
         this.listen({

@@ -1,4 +1,4 @@
-Ext.define('doctor.model.HtmlModel', {
+Ext.define('Doctor.model.HtmlModel', {
     
     extend: 'Ext.data.Model',
     

@@ -1,10 +1,10 @@
-Ext.define('doctor.store.HtmlStore', {
+Ext.define('Doctor.store.HtmlStore', {
     
     extend: 'Ext.data.Store',
     
     alias: 'store.app-html-store',
 
-    model: 'doctor.model.HtmlModel',
+    model: 'Doctor.model.HtmlModel',
     
     proxy: {
         

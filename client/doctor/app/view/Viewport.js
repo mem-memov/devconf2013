@@ -1,4 +1,4 @@
-Ext.define('doctor.view.Viewport', {
+Ext.define('Doctor.view.Viewport', {
     
     extend: 'Ext.container.Viewport',
     

@@ -1,4 +1,4 @@
-Ext.define('doctor.view.Menu', {
+Ext.define('Doctor.view.Menu', {
     
     extend: 'Ext.panel.Panel',
     

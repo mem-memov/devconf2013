@@ -8,9 +8,9 @@
 //@require @packageOverrides
 
 Ext.application({
-    name: 'doctor',
+    name: 'Doctor',
 
-    extend: 'doctor.Application',
+    extend: 'Doctor.Application',
     
     autoCreateViewport: true
 });

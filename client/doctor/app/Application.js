@@ -1,5 +1,5 @@
-Ext.define('doctor.Application', {
-    name: 'doctor',
+Ext.define('Doctor.Application', {
+    name: 'Doctor',
 
     extend: 'Ext.app.Application',
     
@@ -38,25 +38,25 @@ Ext.define('doctor.Application', {
     },
 
     views: [
-        'doctor.view.Viewport',
-        'doctor.view.Menu',
-        'doctor.view.HtmlPanel'
+        'Doctor.view.Viewport',
+        'Doctor.view.Menu',
+        'Doctor.view.HtmlPanel'
     ],
 
     controllers: [
-        'doctor.controller.ViewportController',
-        'doctor.controller.MenuController',
-        'doctor.controller.HtmlPanelController'
+        'Doctor.controller.ViewportController',
+        'Doctor.controller.MenuController',
+        'Doctor.controller.HtmlPanelController'
     ],
 
     stores: [
-        'doctor.store.MenuStore',
-        'doctor.store.HtmlStore'
+        'Doctor.store.MenuStore',
+        'Doctor.store.HtmlStore'
     ],
     
     models: [
-        'doctor.model.MenuModel',
-        'doctor.model.HtmlModel'
+        'Doctor.model.MenuModel',
+        'Doctor.model.HtmlModel'
     ]
     
 });
