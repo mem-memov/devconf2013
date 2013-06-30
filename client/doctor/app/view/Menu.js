@@ -76,7 +76,7 @@ Ext.define('Doctor.view.Menu', {
                         // вставляем панель с кнопками
                         var panel = {
                             xtype: 'panel',
-                            componentCls: 'app-menu-list',
+                            ItemId: 'app-menu-list',
                             title:  Ext.String.repeat('-', node.getDepth()-1) + nodeText,
                             layout: {
                                 type: 'vbox',
@@ -91,7 +91,7 @@ Ext.define('Doctor.view.Menu', {
                             node.eachChild(function(leafNode) {
                                 panel.items.push({
                                     xtype: 'button',
-                                    componentCls: 'app-menu-item',
+                                    ItemId: 'app-menu-item',
                                     text: leafNode.get('text'),
                                     node: leafNode
                                 });

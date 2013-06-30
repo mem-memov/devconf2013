@@ -4,8 +4,8 @@ Ext.define('Doctor.controller.ViewportController', {
     
     selectors: {
         viewport: 'app-viewport',
-        menuContainer: 'panel[componentCls="menu-container"]',
-        contentContainer: 'panel[componentCls="content-container"]'
+        menuContainer: 'panel[ItemId="menu-container"]',
+        contentContainer: 'panel[ItemId="content-container"]'
     },
 
     init: function () {

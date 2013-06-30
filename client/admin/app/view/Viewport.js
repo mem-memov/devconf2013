@@ -12,7 +12,8 @@ Ext.define('Admin.view.Viewport', {
         xtype: 'tabpanel',
         items: [
             {
-                title: 'Меню'
+                title: 'Меню',
+                xtype: 'app-menu-editor'
             }, {
                 title: 'HTML',
                 xtype: 'app-html-editor'

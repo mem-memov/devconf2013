@@ -6,10 +6,10 @@ Ext.define('Doctor.controller.MenuController', {
 
         this.listen({
             component: {
-                'app-menu [componentCls="app-menu-list"]': {
+                'app-menu [ItemId="app-menu-list"]': {
                     expand: this.onListExpand
                 },
-                'app-menu [componentCls="app-menu-item"]': {
+                'app-menu [ItemId="app-menu-item"]': {
                     click: this.onItemClick
                 }
             }

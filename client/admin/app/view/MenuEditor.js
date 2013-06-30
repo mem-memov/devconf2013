@@ -4,23 +4,24 @@ Ext.define('Admin.view.MenuEditor', {
     
     alias: 'widget.app-menu-editor',
     
+    require: ['Ext.tree.plugin.TreeViewDragDrop'],
 
     border: false,
     hideHeaders: true,
 
     viewConfig: {
         markDirty: false,
-        plugins: [{
-            ptype: 'treeviewdragdrop',
-            containerScroll: true
-        }],
+//        plugins: [{
+//            ptype: 'treeviewdragdrop',
+//            containerScroll: true
+//        }],
         animate: true
     },
     
-    plugins: [{
-        ptype: 'cellediting',
-        pluginId: 'menuEditorCellEditingPlugin'
-    }],
+//    plugins: [{
+//        ptype: 'cellediting',
+//        pluginId: 'menuEditorCellEditingPlugin'
+//    }],
 
     selType: 'cellmodel',
 
