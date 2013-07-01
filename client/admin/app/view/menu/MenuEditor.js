@@ -10,14 +10,14 @@ Ext.define('Admin.view.menu.MenuEditor', {
 //    hideHeaders: true,
     rootVisible: true,
     
-//    viewConfig: {
-//        markDirty: false,
-////        plugins: [{
-////            ptype: 'treeviewdragdrop',
-////            containerScroll: true
-////        }],
-//        animate: true
-//    },
+    viewConfig: {
+        markDirty: false,
+//        plugins: [{
+//            ptype: 'treeviewdragdrop',
+//            containerScroll: true
+//        }],
+        animate: false
+    },
     
 //    plugins: [{
 //        ptype: 'cellediting',

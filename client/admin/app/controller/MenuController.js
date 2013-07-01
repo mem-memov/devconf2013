@@ -62,7 +62,7 @@ Ext.define('Admin.controller.MenuController', {
     onAdded: function(editor) {
         
         //editor.getStore().load();
-        console.log(editor.getStore().getRootNode());
+        //console.log(editor.getStore().getRootNode());
     
 //        editor.getStore().load({
 //            
