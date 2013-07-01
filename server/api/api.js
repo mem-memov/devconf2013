@@ -39,7 +39,7 @@ Ext.remote.REMOTING_API = {
 			},
 			{
 				"name": "readMenu",
-				"len": 0,
+				"len": 1,
 				"formHandler": false
 			},
 			{

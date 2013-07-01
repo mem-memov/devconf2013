@@ -4,10 +4,10 @@ Ext.define('Admin.view.menu.MenuEditor', {
     
     alias: 'widget.app-menu-editor',
     
-//    require: ['Ext.tree.plugin.TreeViewDragDrop'],
+    require: ['Ext.tree.plugin.TreeViewDragDrop'],
 
-//    border: false,
-//    hideHeaders: true,
+    border: false,
+    hideHeaders: true,
     rootVisible: true,
     
     viewConfig: {
@@ -24,7 +24,7 @@ Ext.define('Admin.view.menu.MenuEditor', {
 //        pluginId: 'menuEditorCellEditingPlugin'
 //    }],
 
-//    selType: 'cellmodel',
+    selType: 'cellmodel',
 
     columns: [{
         header: 'Пункт меню',  
@@ -36,34 +36,36 @@ Ext.define('Admin.view.menu.MenuEditor', {
             allowBlank: false
         },
         flex: 1
-    }//, 
-//    {
-//        xtype:'actioncolumn',
-//        itemId: 'menuManagerTreeLinkColumn',
-//        width: 50,
-//        items: [{
-//            icon: 'resources/images/icons/magnifying_glass.png',
-//            isDisabled: function(view, rowIndex, colIndex, item, record) {
-//                return !record.get('leaf');
-//            }
-//        }]
-//    }
-    ],
+    }, {
+        xtype:'actioncolumn',
+        itemId: 'menuManagerTreeLinkColumn',
+        width: 50,
+        items: [{
+            icon: 'resources/images/icons/magnifying_glass.png',
+            isDisabled: function(view, rowIndex, colIndex, item, record) {
+                return !record.get('leaf');
+            }
+        }]
+    }],
 
-//    dockedItems: [{
-//        xtype: 'toolbar',
-//        items: [{
-//            text: 'Развернуть все',
-//            cls: 'menuManagerTreeExpandAllButton'
-//        }, {
-//            text: 'Свернуть все',
-//            cls: 'menuManagerTreeCollapseAllButton'
-//        }]
-//    }],
+    dockedItems: [{
+        xtype: 'toolbar',
+        items: [{
+            text: 'Развернуть все',
+            cls: 'menuManagerTreeExpandAllButton'
+        }, {
+            text: 'Свернуть все',
+            cls: 'menuManagerTreeCollapseAllButton'
+        }]
+    }],
 
-    store: {
-        type: 'app-menu-store',
-        autoLoad: true
+    
+    initComponent: function() {
+        
+        this.store = Ext.create('Admin.store.MenuStore'); // store указан в документации как обязательный параметр, тип этого параметра не допускает передачу конфигурационного объекта (ленивое создание экземпляра невозможно, это находится в противоречии с рекомендациями по написанию кода для более эффективной компиляции при помощи Sencha Cmd)
+        
+        this.callParent();
+        
     }
     
 });

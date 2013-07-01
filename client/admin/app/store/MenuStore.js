@@ -3,21 +3,14 @@ Ext.define('Admin.store.MenuStore', {
     extend: 'Ext.data.TreeStore',
     
     alias: 'store.app-menu-store',
-    
-    require: ['Admin.model.MenuModel'],
 
     model: 'Admin.model.MenuModel',
-    
-//    autoSync: true,
-    //defaultRootId: 'root',
-    autoLoad: true,
-    
-    root: {
-        expanded: true,
-        text: 'ttt',
-        id: null
-    },
 
+    root: {
+        text: 'Меню',
+        id: '0',
+        expanded: false // предотвращаем двойную загрузку
+    },
 
     proxy: {
         

@@ -13,7 +13,7 @@ Ext.define('Admin.controller.MenuController', {
         this.listen({
             component: {
                 'app-menu-editor': {
-                    added: this.onAdded
+                    
                 }
             }
         });
@@ -57,35 +57,6 @@ Ext.define('Admin.controller.MenuController', {
             scope: this
         });
         
-    },
-
-    onAdded: function(editor) {
-        
-        //editor.getStore().load();
-        //console.log(editor.getStore().getRootNode());
-    
-//        editor.getStore().load({
-//            
-//            callback: function() {
-//                console.log(arguments);
-////                editor.getStore().setRootNode({
-////                    text: '.',
-////                    id: null,
-////                    children: [
-////                        {
-////                            text: '1'
-////                        },{
-////                            text: '2'
-////                        },{
-////                            text: '3'
-////                        }
-////                    ],
-////                    expanded: true // начинает загрузку данных, поскольку дочерние узлы не определены
-////                });
-//            }
-//
-//        });
-    
     },
     
     

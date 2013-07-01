@@ -31,12 +31,16 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
         
     }
     
-    public function readMenu() {
+    public function readMenu(stdClass $request) {
+
+        $parentNodeId = $request->node; // FYI
 
         $rows = $this->dataAccessFactory->makeMenu()->load();
         $tree = $this->serviceLocator->getTreeMaker($rows);
-
-        return $tree->toArray();  
+        
+        $response = $tree->toArray(); 
+        
+        return $response;  
         
     }
     

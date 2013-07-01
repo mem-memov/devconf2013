@@ -7,7 +7,7 @@ class Doctor_Service_TreeMaker_Tree {
     
     
     public function __construct(array &$rows, $myRow = null) {
-        
+
         // корневой узел
         
         if (is_null($myRow)) {
@@ -31,7 +31,7 @@ class Doctor_Service_TreeMaker_Tree {
         // прочие узлы
         
         $this->row = $myRow;
-        
+
         foreach ($rows as $index => $row) {
             
             if ($row['parent_id'] == $myRow['id']) {
@@ -49,7 +49,7 @@ class Doctor_Service_TreeMaker_Tree {
         $array = $this->row;
 
         if (!empty($this->children)) {
-            
+
             $array['children'] = array();
             
             foreach ($this->children as $child) {

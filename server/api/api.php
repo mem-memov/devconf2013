@@ -57,9 +57,10 @@
       ),
       'readMenu' => 
       array (
-        'length' => 0,
+        'length' => 1,
         'parameters' => 
         array (
+          'request' => NULL,
         ),
       ),
       'updateMenu' => 
