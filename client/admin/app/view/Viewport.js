@@ -7,17 +7,21 @@ Ext.define('Admin.view.Viewport', {
     layout: {
         type: 'fit'
     },
-
+    
     items: [{
-        xtype: 'tabpanel',
-        items: [
-            {
-                title: 'Меню',
-                xtype: 'app-menu-editor'
-            }, {
-                title: 'HTML',
-                xtype: 'app-html-editor'
-            }
-        ]
+        xtype: 'app-menu-editor'
     }]
+
+//    items: [{
+//        xtype: 'tabpanel',
+//        items: [
+//            {
+//                title: 'Меню',
+//                xtype: 'app-menu-editor'
+//            }, {
+//                title: 'HTML',
+//                xtype: 'app-html-editor'
+//            }
+//        ]
+//    }]
 });

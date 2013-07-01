@@ -22,7 +22,7 @@ class Doctor_DataAccess_Menu extends Doctor_DataAccess_Abstract_Provider {
         ');
         
         foreach ($rows as $index => $row) {
-            $this->db->castBoolean($rows[$index]['is_leaf']);
+            $this->db->castBoolean($rows[$index]['leaf']);
         }
 
         return $rows;

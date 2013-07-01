@@ -6,45 +6,51 @@ Ext.define('Admin.Application', {
     autoCreateViewport: true,
     
     requires: [
-        'Ext.direct.*' // эти классы должны быть загружены до запуска конструктора
+        'Ext.direct.*', // эти классы должны быть загружены до запуска конструктора
+        'Ext.grid.*',
+        'Ext.tree.*',
+        'Ext.data.*'
     ],
-    
-    constructor: function(config) {
-        
-        config = config || {};
-
-        // Даём возможность вызывать методы серверной части приложения
-        // Выполняется в конструкторе, т.к. он запускается до создания каких-либо хранилищ, моделей и контроллеров
-        // В противном случае вызов удалённых процедур будет невозможен.
-        // Работает как в режиме динамической загрузки, так и после компиляции в Sencha Cmd
-        (function applyMultipleNamespacesOfRemoteApi (apiNamespace){
-
-            Ext.Object.each(apiNamespace, function(key, value, object) {
-
-                if (key == 'REMOTING_API') {
-                    Ext.direct.Manager.addProvider(value);
-                } else {
-                    applyMultipleNamespacesOfRemoteApi(value); // recursive call
-                }
-
-
-            });
-
-        })(Ext.remote);
-
-
-        this.callParent([config]);
-
-    },
+//    
+//    constructor: function(config) {
+//        
+//        config = config || {};
+//
+//        // Даём возможность вызывать методы серверной части приложения
+//        // Выполняется в конструкторе, т.к. он запускается до создания каких-либо хранилищ, моделей и контроллеров
+//        // В противном случае вызов удалённых процедур будет невозможен.
+//        // Работает как в режиме динамической загрузки, так и после компиляции в Sencha Cmd
+//        (function applyMultipleNamespacesOfRemoteApi (apiNamespace){
+//
+//            Ext.Object.each(apiNamespace, function(key, value, object) {
+//
+//                if (key == 'REMOTING_API') {
+//                    Ext.direct.Manager.addProvider(value);
+//                } else {
+//                    applyMultipleNamespacesOfRemoteApi(value); // recursive call
+//                }
+//
+//
+//            });
+//
+//        })(Ext.remote);
+//
+//
+//        this.callParent([config]);
+//
+//    },
 
     views: [
         'Admin.view.HtmlEditor',
-        'Admin.view.MenuEditor',
+        'Admin.view.menu.MenuEditor',
+        'Admin.view.menu.ContextMenuForFolder',
+        'Admin.view.menu.ContextMenuForReference',
+        'Admin.view.menu.ContextMenuForTopFolder',
         'Admin.view.Viewport'
     ],
 
     controllers: [
-        // TODO: add controllers here
+        'Admin.controller.MenuController'
     ],
     
     models: [

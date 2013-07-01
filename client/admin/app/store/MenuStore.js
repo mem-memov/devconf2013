@@ -4,13 +4,36 @@ Ext.define('Admin.store.MenuStore', {
     
     alias: 'store.app-menu-store',
 
-    model: 'Admin.model.MenuModel',
-
+    //model: 'Admin.model.MenuModel',
+    
+//    autoSync: true,
+    //defaultRootId: 'root',
+    autoLoad: true,
+    data: { text: '88', children:[{
+        expanded: true,
+        text: "My Root",
+        id: 'root',
+        children: [
+            { text: "Child 1", leaf: true },
+            { text: "Child 2", expanded: true, children: [
+                { text: "GrandChild", leaf: true }
+            ] }
+        ]
+    }]},
+    
     proxy: {
-        
-        type: 'direct',
-        
-        api: {
+        type: 'memory',
+        reader: {
+            type: 'json',
+            root: 'children' // ответ сервера должен содержать такой ключ, чтобы клиент смог прочитать его
+        }
+    }
+
+//    proxy: {
+//        
+//        type: 'direct',
+//        
+//        api: {
 
 //            create: function(newNodeData, requestCallBack, directProxy) {
 //
@@ -34,10 +57,10 @@ Ext.define('Admin.store.MenuStore', {
 //                
 //            },
             
-            
-            read: 'Ext.remote.Menu.readMenu'//,
-            
-            
+//            
+//            read: 'Ext.remote.Menu.readMenu'//,
+//            
+//            
 //            update: function(data, requestCallBack, directProxy) {
 //
 //                Ext.remote.Menu.updateMenu(
@@ -58,14 +81,14 @@ Ext.define('Admin.store.MenuStore', {
 //                );
 //                
 //            }
-            
-        },
-        
-        reader: {
-            type: 'json',
-            root: 'children' // ответ сервера должен содержать такой ключ, чтобы клиент смог прочитать его
-        }
-        
-    }
+//            
+//        },
+//        
+//        reader: {
+//            type: 'json',
+//            root: 'children' // ответ сервера должен содержать такой ключ, чтобы клиент смог прочитать его
+//        }
+//        
+//    }
     
 });

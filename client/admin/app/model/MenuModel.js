@@ -3,7 +3,7 @@
  */
 Ext.define('Admin.model.MenuModel', {
     
-    extend: 'Ext.data.Model',
+    extend: 'Ext.data.TreeModel',
     
     idProperty: 'id',
 
