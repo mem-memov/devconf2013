@@ -12,16 +12,19 @@ Ext.define('Admin.controller.MenuController', {
         
         this.listen({
             component: {
-                'app-menu-editor': {
-                    
+                'app-menu-editor [itemId="expand-all-button"]': {
+                    click: this.onExpandAllButtonClick
+                },
+                'app-menu-editor [itemId="collapse-all-button"]': {
+                    click: this.onCollapseAllButtonClick
+                },
+                'app-menu-editor > treeview': {
+                    drop: this.onDrop
                 }
             }
         });
 
         this.control({
-            '#menuManagerTree > treeview': {
-                drop: this.onDrop
-            },
             '#menuManagerTree': {
                 beforeitemcontextmenu: this.beforeContextMenu,
                 beforeedit: this.beforeTreeEdit,
@@ -36,12 +39,6 @@ Ext.define('Admin.controller.MenuController', {
             },
             '#menuManagerContextMenuForReference': {
                 click: this.onContextMenuClick
-            },
-            '#menuManagerTree [cls~=menuManagerTreeExpandAllButton]': {
-                click: this.onExpandAllButtonClick
-            },
-            '#menuManagerTree [cls~=menuManagerTreeCollapseAllButton]': {
-                click: this.onCollapseAllButtonClick
             },
             '#menuManagerTreeDashboardCombobox': {
                 added: this.dashboardComboboxAdded
@@ -59,31 +56,17 @@ Ext.define('Admin.controller.MenuController', {
         
     },
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     onExpandAllButtonClick: function(expandAllButton) {
         
-        var menuManagerTree = Ext.ComponentQuery.query('#menuManagerTree')[0];
-        
-        menuManagerTree.getEl().mask('Развёртывание меню...');
+        var menuEditor = expandAllButton.up('app-menu-editor');
         var toolbar = expandAllButton.up('toolbar');
+        
         toolbar.disable();
 
-        menuManagerTree.expandAll(function() {
-            menuManagerTree.getEl().unmask();
+        menuEditor.getEl().mask('Развёртывание меню...');
+
+        menuEditor.expandAll(function() {
+            menuEditor.getEl().unmask();
             toolbar.enable();
         });
         
@@ -91,12 +74,12 @@ Ext.define('Admin.controller.MenuController', {
     
     onCollapseAllButtonClick: function(collapseAllButton) {
         
-        var menuManagerTree = Ext.ComponentQuery.query('#menuManagerTree')[0];
-        
+        var menuEditor = collapseAllButton.up('app-menu-editor');
         var toolbar = collapseAllButton.up('toolbar');
+        
         toolbar.disable();
 
-        menuManagerTree.collapseAll(function() {
+        menuEditor.collapseAll(function() {
             toolbar.enable();
         });
         
@@ -110,7 +93,7 @@ Ext.define('Admin.controller.MenuController', {
         Ext.Array.each(data.records, function(record) {
             movedIds.push(record.get('id'));
         });
-        
+
         Ext.remote.Menu.updatePositions(
             targetId,
             movedIds,
@@ -118,6 +101,24 @@ Ext.define('Admin.controller.MenuController', {
         );
         
     },
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+    
+
     
     beforeContextMenu: function(tree, record, item, index, e) {
 

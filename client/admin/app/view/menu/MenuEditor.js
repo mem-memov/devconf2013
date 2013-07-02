@@ -4,27 +4,28 @@ Ext.define('Admin.view.menu.MenuEditor', {
     
     alias: 'widget.app-menu-editor',
     
-    require: ['Ext.tree.plugin.TreeViewDragDrop'],
+    require: ['Ext.tree.plugin.TreeViewDragDrop', 'Ext.grid.plugin.CellEditing'],
 
     border: false,
     hideHeaders: true,
     rootVisible: true,
     
     viewConfig: {
-        markDirty: false,
-//        plugins: [{
-//            ptype: 'treeviewdragdrop',
-//            containerScroll: true
-//        }],
-        animate: false
+        plugins: [{
+            ptype: 'treeviewdragdrop', // во время разработки необходимо подключать класс ext-all-dev.js, иначе возникает ошибка "config is null" в PluginManager
+            containerScroll: true
+        }]
     },
     
-//    plugins: [{
-//        ptype: 'cellediting',
-//        pluginId: 'menuEditorCellEditingPlugin'
-//    }],
+    plugins: [{
+        ptype: 'cellediting', // во время разработки необходимо подключать класс ext-all-dev.js, иначе возникает ошибка "config is null" в PluginManager
+        pluginId: 'menuEditorCellEditingPlugin'
+    }],
 
-    selType: 'cellmodel',
+    selModel: {
+        selection: 'treemodel',
+        mode: 'MULTI'
+    },
 
     columns: [{
         header: 'Пункт меню',  
@@ -52,10 +53,10 @@ Ext.define('Admin.view.menu.MenuEditor', {
         xtype: 'toolbar',
         items: [{
             text: 'Развернуть все',
-            cls: 'menuManagerTreeExpandAllButton'
+            itemId: 'expand-all-button'
         }, {
             text: 'Свернуть все',
-            cls: 'menuManagerTreeCollapseAllButton'
+            itemId: 'collapse-all-button'
         }]
     }],
 

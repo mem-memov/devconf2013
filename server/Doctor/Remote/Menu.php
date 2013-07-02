@@ -35,8 +35,7 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
 
         $parentNodeId = $request->node; // FYI
 
-        $rows = $this->dataAccessFactory->makeMenu()->load();
-        $tree = $this->serviceLocator->getTreeMaker($rows);
+        $tree = $this->fetchMenuTree();
         
         $response = $tree->toArray(); 
         
@@ -74,81 +73,57 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
      */
     public function updatePositions($targetId, array $movedIds, $position) {
 
-        $userPanel = $this->getDomainFactory()->makeUserPanel();
-        $isSuccessful = $userPanel->moveMenuItems($targetId, $movedIds, $position);
-
-        return array(
-            'success' => $isSuccessful
-        );
+        $tree = $this->fetchMenuTree();
         
-    }
-
-    
-    
-    
-    
-    
-    
-    
-    public function create(stdClass $request) {
-
-        if (empty($request->date)) {
-            $date = $this->dataAccessFactory->makeTimeMachine()->getCurrentDate();
-        } else {
-            $date = $request->date;
-        }
-
-        $assessmentId = $this->dataAccessFactory->makeAssessment()->create(
-                $request->student_id, 
-                $request->subject_id, 
-                $request->teacher_id, 
-                $request->grade_id, 
-                $date
-        );
+        $targetNode = $tree->findNodeById($targetId);
         
-        return array(
-            'success' => true,
-            'data' => array(
-                'id' => $assessmentId,
-                'date' => $date
-            )
-        );
+        $movedNodes = array();
         
-    }
-    
-    public function read(stdClass $request) {
-
-         return $this->dataAccessFactory->makeAssessment()->read(
-                 $request->studentId, 
-                 $request->subjectId
-         );
-    }
-    
-    public function update(stdClass $request) {
-        
-        $gradeExists = $this->dataAccessFactory->makeGrade()->gradeIdExists($request->grade_id);
-        if (!$gradeExists) {
-            return array(
-                'success' => false
-            );
-        }
-
-        $this->dataAccessFactory->makeAssessment()->update(
-                $request->grade_id
-        );
-        
-        return array(
-            'success' => true
-        );
-    }
+        foreach ($movedIds as $movedId) {
             
-    public function destroy(stdClass $request) {
+            $movedNode = $tree->findNodeById($movedId);
+            
+            if ($movedNode instanceof Doctor_Service_TreeMaker_Tree) {
+                $movedNodes[] = $movedNode;
+            }
+            
+        }
+
+        switch ($position) {
+            case 'before':
+                $tree->insertBefore($targetNode, $movedNodes);
+                break;
+            case 'after':
+                $tree->insertAfter($targetNode, $movedNodes);
+                break;
+            case 'append':
+                $tree->append($targetNode, $movedNodes);
+                break;
+            default:
+                throw new Exception('Неизвестное расположение: ' . $position);
+                break;
+        }
+
         
-        $this->dataAccessFactory->makeAssessment()->destroy($request->id);
-        
+
         return array(
             'success' => true
         );
+        
+    }
+
+    
+    
+    
+    
+    
+ 
+    private function fetchMenuTree() {
+        
+        $rows = $this->dataAccessFactory->makeMenu()->load();
+        $tree = $this->serviceLocator->getTreeMaker($rows);
+        
+        return $tree;
         
     }
     
