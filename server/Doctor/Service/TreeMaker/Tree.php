@@ -12,7 +12,7 @@ class Doctor_Service_TreeMaker_Tree {
         
         if (is_null($myRow)) {
             
-            $this->row = array('id' => null, 'text' => '.', 'leaf' => false);
+            $this->row = array('id' => null, 'text' => '.', 'leaf' => false, 'loaded' => true);
 
             foreach ($rows as $index => $row) {
                 

@@ -40,9 +40,7 @@ Ext.define('Admin.Application', {
     views: [
         'Admin.view.HtmlEditor',
         'Admin.view.menu.MenuEditor',
-        'Admin.view.menu.ContextMenuForFolder',
-        'Admin.view.menu.ContextMenuForReference',
-        'Admin.view.menu.ContextMenuForTopFolder',
+        'Admin.view.menu.ContextMenu',
         'Admin.view.Viewport'
     ],
 

@@ -1,12 +1,6 @@
 Ext.define('Admin.controller.MenuController', {
     
     extend: 'Ext.app.Controller',
-    
-    /**
-     * порядковый номер строки на экране (а не в дереве)
-     * null|int
-     */ 
-    selectedRowIndex: null,
 
     init: function() {
         
@@ -20,9 +14,18 @@ Ext.define('Admin.controller.MenuController', {
                 },
                 'app-menu-editor > treeview': {
                     drop: this.onDrop
+                },
+                'app-menu-editor': {
+                    itemcontextmenu: this.onItemContextMenu,
+                    selectionchange: this.onSelectionChange,
+                    render: this.onRender
+                },
+                'app-menu-editor app-menu-context-menu': {
+                    click: this.onContextMenuClick
                 }
             }
         });
+/*
 
         this.control({
             '#menuManagerTree': {
@@ -53,6 +56,12 @@ Ext.define('Admin.controller.MenuController', {
             dashboardRemoved: this.refreshDashboardList,
             scope: this
         });
+*/        
+    },
+    
+    onRender: function(menuEditor) {
+        
+        //menuEditor.getStore().getRootNode().expand();
         
     },
     
@@ -102,131 +111,100 @@ Ext.define('Admin.controller.MenuController', {
         
     },
     
+    onSelectionChange: function(selectionModel, selectedRecords) {
+        
+        this.currentSelectionModel = selectionModel;
+        
+    },
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-
-    
-
-    
-    beforeContextMenu: function(tree, record, item, index, e) {
+    onItemContextMenu: function(treeview, record, item, index, e) {
 
         e.stopEvent();
 
+        var menuEditor = treeview.up('app-menu-editor');
+        var contextMenu = menuEditor.down('app-menu-context-menu');
+        var renameButton = contextMenu.down('[itemId="rename-button"]');
+        var deleteButton = contextMenu.down('[itemId="delete-button"]');
+        var createFolderButton = contextMenu.down('[itemId="create-folder-button"]');
+        var createReferenceButton = contextMenu.down('[itemId="create-reference-button"]');
+
         if (record.get('leaf')) {
             
-            var contextMenu = Ext.ComponentQuery.query('#menuManagerContextMenuForReference')[0];
+            renameButton.show();
+            deleteButton.show();
+            createFolderButton.hide();
+            createReferenceButton.hide();
             
         } else {
             
             if (record.get('id') == 0) {
-                var contextMenu = Ext.ComponentQuery.query('#menuManagerContextMenuForTopFolder')[0];
+                
+                renameButton.hide();
+                deleteButton.hide();
+                createFolderButton.show();
+                createReferenceButton.show();
+                
             } else {
-                var contextMenu = Ext.ComponentQuery.query('#menuManagerContextMenuForFolder')[0];
+                
+                renameButton.show();
+                deleteButton.show();
+                createFolderButton.show();
+                createReferenceButton.show();
+                
             }
             
         }
 
         contextMenu.showAt(e.getXY());
         
-        this.selectedRowIndex = index;
-        
     },
-    
+
     onContextMenuClick: function(menu, item, e) {
-       
-        if (item.hasCls('menu-manager-context-menu-create-folder-button')) {
-           
-            this.addMenuItem(false, 'Новый раздел меню');
-
-        }
         
-        if (item.hasCls('menu-manager-context-menu-create-reference-button')) {
-            
-            this.addMenuItem(true, 'Новый пункт меню');
-
-        }
+        var menuEditor = Ext.ComponentQuery.query('app-menu-editor{isVisible()}')[0];
         
-        if (item.hasCls('menu-manager-context-menu-rename-button')) {
-
-            var menuManagerTree = Ext.ComponentQuery.query('#menuManagerTree')[0];
-            var selectionModel = menuManagerTree.getSelectionModel();
-            
-            if (selectionModel.hasSelection()) {
-                var selectedNode = selectionModel.getSelection()[0];
-                this.openEditor(menuManagerTree, selectedNode);
-            }
-            
-        }
+        var selectionModel = menuEditor.getSelectionModel();
         
-        if (item.hasCls('menu-manager-context-menu-delete-button')) {
-
-            var menuManagerTree = Ext.ComponentQuery.query('#menuManagerTree')[0];
-            var selectionModel = menuManagerTree.getSelectionModel();
-            
-            if (selectionModel.hasSelection()) {
-
-                var selectedNode = selectionModel.getSelection()[0];
-                var message = 'Удалить "' + selectedNode.get('text') + '"?';
-                
-                Ext.MessageBox.confirm('Запрос подтверждения', message, function(buttonId) {
-                    if (buttonId === 'yes') {
-                        selectedNode.remove();
-                    }
-                });
-                
-            }
-            
-        }
-
-    },
-    
-    addMenuItem: function(isLeaf, defaultText) {
-        
-        var menuManagerTree = Ext.ComponentQuery.query('#menuManagerTree')[0];
-        var selectionModel = menuManagerTree.getSelectionModel();
-
         if (!selectionModel.hasSelection()) {
             return;
         }
         
-        var selectedNode = selectionModel.getSelection()[0];
-
-        if (selectedNode.get('leaf')) {
-            return;
-        }
-
-        if (selectedNode.isExpanded()) {
-
-            this.appendNewMenuItem(selectedNode, isLeaf, defaultText);
-
-            this.openEditor(menuManagerTree, selectedNode);
-
-        } else {
-
-            this.openEditorAfterNodeExpand(menuManagerTree, selectedNode);
-
-            selectedNode.expand(false, function() {
-
-                this.appendNewMenuItem(selectedNode, isLeaf, defaultText);
-
-            }, this);
-
-        }
+        var selectedNodes = selectionModel.getSelection();
+        var selectedNode = selectedNodes[0];
+        selectionModel.deselectAll();
+        selectionModel.select(selectedNode);
         
+        if (item.is('[itemId="rename-button"]') && !selectedNode.isRoot()) {
+
+            this.openEditor(menuEditor, selectedNode);
+
+        } else if (item.is('[itemId="delete-button"]') && !selectedNode.isRoot()) {
+
+            var message = 'Удалить "' + selectedNode.get('text') + '"?';
+
+            Ext.MessageBox.confirm('Запрос подтверждения', message, function(buttonId) {
+                if (buttonId === 'yes') {
+                    selectedNode.remove();
+                }
+            });
+
+        } else if (item.is('[itemId="create-folder-button"]') && !selectedNode.isLeaf()) {
+            
+            var newNode = this.appendNewMenuItem(selectedNode, false, 'Новый раздел меню');
+            selectionModel.deselectAll();
+            selectedNode.expand(false, function () {
+                this.openEditor(menuEditor, newNode);
+            }, this);
+            
+            
+        } else if (item.is('[itemId="create-reference-button"]') && !selectedNode.isLeaf()) {
+
+            this.addMenuItem(menuEditor, selectedNode, true, 'Новый пункт меню');
+
+        }
+
     },
-    
+
     appendNewMenuItem: function(parentNode, isLeaf, text) {
         
         return parentNode.appendChild({
@@ -238,37 +216,16 @@ Ext.define('Admin.controller.MenuController', {
                 
     },
     
-    openEditorAfterNodeExpand: function(menuManagerTree, selectedNode) {
-        
-        menuManagerTree.getView().on(
-            'afteritemexpand',
-            function() {
 
-                this.openEditor(menuManagerTree, selectedNode);
-
-            },
-            this,
-            {
-                single: true
-            }
-        );
-        
-    },
     
-    openEditor: function(menuManagerTree, selectedNode) {
-      
-        if (this.selectedRowIndex === null) {
-            return;
-        }
-        
-        var cellEditingPlugin = menuManagerTree.getPlugin('menuManagerTreeCellEditingPlugin');
+    openEditor: function(menuEditor, node) {
+
+        var cellEditingPlugin = menuEditor.getPlugin('menuEditorCellEditingPlugin');
 
         cellEditingPlugin.startEditByPosition({
-            row: this.selectedRowIndex + selectedNode.indexOf(selectedNode.lastChild)+1,
+            row: 0,
             column: 0
         });
-        
-        this.selectedRowIndex = null;
         
     },
     

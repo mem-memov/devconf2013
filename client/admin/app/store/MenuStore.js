@@ -9,7 +9,8 @@ Ext.define('Admin.store.MenuStore', {
     root: {
         text: 'Меню',
         id: '0',
-        expanded: false // предотвращаем двойную загрузку
+        loaded: false,
+        expanded: true
     },
 
     proxy: {

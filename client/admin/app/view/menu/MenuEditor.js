@@ -57,14 +57,28 @@ Ext.define('Admin.view.menu.MenuEditor', {
         }, {
             text: 'Свернуть все',
             itemId: 'collapse-all-button'
+        }, {
+            xtype: 'app-menu-context-menu',
+            floating: true,
+            hidden: true
         }]
     }],
 
+    items: [
+        {
+            xtype: 'app-context-menu-for-folder',
+            floating: false
+        }, {
+            xtype: 'app-context-menu-for-reference'
+        }, {
+            xtype: 'app-context-menu-for-top-folder'
+        }
+    ],
     
     initComponent: function() {
         
         this.store = Ext.create('Admin.store.MenuStore'); // store указан в документации как обязательный параметр, тип этого параметра не допускает передачу конфигурационного объекта (ленивое создание экземпляра невозможно, это находится в противоречии с рекомендациями по написанию кода для более эффективной компиляции при помощи Sencha Cmd)
-        
+
         this.callParent();
         
     }
