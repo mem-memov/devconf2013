@@ -102,6 +102,12 @@ implements
         
     }
     
+    public function prepareString($value) {
+        
+        return '"'. $this->connection->real_escape_string($value) . '"';
+        
+    }
+
     /**
      * Выполняет подключение к базе данных
      * @return null

@@ -134,7 +134,7 @@ implements
 
     public function prepareString($value) {
         
-        return '"'. pg_escape_string($value) . '"';
+        return $this->driver->prepareString($value);
         
     }
 

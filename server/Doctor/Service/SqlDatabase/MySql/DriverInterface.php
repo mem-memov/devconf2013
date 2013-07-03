@@ -32,4 +32,10 @@ interface Doctor_Service_SqlDatabase_MySql_DriverInterface {
      */
     public function fetchLastId($query);
     
+    /**
+     * Подготавливает строковое значение для вставки в запрос
+     * @param str $value
+     */
+    public function prepareString($value);
+    
 }

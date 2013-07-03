@@ -33,11 +33,17 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
     
     public function readMenu(stdClass $request) {
 
-        $parentNodeId = $request->node; // FYI
+        $parentNodeId = $request->node;
+        
+        if ($parentNodeId == 0) {
+            $parentNodeId = null;
+        }
 
         $tree = $this->fetchMenuTree();
+
+        $node = $tree->findNodeById($parentNodeId);
         
-        $response = $tree->toArray(); 
+        $response = $node->toArray(); 
         
         return $response;  
         
@@ -104,7 +110,19 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
                 break;
         }
 
-        
+        foreach ($tree->toFlatArray() as $row) {
+            
+            $this->dataAccessFactory->makeMenu()->update(
+                $row['id'], 
+                $row['parent_id'], 
+                $row['position'], 
+                $row['text'], 
+                $row['link_id'], 
+                $row['link_type_id'], 
+                $row['leaf']
+            );
+            
+        }
 
         return array(
             'success' => true
