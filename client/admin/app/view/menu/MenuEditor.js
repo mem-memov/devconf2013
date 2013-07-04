@@ -9,7 +9,7 @@ Ext.define('Admin.view.menu.MenuEditor', {
     border: false,
     hideHeaders: true,
     rootVisible: true,
-    
+
     viewConfig: {
         plugins: [{
             ptype: 'treeviewdragdrop', // во время разработки необходимо подключать класс ext-all-dev.js, иначе возникает ошибка "config is null" в PluginManager

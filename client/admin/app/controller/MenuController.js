@@ -172,16 +172,15 @@ Ext.define('Admin.controller.MenuController', {
         var selectedNodes = selectionModel.getSelection();
         var selectedNode = selectedNodes[0];
         selectionModel.deselectAll();
-        selectionModel.select(selectedNode);
-        
+
         if (item.is('[itemId="rename-button"]') && !selectedNode.isRoot()) {
 
-            this.openEditor(menuEditor, selectedNode);
+            menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(selectedNode, 0);
 
         } else if (item.is('[itemId="delete-button"]') && !selectedNode.isRoot()) {
 
+            selectionModel.select(selectedNode);
             var message = 'Удалить "' + selectedNode.get('text') + '"?';
-
             Ext.MessageBox.confirm('Запрос подтверждения', message, function(buttonId) {
                 if (buttonId === 'yes') {
                     selectedNode.remove();
@@ -189,55 +188,42 @@ Ext.define('Admin.controller.MenuController', {
             });
 
         } else if (item.is('[itemId="create-folder-button"]') && !selectedNode.isLeaf()) {
-            
-            var newNode = this.appendNewMenuItem(selectedNode, false, 'Новый раздел меню');
-            selectionModel.deselectAll();
-            selectedNode.expand(false, function () {
-                this.openEditor(menuEditor, newNode);
-            }, this);
+
+            this.mon(menuEditor.getView(), 'afteritemexpand', function(node, index, item, eOpts) {
+                var newNode = selectedNode.appendChild({
+                    id: null,
+                    text: '',
+                    leaf: false,
+                    loaded: true
+                });
+                menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(newNode, 0);
+            }, this, {single: true});
+            selectedNode.expand();
             
             
         } else if (item.is('[itemId="create-reference-button"]') && !selectedNode.isLeaf()) {
 
-            this.addMenuItem(menuEditor, selectedNode, true, 'Новый пункт меню');
+            this.mon(menuEditor.getView(), 'afteritemexpand', function(node, index, item, eOpts) {
+                var newNode = selectedNode.appendChild({
+                    id: null,
+                    text: '',
+                    leaf: true,
+                    loaded: true
+                });
+                menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(newNode, 0);
+            }, this, {single: true});
+            selectedNode.expand();
 
         }
 
     },
-
-    appendNewMenuItem: function(parentNode, isLeaf, text) {
-        
-        return parentNode.appendChild({
-            id: null,
-            text: text,
-            leaf: isLeaf,
-            loaded: true
-        });
-                
-    },
+    
+    
+    
+    
+    
     
 
-    
-    openEditor: function(menuEditor, node) {
-
-        var cellEditingPlugin = menuEditor.getPlugin('menuEditorCellEditingPlugin');
-
-        cellEditingPlugin.startEditByPosition({
-            row: 0,
-            column: 0
-        });
-        
-    },
-    
-    dashboardComboboxAdded: function(dashboardCombobox) {
-
-        var store = dashboardCombobox.getStore();
-        
-        store.load();
-
-        this.insertEmptyRecordIntoDashboardStore(store);
-        
-    },
     
     refreshDashboardList: function() {
 
