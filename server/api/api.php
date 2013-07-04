@@ -55,6 +55,30 @@
           'text' => NULL,
         ),
       ),
+      'createMenuItem' => 
+      array (
+        'length' => 1,
+        'parameters' => 
+        array (
+          'request' => NULL,
+        ),
+      ),
+      'deleteMenuItem' => 
+      array (
+        'length' => 1,
+        'parameters' => 
+        array (
+          'request' => NULL,
+        ),
+      ),
+      'updateMenuItem' => 
+      array (
+        'length' => 1,
+        'parameters' => 
+        array (
+          'request' => NULL,
+        ),
+      ),
       'readMenu' => 
       array (
         'length' => 1,
@@ -90,38 +114,6 @@
           'targetId' => NULL,
           'movedIds' => NULL,
           'position' => NULL,
-        ),
-      ),
-      'create' => 
-      array (
-        'length' => 1,
-        'parameters' => 
-        array (
-          'request' => NULL,
-        ),
-      ),
-      'read' => 
-      array (
-        'length' => 1,
-        'parameters' => 
-        array (
-          'request' => NULL,
-        ),
-      ),
-      'update' => 
-      array (
-        'length' => 1,
-        'parameters' => 
-        array (
-          'request' => NULL,
-        ),
-      ),
-      'destroy' => 
-      array (
-        'length' => 1,
-        'parameters' => 
-        array (
-          'request' => NULL,
         ),
       ),
     ),

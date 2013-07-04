@@ -12,7 +12,6 @@ Ext.define('Admin.model.MenuModel', {
         { name:'id', type: 'int', useNull: true }, 
         { name:'text', type: 'string' }, 
         { name:'link_id', type: 'int', useNull: true },
-        { name:'link_type_id', type: 'int', useNull: true },
         { name:'link_type', type: 'string' },
         { name:'leaf', type: 'boolean', defaultValue: false }
         

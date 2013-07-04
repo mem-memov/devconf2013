@@ -17,52 +17,14 @@ Ext.define('Admin.controller.MenuController', {
                 },
                 'app-menu-editor': {
                     itemcontextmenu: this.onItemContextMenu,
-                    selectionchange: this.onSelectionChange,
-                    render: this.onRender
+                    selectionchange: this.onSelectionChange
                 },
                 'app-menu-editor app-menu-context-menu': {
                     click: this.onContextMenuClick
                 }
             }
         });
-/*
-
-        this.control({
-            '#menuManagerTree': {
-                beforeitemcontextmenu: this.beforeContextMenu,
-                beforeedit: this.beforeTreeEdit,
-                validateedit: this.onTreeEditValidation,
-                edit: this.onTreeEdit
-            },
-            '#menuManagerContextMenuForFolder': {
-                click: this.onContextMenuClick
-            },
-            '#menuManagerContextMenuForTopFolder': {
-                click: this.onContextMenuClick
-            },
-            '#menuManagerContextMenuForReference': {
-                click: this.onContextMenuClick
-            },
-            '#menuManagerTreeDashboardCombobox': {
-                added: this.dashboardComboboxAdded
-            },
-            '#menuManagerTreeLinkColumn': {
-                click: this.onLinkColumnClick
-            }
-        });
-        
-        this.application.on({
-            dashboardListChanged: this.refreshDashboardList,
-            dashboardRemoved: this.refreshDashboardList,
-            scope: this
-        });
-*/        
-    },
-    
-    onRender: function(menuEditor) {
-        
-        //menuEditor.getStore().getRootNode().expand();
-        
+   
     },
     
     onExpandAllButtonClick: function(expandAllButton) {
@@ -193,8 +155,7 @@ Ext.define('Admin.controller.MenuController', {
                 var newNode = selectedNode.appendChild({
                     id: null,
                     text: '',
-                    leaf: false,
-                    loaded: true
+                    leaf: false
                 });
                 menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(newNode, 0);
             }, this, {single: true});
@@ -207,8 +168,7 @@ Ext.define('Admin.controller.MenuController', {
                 var newNode = selectedNode.appendChild({
                     id: null,
                     text: '',
-                    leaf: true,
-                    loaded: true
+                    leaf: true
                 });
                 menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(newNode, 0);
             }, this, {single: true});
@@ -216,81 +176,6 @@ Ext.define('Admin.controller.MenuController', {
 
         }
 
-    },
-    
-    
-    
-    
-    
-    
-
-    
-    refreshDashboardList: function() {
-
-        var dashboardCombobox = Ext.ComponentQuery.query('#menuManagerTreeDashboardCombobox')[0];
-        
-        if (dashboardCombobox) {
-            var store = dashboardCombobox.getStore();
-            store.reload({
-                scope: this,
-                callback: function(records, operation, success) {
-                    this.insertEmptyRecordIntoDashboardStore(store);
-                }
-            });
-        }
-
-    },
-    
-    insertEmptyRecordIntoDashboardStore: function(store) {
-        
-        var emptyText = '-- не назначен --';
-        
-        if (store.query('name', emptyText).getCount() == 0) {
-            
-            store.insert(0, [{'id': null, 'name': emptyText}]);
-            
-        }
-        
-    },
-    
-    beforeTreeEdit: function(editor, editEvent) {
-        
-        // запрещаем назначать дэшборды папкам
-        if (!editEvent.record.get('leaf') && editEvent.field == 'link_id') {
-            editEvent.cancel = true;
-            return false;
-        }
-        
-    },
-    
-    onTreeEditValidation: function(editor, editEvent) {
-        
-
-        
-    },
-    
-    onTreeEdit: function(editor, editEvent) {
-
-        if (editEvent.record.get('leaf') && editEvent.field == 'link_id') {
-
-            if (editEvent.value === null) {
-                
-                // удаление дэшборда из пункта меню
-                editEvent.record.set('link_title', '');
-                
-            } else {
-                
-                // назначение дэшборда
-                
-                var combobox = Ext.ComponentQuery.query('#menuManagerTreeDashboardCombobox')[0];
-                var record = combobox.findRecordByValue(editEvent.value);
-
-                editEvent.record.set('link_title', record.get('name'));
-                
-            }
-
-        }
-        
     },
     
     onLinkColumnClick: function(treeView, cellElement, num1, num2, clickEvent, menuRecord, rowElement, menuManagerTree) {

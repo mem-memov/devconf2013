@@ -64,7 +64,7 @@ implements
         $values[$idColumn] = 'DEFAULT';
         
         $fields = array();
-        foreach (array_keys($columnValues) as $field) {
+        foreach (array_keys($values) as $field) {
             $fields[] = '`' . $field . '`';
         }
         
@@ -73,7 +73,7 @@ implements
                 '.implode(', ', $fields).'
             )
             VALUES (
-                '.implode(', ', array_values($columnValues)).'
+                '.implode(', ', array_values($values)).'
             )
             ;
         ');

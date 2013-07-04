@@ -1,5 +1,5 @@
 <?php
-class Doctor_Service_TreeMaker_Tree {
+class Doctor_Service_TreeMaker_Tree implements Doctor_Service_Interface_TreeMaker {
     
     private $row;
 
@@ -12,7 +12,7 @@ class Doctor_Service_TreeMaker_Tree {
         
         if (is_null($myRow)) {
             
-            $this->row = array('id' => null, 'text' => '.', 'leaf' => false, 'loaded' => true);
+            $this->row = array('id' => null);
 
             foreach ($rows as $index => $row) {
                 
@@ -33,24 +33,22 @@ class Doctor_Service_TreeMaker_Tree {
         $this->row = $myRow;
 
         foreach ($rows as $index => $row) {
-            
+
             if ($row['parent_id'] == $myRow['id']) {
 
                 $this->children[] = new self($rows, $row);
 
             }
-            
+
         }
-        
+
     }
     
     public function toArray() {
         
         $array = $this->row;
-        
-        if ($this->row['leaf']) {
-            $array['loaded'] = true;
-        }
+
+        $array['loaded'] = true;
 
         if (is_array($this->children) && !empty($this->children)) {
 
@@ -67,7 +65,7 @@ class Doctor_Service_TreeMaker_Tree {
     }
     
     public function toFlatArray() {
-        
+
         $flatArray = $this->isRootNode() ? array() : array($this->row);
         
         if (is_array($this->children)) {
@@ -116,9 +114,9 @@ class Doctor_Service_TreeMaker_Tree {
         
     }
     
-    public function removeNode(Doctor_Service_TreeMaker_Tree $node) {
+    public function removeNode(Doctor_Service_Interface_TreeMaker $node) {
         
-        if ($this->isRootNode()) {
+        if ($this.isRootNode() && $node === $this) {
             
             throw new Exception('Невозможно удалить корневой узел');
             
@@ -154,7 +152,7 @@ class Doctor_Service_TreeMaker_Tree {
         
     }
     
-    public function append(Doctor_Service_TreeMaker_Tree  $targetNode, array $nodes) {
+    public function append(Doctor_Service_Interface_TreeMaker  $targetNode, array $nodes) {
         
         if ($targetNode === $this) {
 
@@ -191,8 +189,8 @@ class Doctor_Service_TreeMaker_Tree {
         
     }
     
-    public function insertBefore(Doctor_Service_TreeMaker_Tree  $targetNode, array $nodes) {
-
+    public function insertBefore(Doctor_Service_Interface_TreeMaker  $targetNode, array $nodes) {
+        
         if (is_array($this->children)) {
             
             foreach ($this->children as $index => $child) {
@@ -227,7 +225,7 @@ class Doctor_Service_TreeMaker_Tree {
         
     }
     
-    public function insertAfter(Doctor_Service_TreeMaker_Tree  $targetNode, array $nodes) {
+    public function insertAfter(Doctor_Service_Interface_TreeMaker  $targetNode, array $nodes) {
 
         if (is_array($this->children)) {
             
@@ -264,7 +262,7 @@ class Doctor_Service_TreeMaker_Tree {
     }
     
     private function joinParent($parentId, $orderNumber) {
-        
+
         $this->row['parent_id'] = $parentId;
         $this->row['position'] = $orderNumber;
         

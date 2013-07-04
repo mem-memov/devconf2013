@@ -31,6 +31,58 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
         
     }
     
+    public function createMenuItem(stdClass $request) {
+        
+        $tree = $this->fetchMenuTree();
+
+        $parentNode = $tree->findNodeById($request->parentId); // значение parentId устанавливается автоматически Ext.data.TreeStore
+        
+        $rows = array();
+        $childNode = $this->serviceLocator->getTreeMaker($rows, array(
+            'id' => $this->dataAccessFactory->makeMenu()->create($request->leaf), // значение leaf устанавливается автоматически Ext.data.TreeStore
+            
+            'parent_id' => null,
+            'position' => null,
+            'text' => $request->text,
+            'leaf' => $request->leaf,
+            'link_id' => null,
+            'link_type_id' => null
+            
+        ));
+        
+        $tree->append($parentNode, array($childNode));
+        
+        $this->saveMenuTree($tree);
+
+        return array(
+            'success' => true,
+            'children' => $childNode->toFlatArray()
+        );
+        
+    }
+    
+    public function deleteMenuItem(stdClass $request) {
+        
+        var_dump($request);
+        
+        return array(
+            'success' => true,
+            'children' => array()
+        );
+        
+    }
+    
+    public function updateMenuItem(stdClass $request) {
+        
+        var_dump($request);
+        
+        return array(
+            'success' => true,
+            'children' => array()
+        );
+        
+    }
+    
     public function readMenu(stdClass $request) {
 
         $parentNodeId = $request->node;
@@ -110,19 +162,7 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
                 break;
         }
 
-        foreach ($tree->toFlatArray() as $row) {
-            
-            $this->dataAccessFactory->makeMenu()->update(
-                $row['id'], 
-                $row['parent_id'], 
-                $row['position'], 
-                $row['text'], 
-                $row['link_id'], 
-                $row['link_type_id'], 
-                $row['leaf']
-            );
-            
-        }
+        $this->saveMenuTree($tree);
 
         return array(
             'success' => true
@@ -135,13 +175,34 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
     
     
     
- 
+    /**
+     * 
+     * @return Doctor_Service_Interface_TreeMaker
+     */
     private function fetchMenuTree() {
         
         $rows = $this->dataAccessFactory->makeMenu()->load();
         $tree = $this->serviceLocator->getTreeMaker($rows);
         
         return $tree;
+        
+    }
+    
+    private function saveMenuTree(Doctor_Service_Interface_TreeMaker $tree) {
+        
+        foreach ($tree->toFlatArray() as $row) {
+
+            $this->dataAccessFactory->makeMenu()->update(
+                $row['id'], 
+                $row['parent_id'], 
+                $row['position'], 
+                $row['text'], 
+                $row['link_id'], 
+                $row['link_type_id'], 
+                $row['leaf']
+            );
+            
+        }
         
     }
     

@@ -97,6 +97,10 @@ implements
         if ($result !== true) {
             throw new Doctor_Service_SqlDatabase_Exception_ResultUnexpected(gettype($result), $query);
         }
+        
+        if ($this->connection->insert_id == 0) {
+            throw new Doctor_Service_SqlDatabase_Exception_Basic('Поле идентификатора не увличивается автоматически. AUTO_INCREMENT = false');
+        }
 
         return $this->connection->insert_id;
         
