@@ -65,7 +65,7 @@ class Doctor_DataAccess_Menu extends Doctor_DataAccess_Abstract_Provider {
     }
     
     public function delete($id) {
-  
+
         $this->db->fetchNumberOfAffectedRows('
             DELETE FROM
                 menu

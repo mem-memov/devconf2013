@@ -45,7 +45,7 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
         
     }
     
-    public function deleteMenuItem(stdClass $request) {
+    public function deleteMenuItem($requests) {
         
         if ($requests instanceof stdClass) {
             $requests = array($requests);
@@ -58,7 +58,13 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
             $removedNode = $tree->findNodeById($request->id);
             
             $tree->removeNode($removedNode);
-            
+
+            foreach ($removedNode->toFlatArray() as $row) {
+
+                $this->dataAccessFactory->makeMenu()->delete($row['id']);
+                
+            }
+
         }
         
         $this->saveMenuTree($tree);
@@ -69,7 +75,7 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
         
     }
     
-    public function updateMenuItem(stdClass $requests) {
+    public function updateMenuItem($requests) {
         
         if ($requests instanceof stdClass) {
             $requests = array($requests);
@@ -80,9 +86,9 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
         foreach ($requests as $request) {
             
             $tree->updateNode($this->objectToArray($request));
-            
+
         }
-        
+
         $this->saveMenuTree($tree);
         
         return array(

@@ -137,20 +137,24 @@ Ext.define('Admin.controller.MenuController', {
 
         if (item.is('[itemId="rename-button"]') && !selectedNode.isRoot()) {
 
+            // изменяем название
             menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(selectedNode, 0);
 
         } else if (item.is('[itemId="delete-button"]') && !selectedNode.isRoot()) {
 
+            // удаляем из меню
             selectionModel.select(selectedNode);
             var message = 'Удалить "' + selectedNode.get('text') + '"?';
             Ext.MessageBox.confirm('Запрос подтверждения', message, function(buttonId) {
                 if (buttonId === 'yes') {
+                    selectionModel.deselect(selectedNode);
                     selectedNode.remove();
                 }
             });
 
         } else if (item.is('[itemId="create-folder-button"]') && !selectedNode.isLeaf()) {
 
+            // создаём раздел меню
             var createBranch = (function(menuEditor, selectedNode) { 
                 return function() {
                     var newNode = selectedNode.appendChild({
@@ -177,6 +181,7 @@ Ext.define('Admin.controller.MenuController', {
 
         } else if (item.is('[itemId="create-reference-button"]') && !selectedNode.isLeaf()) {
 
+            // создаём пункт меню
             var createLeaf = (function(menuEditor, selectedNode) { 
                 return function() {
                     var newNode = selectedNode.appendChild({

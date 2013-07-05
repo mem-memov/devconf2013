@@ -28,16 +28,6 @@ Ext.remote.REMOTING_API = {
 		],
 		"Menu": [
 			{
-				"name": "appendList",
-				"len": 2,
-				"formHandler": false
-			},
-			{
-				"name": "appendReference",
-				"len": 2,
-				"formHandler": false
-			},
-			{
 				"name": "createMenuItem",
 				"len": 1,
 				"formHandler": false
@@ -54,16 +44,6 @@ Ext.remote.REMOTING_API = {
 			},
 			{
 				"name": "readMenu",
-				"len": 1,
-				"formHandler": false
-			},
-			{
-				"name": "updateMenu",
-				"len": 4,
-				"formHandler": false
-			},
-			{
-				"name": "destroyMenu",
 				"len": 1,
 				"formHandler": false
 			},

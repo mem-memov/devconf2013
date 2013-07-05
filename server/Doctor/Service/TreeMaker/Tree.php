@@ -156,14 +156,14 @@ class Doctor_Service_TreeMaker_Tree implements Doctor_Service_Interface_TreeMake
     
     public function removeNode(Doctor_Service_Interface_TreeMaker $node) {
         
-        if ($this.isRootNode() && $node === $this) {
+        if ($this->isRootNode() && $node === $this) {
             
             throw new Doctor_Service_TreeMaker_Exception('Невозможно удалить корневой узел');
             
         }
 
         if ($node === $this) { // находимся в удаляемом узле
-            
+
             $this->row['parent_id'] = -1;
             return true;
             
@@ -178,7 +178,8 @@ class Doctor_Service_TreeMaker_Tree implements Doctor_Service_Interface_TreeMake
                 if ($done) {
                     
                     if ($node === $child) { // находимся в родительском узле удаляемого узла
-                        unset($this->children[$index]);
+                        array_splice($this->children, $index, 1);
+                        $this->orderChildren();
                     }
                     
                     return true;

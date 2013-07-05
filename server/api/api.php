@@ -37,24 +37,6 @@
     ),
     'Menu' => 
     array (
-      'appendList' => 
-      array (
-        'length' => 2,
-        'parameters' => 
-        array (
-          'parentId' => NULL,
-          'text' => NULL,
-        ),
-      ),
-      'appendReference' => 
-      array (
-        'length' => 2,
-        'parameters' => 
-        array (
-          'parentId' => NULL,
-          'text' => NULL,
-        ),
-      ),
       'createMenuItem' => 
       array (
         'length' => 1,
@@ -68,7 +50,7 @@
         'length' => 1,
         'parameters' => 
         array (
-          'request' => NULL,
+          'requests' => NULL,
         ),
       ),
       'updateMenuItem' => 
@@ -85,25 +67,6 @@
         'parameters' => 
         array (
           'request' => NULL,
-        ),
-      ),
-      'updateMenu' => 
-      array (
-        'length' => 4,
-        'parameters' => 
-        array (
-          'id' => NULL,
-          'text' => NULL,
-          'linkType' => NULL,
-          'linkId' => NULL,
-        ),
-      ),
-      'destroyMenu' => 
-      array (
-        'length' => 1,
-        'parameters' => 
-        array (
-          'id' => NULL,
         ),
       ),
       'updatePositions' => 
