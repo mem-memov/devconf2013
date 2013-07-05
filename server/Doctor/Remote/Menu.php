@@ -47,11 +47,24 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
     
     public function deleteMenuItem(stdClass $request) {
         
-        var_dump($request);
+        if ($requests instanceof stdClass) {
+            $requests = array($requests);
+        }
+        
+        $tree = $this->fetchMenuTree();
+
+        foreach ($requests as $request) {
+            
+            $removedNode = $tree->findNodeById($request->id);
+            
+            $tree->removeNode($removedNode);
+            
+        }
+        
+        $this->saveMenuTree($tree);
         
         return array(
-            'success' => true,
-            'children' => array()
+            'success' => true
         );
         
     }
