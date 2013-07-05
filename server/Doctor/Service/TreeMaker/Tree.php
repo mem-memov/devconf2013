@@ -114,11 +114,51 @@ class Doctor_Service_TreeMaker_Tree implements Doctor_Service_Interface_TreeMake
         
     }
     
+    public function updateNode(array $data) {
+        
+        if (is_null($data['id'])) {
+            throw new Doctor_Service_TreeMaker_Exception('Обновляемый узел не имеет идентификатора.');
+        }
+        
+        if ($data['id'] == $this->row['id']) {
+            
+            foreach ($data as $key => $value) {
+                
+                if ($key == 'parent_id') {
+                    continue;
+                }
+                
+                $this->row[$key] = $value;
+                
+            }
+            
+            return true;
+            
+        }
+        
+        if (is_array($this->children)) {
+
+            foreach ($this->children as $index => $child) {
+                
+                $done = $child->updateNode($data);
+                
+                if ($done) {
+                    
+                    return true;
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
     public function removeNode(Doctor_Service_Interface_TreeMaker $node) {
         
         if ($this.isRootNode() && $node === $this) {
             
-            throw new Exception('Невозможно удалить корневой узел');
+            throw new Doctor_Service_TreeMaker_Exception('Невозможно удалить корневой узел');
             
         }
 

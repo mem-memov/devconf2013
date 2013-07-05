@@ -151,28 +151,55 @@ Ext.define('Admin.controller.MenuController', {
 
         } else if (item.is('[itemId="create-folder-button"]') && !selectedNode.isLeaf()) {
 
-            this.mon(menuEditor.getView(), 'afteritemexpand', function(node, index, item, eOpts) {
-                var newNode = selectedNode.appendChild({
-                    id: null,
-                    text: '',
-                    leaf: false
-                });
-                menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(newNode, 0);
-            }, this, {single: true});
-            selectedNode.expand();
+            var createBranch = (function(menuEditor, selectedNode) { 
+                return function() {
+                    var newNode = selectedNode.appendChild({
+                        id: null,
+                        text: '',
+                        leaf: false
+                    });
+                    menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(newNode, 0);
+                }
+            })(menuEditor, selectedNode);
             
-            
+            if (selectedNode.isExpanded()) {
+                
+                createBranch();
+                
+            } else {
+                
+                this.mon(menuEditor.getView(), 'afteritemexpand', function(node, index, item, eOpts) {
+                    createBranch();
+                }, this, {single: true});
+                selectedNode.expand();
+                
+            }
+
         } else if (item.is('[itemId="create-reference-button"]') && !selectedNode.isLeaf()) {
 
-            this.mon(menuEditor.getView(), 'afteritemexpand', function(node, index, item, eOpts) {
-                var newNode = selectedNode.appendChild({
-                    id: null,
-                    text: '',
-                    leaf: true
-                });
-                menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(newNode, 0);
-            }, this, {single: true});
-            selectedNode.expand();
+            var createLeaf = (function(menuEditor, selectedNode) { 
+                return function() {
+                    var newNode = selectedNode.appendChild({
+                        id: null,
+                        text: '',
+                        leaf: true
+                    });
+                    menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(newNode, 0);
+                }
+            })(menuEditor, selectedNode);
+            
+            if (selectedNode.isExpanded()) {
+                
+                createLeaf();
+                
+            } else {
+                
+                this.mon(menuEditor.getView(), 'afteritemexpand', function(node, index, item, eOpts) {
+                    createLeaf();
+                }, this, {single: true});
+                selectedNode.expand();
+                
+            }
 
         }
 

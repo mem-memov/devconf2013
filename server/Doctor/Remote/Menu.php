@@ -1,57 +1,41 @@
 <?php
 class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
     
-    public function appendList($parentId, $text) {
-
-        $userPanel = $this->getDomainFactory()->makeUserPanel();
-        $list = $userPanel->createMenuList($text);
-        $isSuccessful = $userPanel->appendToMenu($parentId, $list);
-
-        $listTree = $list->getTree();
+    /**
+     * Создаёт новый пункт меню
+     * @param stdClass|array $requests
+     * @return array
+     */
+    public function createMenuItem($requests) {
         
-        return array(
-            'success' => $isSuccessful,
-            'children' => array($listTree)
-        );
-        
-    }
-    
-    public function appendReference($parentId, $text) {
-
-        $userPanel = $this->getDomainFactory()->makeUserPanel();
-        $reference = $userPanel->createMenuReference($text);
-        $isSuccessful = $userPanel->appendToMenu($parentId, $reference);
-
-        $referenceTree = $reference->getTree();
-        
-        return array(
-            'success' => $isSuccessful,
-            'children' => array($referenceTree)
-        );
-        
-    }
-    
-    public function createMenuItem(stdClass $request) {
+        if ($requests instanceof stdClass) {
+            $requests = array($requests);
+        }
         
         $tree = $this->fetchMenuTree();
 
-        $parentNode = $tree->findNodeById($request->parentId); // значение parentId устанавливается автоматически Ext.data.TreeStore
-        
-        $rows = array();
-        $childNode = $this->serviceLocator->getTreeMaker($rows, array(
-            'id' => $this->dataAccessFactory->makeMenu()->create($request->leaf), // значение leaf устанавливается автоматически Ext.data.TreeStore
+        foreach ($requests as $request) {
             
-            'parent_id' => null,
-            'position' => null,
-            'text' => $request->text,
-            'leaf' => $request->leaf,
-            'link_id' => null,
-            'link_type_id' => null
+            $parentNode = $tree->findNodeById($request->parentId); // значение parentId устанавливается автоматически Ext.data.TreeStore
             
-        ));
-        
-        $tree->append($parentNode, array($childNode));
-        
+            $childId = $this->dataAccessFactory->makeMenu()->create($request->leaf); // значение leaf устанавливается автоматически Ext.data.TreeStore
+
+            $rows = array(array(
+                'id' => $childId,
+                'parent_id' => null,
+                'position' => null,
+                'text' => $request->text,
+                'leaf' => $request->leaf,
+                'link_id' => null,
+                'link_type_id' => null
+
+            ));
+            $childNode = $this->serviceLocator->getTreeMaker($rows)->findNodeById($childId);
+
+            $tree->append($parentNode, array($childNode));
+            
+        }
+
         $this->saveMenuTree($tree);
 
         return array(
@@ -72,13 +56,24 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
         
     }
     
-    public function updateMenuItem(stdClass $request) {
+    public function updateMenuItem(stdClass $requests) {
         
-        var_dump($request);
+        if ($requests instanceof stdClass) {
+            $requests = array($requests);
+        }
+        
+        $tree = $this->fetchMenuTree();
+
+        foreach ($requests as $request) {
+            
+            $tree->updateNode($this->objectToArray($request));
+            
+        }
+        
+        $this->saveMenuTree($tree);
         
         return array(
-            'success' => true,
-            'children' => array()
+            'success' => true
         );
         
     }
@@ -98,28 +93,6 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
         $response = $node->toArray(); 
         
         return $response;  
-        
-    }
-    
-    public function updateMenu($id, $text, $linkType, $linkId) {
-
-        $userPanel = $this->getDomainFactory()->makeUserPanel();
-        $isSuccessful = $userPanel->updateMenuItem($id, $text, $linkType, $linkId);
-        
-        return array(
-            'success' => $isSuccessful
-        );
-        
-    }
-    
-    public function destroyMenu($id) {
-
-        $userPanel = $this->getDomainFactory()->makeUserPanel();
-        $userPanel->destroyMenuItem($id);
-        
-        return array(
-            'success' => true
-        );
         
     }
     

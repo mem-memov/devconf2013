@@ -60,7 +60,7 @@
         'length' => 1,
         'parameters' => 
         array (
-          'request' => NULL,
+          'requests' => NULL,
         ),
       ),
       'deleteMenuItem' => 
@@ -76,7 +76,7 @@
         'length' => 1,
         'parameters' => 
         array (
-          'request' => NULL,
+          'requests' => NULL,
         ),
       ),
       'readMenu' => 
