@@ -23,7 +23,7 @@ class Doctor_Remote_Abstract_Controller {
         
         $this->dataAccessFactory = $dataAccessFactory;
         $this->serviceLocator = $serviceLocator;
-        
+
     }
     
     /**

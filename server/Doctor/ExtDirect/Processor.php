@@ -36,6 +36,9 @@ class Doctor_ExtDirect_Processor {
         array $post,
         array $files
     ) {
+        
+        $database = $this->factory->makeServiceLocator()->getDatabase();
+        $database->beginTransaction();
 
         $input = $this->factory->makeInput();
         $input->initialize($post, $files, $rawRequestString, $uri);
@@ -90,6 +93,8 @@ class Doctor_ExtDirect_Processor {
             }
 
         }
+        
+        $database->commit();
 
         // Сообщаем, что обработать запрос не можем
         if (!isset($headers, $contents)) {

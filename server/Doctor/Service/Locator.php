@@ -27,6 +27,11 @@ class Doctor_Service_Locator {
         
     }
     
+    /**
+     * 
+     * @return Doctor_Service_Interface_SqlDatabase
+     * @throws Doctor_Service_Exception
+     */
     public function getDatabase() {
         
         $config = $this->config['база данных'];

@@ -188,7 +188,7 @@ class Doctor_ExtDirect_Factory {
 
             $this->instances[$instanceKey] = new Doctor_ExtDirect_Factory_Controller(
                   $this->makeDataAccessFactory(),
-                  $this->makeServiceLocator()  
+                  $this->makeServiceLocator() 
             );
             
         }
