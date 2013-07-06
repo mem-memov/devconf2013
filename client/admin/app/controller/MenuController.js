@@ -19,8 +19,17 @@ Ext.define('Admin.controller.MenuController', {
                     itemcontextmenu: this.onItemContextMenu,
                     selectionchange: this.onSelectionChange
                 },
-                'app-menu-editor app-menu-context-menu': {
-                    click: this.onContextMenuClick
+                'app-menu-editor app-menu-context-menu [itemId="rename-button"]': {
+                    click: this.onRenameButtonClick
+                },
+                'app-menu-editor app-menu-context-menu [itemId="delete-button"]': {
+                    click: this.onDeleteButtonClick
+                },
+                'app-menu-editor app-menu-context-menu [itemId="create-folder-button"]': {
+                    click: this.onCreateFolderButtonClick
+                },
+                'app-menu-editor app-menu-context-menu [itemId="create-html-button"]': {
+                    click: this.onCreateReferenceButtonClick
                 }
             }
         });
@@ -88,7 +97,7 @@ Ext.define('Admin.controller.MenuController', {
         var renameButton = contextMenu.down('[itemId="rename-button"]');
         var deleteButton = contextMenu.down('[itemId="delete-button"]');
         var createFolderButton = contextMenu.down('[itemId="create-folder-button"]');
-        var createReferenceButton = contextMenu.down('[itemId="create-reference-button"]');
+        var createReferenceButton = contextMenu.down('[itemId="create-reference-button-list"]');
 
         if (record.get('leaf')) {
             
@@ -120,10 +129,10 @@ Ext.define('Admin.controller.MenuController', {
         contextMenu.showAt(e.getXY());
         
     },
-
-    onContextMenuClick: function(menu, item, e) {
+    
+    onRenameButtonClick: function(button, event) {
         
-        var menuEditor = Ext.ComponentQuery.query('app-menu-editor{isVisible()}')[0];
+        var menuEditor = this.getActiveMenuEditor();
         
         var selectionModel = menuEditor.getSelectionModel();
         
@@ -134,80 +143,125 @@ Ext.define('Admin.controller.MenuController', {
         var selectedNodes = selectionModel.getSelection();
         var selectedNode = selectedNodes[0];
         selectionModel.deselectAll();
+        
+        menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(selectedNode, 0);
 
-        if (item.is('[itemId="rename-button"]') && !selectedNode.isRoot()) {
+    },
+    
+    onDeleteButtonClick: function(button, event) {
+        
+        var menuEditor = this.getActiveMenuEditor();
+        
+        var selectionModel = menuEditor.getSelectionModel();
+        
+        if (!selectionModel.hasSelection()) {
+            return;
+        }
+        
+        var selectedNodes = selectionModel.getSelection();
+        var selectedNode = selectedNodes[0];
+        selectionModel.deselectAll();
+        
+        selectionModel.select(selectedNode);
+        var message = 'Удалить "' + selectedNode.get('text') + '"?';
+        Ext.MessageBox.confirm('Запрос подтверждения', message, function(buttonId) {
+            if (buttonId === 'yes') {
+                selectionModel.deselect(selectedNode);
+                selectedNode.remove();
+            }
+        });
+        
+    },
+    
+    onCreateFolderButtonClick: function(button, event) {
+        
+        var menuEditor = this.getActiveMenuEditor();
+        
+        var selectionModel = menuEditor.getSelectionModel();
+        
+        if (!selectionModel.hasSelection()) {
+            return;
+        }
+        
+        var selectedNodes = selectionModel.getSelection();
+        var selectedNode = selectedNodes[0];
+        selectionModel.deselectAll();
+        
+        var createBranch = (function(menuEditor, selectedNode) { 
+            return function() {
+                var newNode = selectedNode.appendChild({
+                    id: null,
+                    text: '',
+                    leaf: false
+                });
+                menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(newNode, 0);
+            }
+        })(menuEditor, selectedNode);
 
-            // изменяем название
-            menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(selectedNode, 0);
+        if (selectedNode.isExpanded()) {
 
-        } else if (item.is('[itemId="delete-button"]') && !selectedNode.isRoot()) {
+            createBranch();
 
-            // удаляем из меню
-            selectionModel.select(selectedNode);
-            var message = 'Удалить "' + selectedNode.get('text') + '"?';
-            Ext.MessageBox.confirm('Запрос подтверждения', message, function(buttonId) {
-                if (buttonId === 'yes') {
-                    selectionModel.deselect(selectedNode);
-                    selectedNode.remove();
-                }
-            });
+        } else {
 
-        } else if (item.is('[itemId="create-folder-button"]') && !selectedNode.isLeaf()) {
-
-            // создаём раздел меню
-            var createBranch = (function(menuEditor, selectedNode) { 
-                return function() {
-                    var newNode = selectedNode.appendChild({
-                        id: null,
-                        text: '',
-                        leaf: false
-                    });
-                    menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(newNode, 0);
-                }
-            })(menuEditor, selectedNode);
-            
-            if (selectedNode.isExpanded()) {
-                
+            this.mon(menuEditor.getView(), 'afteritemexpand', function(node, index, item, eOpts) {
                 createBranch();
-                
-            } else {
-                
-                this.mon(menuEditor.getView(), 'afteritemexpand', function(node, index, item, eOpts) {
-                    createBranch();
-                }, this, {single: true});
-                selectedNode.expand();
-                
-            }
-
-        } else if (item.is('[itemId="create-reference-button"]') && !selectedNode.isLeaf()) {
-
-            // создаём пункт меню
-            var createLeaf = (function(menuEditor, selectedNode) { 
-                return function() {
-                    var newNode = selectedNode.appendChild({
-                        id: null,
-                        text: '',
-                        leaf: true
-                    });
-                    menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(newNode, 0);
-                }
-            })(menuEditor, selectedNode);
-            
-            if (selectedNode.isExpanded()) {
-                
-                createLeaf();
-                
-            } else {
-                
-                this.mon(menuEditor.getView(), 'afteritemexpand', function(node, index, item, eOpts) {
-                    createLeaf();
-                }, this, {single: true});
-                selectedNode.expand();
-                
-            }
+            }, this, {single: true});
+            selectedNode.expand();
 
         }
+        
+    },
+    
+    onCreateReferenceButtonClick: function(button, event) {
+        
+        var menuEditor = this.getActiveMenuEditor();
+        
+        var selectionModel = menuEditor.getSelectionModel();
+        
+        if (!selectionModel.hasSelection()) {
+            return;
+        }
+        
+        var selectedNodes = selectionModel.getSelection();
+        var selectedNode = selectedNodes[0];
+        selectionModel.deselectAll();
+        
+        var linkType;
+        switch (button.getItemId()) {
+            case 'create-html-button':
+                linkType = 'html';
+                break;
+            default:
+                Ext.Error.raise('Неизвестный тип кнопки меню');
+                break;
+        }
+        
+        var createLeaf = (function(menuEditor, selectedNode) { 
+            return function() {
+                var newNode = selectedNode.appendChild({
+                    id: null,
+                    text: '',
+                    leaf: true,
+                    link_type: linkType
+                });
+                menuEditor.getPlugin('menuEditorCellEditingPlugin').startEdit(newNode, 0);
+            }
+        })(menuEditor, selectedNode);
 
+        if (selectedNode.isExpanded()) {
+
+            createLeaf();
+
+        } else {
+
+            this.mon(menuEditor.getView(), 'afteritemexpand', function(node, index, item, eOpts) {
+                createLeaf();
+            }, this, {single: true});
+            selectedNode.expand();
+
+        }
+        
     },
     
     onLinkColumnClick: function(treeView, cellElement, num1, num2, clickEvent, menuRecord, rowElement, menuManagerTree) {
@@ -222,6 +276,18 @@ Ext.define('Admin.controller.MenuController', {
             type: menuRecord.get('link_type')
             
         });
+        
+    },
+    
+    getActiveMenuEditor: function() {
+        
+        var menuEditor = Ext.ComponentQuery.query('app-menu-editor{isVisible()}')[0];
+        
+        if (!menuEditor) {
+            Ext.error.raise('Не обнаружен активный редактор меню');
+        }
+        
+        return menuEditor;
         
     }
     

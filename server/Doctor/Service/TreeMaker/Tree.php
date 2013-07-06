@@ -124,7 +124,8 @@ class Doctor_Service_TreeMaker_Tree implements Doctor_Service_Interface_TreeMake
             
             foreach ($data as $key => $value) {
                 
-                if ($key == 'parent_id') {
+                // пропускаем поля, определяющие структуру дерева
+                if ($key == 'parent_id' || $key == 'id' || $key == 'position') {
                     continue;
                 }
                 

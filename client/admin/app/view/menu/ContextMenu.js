@@ -12,8 +12,14 @@ Ext.define('Admin.view.menu.ContextMenu', {
         icon: 'resources/images/icons/folder.gif'
     },{        
         text: 'Создать пункт',
-        itemId: 'create-reference-button',
-        icon: 'resources/images/icons/leaf.gif'    
+        icon: 'resources/images/icons/leaf.gif',
+        itemId: 'create-reference-button-list',
+        menu: [
+            {
+                text: 'HTML',
+                itemId: 'create-html-button'
+            }
+        ]
     },{        
         text: 'Переименовать',
         itemId: 'rename-button',

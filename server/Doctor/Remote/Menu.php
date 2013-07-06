@@ -3,38 +3,35 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
     
     /**
      * Создаёт новый пункт меню
-     * @param stdClass|array $requests
+     * @param stdClass $request
      * @return array
      */
-    public function createMenuItem($requests) {
+    public function createMenuItem($request) {
         
-        if ($requests instanceof stdClass) {
-            $requests = array($requests);
+        // если приходит массив, отказываемся выполнять операцию сразу на нескольких узлах
+        if (!($request instanceof stdClass)) {
+            return;
         }
-        
+
         $tree = $this->fetchMenuTree();
 
-        foreach ($requests as $request) {
-            
-            $parentNode = $tree->findNodeById($request->parentId); // значение parentId устанавливается автоматически Ext.data.TreeStore
-            
-            $childId = $this->dataAccessFactory->makeMenu()->create($request->leaf, $this->siteId); // значение leaf устанавливается автоматически Ext.data.TreeStore
+        $parentNode = $tree->findNodeById($request->parentId); // значение parentId устанавливается автоматически Ext.data.TreeStore
 
-            $rows = array(array(
-                'id' => $childId,
-                'parent_id' => null,
-                'position' => null,
-                'text' => $request->text,
-                'leaf' => $request->leaf,
-                'link_id' => null,
-                'link_type_id' => null
+        $childId = $this->dataAccessFactory->makeMenu()->create($request->leaf, $this->siteId); // значение leaf устанавливается автоматически Ext.data.TreeStore
 
-            ));
-            $childNode = $this->serviceLocator->getTreeMaker($rows)->findNodeById($childId);
+        $rows = array(array(
+            'id' => $childId,
+            'parent_id' => null,
+            'position' => null,
+            'text' => $request->text,
+            'leaf' => $request->leaf,
+            'link_id' => null,
+            'link_type_id' => null
 
-            $tree->append($parentNode, array($childNode));
-            
-        }
+        ));
+        $childNode = $this->serviceLocator->getTreeMaker($rows)->findNodeById($childId);
+
+        $tree->append($parentNode, array($childNode));
 
         $this->saveMenuTree($tree);
 
@@ -45,47 +42,22 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
         
     }
     
-    public function deleteMenuItem($requests) {
+    public function deleteMenuItem($request) {
         
-        if ($requests instanceof stdClass) {
-            $requests = array($requests);
+        // если приходит массив, отказываемся выполнять операцию сразу на нескольких узлах
+        if (!($request instanceof stdClass)) {
+            return;
         }
-        
+
         $tree = $this->fetchMenuTree();
 
-        foreach ($requests as $request) {
-            
-            $removedNode = $tree->findNodeById($request->id);
-            
-            $tree->removeNode($removedNode);
+        $removedNode = $tree->findNodeById($request->id);
 
-            foreach ($removedNode->toFlatArray() as $row) {
+        $tree->removeNode($removedNode);
 
-                $this->dataAccessFactory->makeMenu()->delete($row['id'], $this->siteId);
-                
-            }
+        foreach ($removedNode->toFlatArray() as $row) {
 
-        }
-        
-        $this->saveMenuTree($tree);
-        
-        return array(
-            'success' => true
-        );
-        
-    }
-    
-    public function updateMenuItem($requests) {
-        
-        if ($requests instanceof stdClass) {
-            $requests = array($requests);
-        }
-        
-        $tree = $this->fetchMenuTree();
-
-        foreach ($requests as $request) {
-            
-            $tree->updateNode($this->objectToArray($request));
+            $this->dataAccessFactory->makeMenu()->delete($row['id'], $this->siteId);
 
         }
 
@@ -97,7 +69,26 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
         
     }
     
-    public function readMenu(stdClass $request) {
+    public function updateMenuItem($request) {
+        
+        // если приходит массив, отказываемся выполнять операцию сразу на нескольких узлах
+        if (!($request instanceof stdClass)) {
+            return;
+        }
+
+        $tree = $this->fetchMenuTree();
+
+        $tree->updateNode($this->objectToArray($request));
+
+        $this->saveMenuTree($tree);
+        
+        return array(
+            'success' => true
+        );
+        
+    }
+    
+    public function readMenu($request) {
 
         $parentNodeId = $request->node;
         
