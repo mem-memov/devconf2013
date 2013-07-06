@@ -39,7 +39,7 @@ Ext.define('Admin.view.menu.MenuEditor', {
         flex: 1
     }, {
         xtype:'actioncolumn',
-        itemId: 'menuManagerTreeLinkColumn',
+        itemId: 'link-column',
         width: 50,
         items: [{
             icon: 'resources/images/icons/magnifying_glass.png',

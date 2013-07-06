@@ -10,11 +10,13 @@ Ext.define('Admin.view.Viewport', {
 
     items: [
         {
-            title: 'Меню',
-            xtype: 'app-menu-editor'
+            id: 'menu-editor',
+            xtype: 'app-menu-editor',
+            hidden: false
         }, {
-            title: 'HTML',
-            xtype: 'app-html-editor'
+            id: 'html-editor',
+            xtype: 'app-html-editor',
+            hidden: true
         }
     ]
 });

@@ -45,7 +45,9 @@ Ext.define('Admin.Application', {
     ],
 
     controllers: [
-        'Admin.controller.MenuController'
+        'Admin.controller.ViewportController',
+        'Admin.controller.MenuController',
+        'Admin.controller.HtmlEditorController'
     ],
     
     models: [

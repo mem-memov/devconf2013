@@ -30,6 +30,15 @@ Ext.define('Admin.controller.MenuController', {
                 },
                 'app-menu-editor app-menu-context-menu [itemId="create-html-button"]': {
                     click: this.onCreateReferenceButtonClick
+                },
+                'app-menu-editor [itemId="link-column"]': {
+                    click: this.onLinkColumnClick
+                }
+            },
+            controller: {
+                '*': {
+                    'editor-active': this.onEditorActive,
+                    'editor-not-active': this.onEditorNotActive
                 }
             }
         });
@@ -132,7 +141,7 @@ Ext.define('Admin.controller.MenuController', {
     
     onRenameButtonClick: function(button, event) {
         
-        var menuEditor = this.getActiveMenuEditor();
+        var menuEditor = this.getSiteMenuEditor();
         
         var selectionModel = menuEditor.getSelectionModel();
         
@@ -150,7 +159,7 @@ Ext.define('Admin.controller.MenuController', {
     
     onDeleteButtonClick: function(button, event) {
         
-        var menuEditor = this.getActiveMenuEditor();
+        var menuEditor = this.getSiteMenuEditor();
         
         var selectionModel = menuEditor.getSelectionModel();
         
@@ -175,7 +184,7 @@ Ext.define('Admin.controller.MenuController', {
     
     onCreateFolderButtonClick: function(button, event) {
         
-        var menuEditor = this.getActiveMenuEditor();
+        var menuEditor = this.getSiteMenuEditor();
         
         var selectionModel = menuEditor.getSelectionModel();
         
@@ -215,7 +224,7 @@ Ext.define('Admin.controller.MenuController', {
     
     onCreateReferenceButtonClick: function(button, event) {
         
-        var menuEditor = this.getActiveMenuEditor();
+        var menuEditor = this.getSiteMenuEditor();
         
         var selectionModel = menuEditor.getSelectionModel();
         
@@ -270,24 +279,30 @@ Ext.define('Admin.controller.MenuController', {
             return false;
         }
         
-        this.application.fireEvent('menuLinkClick', {
-            
-            id: menuRecord.get('link_id'),
-            type: menuRecord.get('link_type')
-            
-        });
+        this.application.fireEvent(
+            'menu-link-click', 
+            menuRecord.get('link_id'),
+            menuRecord.get('link_type'),
+            menuRecord.get('text')
+        );
         
     },
     
-    getActiveMenuEditor: function() {
+    onEditorActive: function() {
         
-        var menuEditor = Ext.ComponentQuery.query('app-menu-editor{isVisible()}')[0];
+        this.getSiteMenuEditor().hide();
         
-        if (!menuEditor) {
-            Ext.error.raise('Не обнаружен активный редактор меню');
-        }
+    },
+    
+    onEditorNotActive: function() {
         
-        return menuEditor;
+        this.getSiteMenuEditor().show();
+        
+    },
+    
+    getSiteMenuEditor: function() {
+        
+        return Ext.getCmp('menu-editor');
         
     }
     
