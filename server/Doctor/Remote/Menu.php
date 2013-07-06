@@ -18,7 +18,7 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
             
             $parentNode = $tree->findNodeById($request->parentId); // значение parentId устанавливается автоматически Ext.data.TreeStore
             
-            $childId = $this->dataAccessFactory->makeMenu()->create($request->leaf); // значение leaf устанавливается автоматически Ext.data.TreeStore
+            $childId = $this->dataAccessFactory->makeMenu()->create($request->leaf, $this->siteId); // значение leaf устанавливается автоматически Ext.data.TreeStore
 
             $rows = array(array(
                 'id' => $childId,
@@ -61,7 +61,7 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
 
             foreach ($removedNode->toFlatArray() as $row) {
 
-                $this->dataAccessFactory->makeMenu()->delete($row['id']);
+                $this->dataAccessFactory->makeMenu()->delete($row['id'], $this->siteId);
                 
             }
 
@@ -173,7 +173,7 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
      */
     private function fetchMenuTree() {
         
-        $rows = $this->dataAccessFactory->makeMenu()->load();
+        $rows = $this->dataAccessFactory->makeMenu()->load($this->siteId);
         $tree = $this->serviceLocator->getTreeMaker($rows);
         
         return $tree;
@@ -191,7 +191,8 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
                 $row['text'], 
                 $row['link_id'], 
                 $row['link_type_id'], 
-                $row['leaf']
+                $row['leaf'],
+                $this->siteId
             );
             
         }

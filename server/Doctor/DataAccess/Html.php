@@ -22,7 +22,7 @@ class Doctor_DataAccess_Html extends Doctor_DataAccess_Abstract_Provider {
         
     }
     
-    public function read() {
+    public function read($siteId) {
         
         return $this->db->fetchRows('
             SELECT 
@@ -30,6 +30,8 @@ class Doctor_DataAccess_Html extends Doctor_DataAccess_Abstract_Provider {
                 html
             FROM
                 html
+            WHERE
+                site_id = '.(int)$siteId.'
             ;
         ');
         

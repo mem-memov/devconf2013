@@ -1,7 +1,7 @@
 <?php
 class Doctor_DataAccess_Menu extends Doctor_DataAccess_Abstract_Provider {
     
-    public function load() {
+    public function load($siteId) {
         
         $rows = $this->db->fetchRows('
             SELECT 
@@ -16,6 +16,8 @@ class Doctor_DataAccess_Menu extends Doctor_DataAccess_Abstract_Provider {
             FROM 
                 menu
                 LEFT JOIN link ON (link.id = menu.link_type_id)
+            WHERE
+                menu.site_id = '.(int)$siteId.'
             ORDER BY
                 menu.position ASC
             ;
@@ -29,19 +31,20 @@ class Doctor_DataAccess_Menu extends Doctor_DataAccess_Abstract_Provider {
         
     }
     
-    public function create($leaf) {
+    public function create($leaf, $siteId) {
 
         return $this->db->fetchDefaultId(
             'menu', 
             'id',
             array(
-                'leaf' => $this->db->prepareBoolean($leaf)
+                'leaf' => $this->db->prepareBoolean($leaf),
+                'site_id' => $siteId
             )
         );
         
     }
     
-    public function update($id, $parentId, $position, $text, $linkId, $linkTypeId, $leaf) {
+    public function update($id, $parentId, $position, $text, $linkId, $linkTypeId, $leaf, $siteId) {
 
         if (empty($parentId)) {
             $parentId = 'NULL';
@@ -58,19 +61,21 @@ class Doctor_DataAccess_Menu extends Doctor_DataAccess_Abstract_Provider {
                 link_type_id = '.$this->db->prepareIfNull($linkTypeId).',
                 leaf = '.$this->db->prepareBoolean($leaf).'
             WHERE
-                id = '.$id.'
+                id = '.(int)$id.'
+                AND site_id = '.(int)$siteId.'
             ;
         ');
 
     }
     
-    public function delete($id) {
+    public function delete($id, $siteId) {
 
         $this->db->fetchNumberOfAffectedRows('
             DELETE FROM
                 menu
             WHERE
                 id = '.$id.'
+                AND site_id = '.(int)$siteId.'
             ;
         ');
         

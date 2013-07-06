@@ -13,6 +13,8 @@ class Doctor_Remote_Abstract_Controller {
      */
     protected $serviceLocator;
     
+    protected $siteId;
+    
     /**
      * Создаёт экземпляр класса
      */
@@ -23,7 +25,9 @@ class Doctor_Remote_Abstract_Controller {
         
         $this->dataAccessFactory = $dataAccessFactory;
         $this->serviceLocator = $serviceLocator;
-
+       
+        $this->siteId = $this->dataAccessFactory->makeSite()->fetchSiteId($_SERVER['SERVER_NAME']);
+ 
     }
     
     /**

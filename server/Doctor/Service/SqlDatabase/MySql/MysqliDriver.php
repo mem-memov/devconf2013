@@ -107,6 +107,8 @@ implements
     }
     
     public function prepareString($value) {
+
+        $this->connect();
         
         return '"'. $this->connection->real_escape_string($value) . '"';
         

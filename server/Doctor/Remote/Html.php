@@ -29,7 +29,7 @@ class Doctor_Remote_Html extends Doctor_Remote_Abstract_Controller {
     
     public function read() {
 
-         return $this->dataAccessFactory->makeHtml()->read();
+         return $this->dataAccessFactory->makeHtml()->read($this->siteId);
     }
     
     public function update(stdClass $request) {

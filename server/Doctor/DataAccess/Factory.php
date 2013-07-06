@@ -29,6 +29,23 @@ class Doctor_DataAccess_Factory {
     }
     
     /**
+     * Сайт
+     * @return Doctor_DataAccess_Site
+     */
+    public function makeSite() {
+        
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            
+            $this->instances[$instanceKey] = new Doctor_DataAccess_Site($this->db);
+        }
+
+        return $this->instances[$instanceKey];
+        
+    }
+    
+    /**
      * Меню
      * @return Doctor_DataAccess_Menu
      */
