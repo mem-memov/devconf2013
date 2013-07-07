@@ -28,6 +28,14 @@ class Doctor_DataAccess_Factory {
         
     }
     
+    public function make($type) {
+        
+        $method = 'make' . ucfirst($type);
+        
+        return $this->$method();
+        
+    }
+    
     /**
      * Сайт
      * @return Doctor_DataAccess_Site
@@ -39,6 +47,23 @@ class Doctor_DataAccess_Factory {
         if (!isset($this->instances[$instanceKey])) {
             
             $this->instances[$instanceKey] = new Doctor_DataAccess_Site($this->db);
+        }
+
+        return $this->instances[$instanceKey];
+        
+    }
+    
+    /**
+     * Компонеты
+     * @return Doctor_DataAccess_Link
+     */
+    public function makeLink() {
+        
+        $instanceKey = __FUNCTION__;
+
+        if (!isset($this->instances[$instanceKey])) {
+            
+            $this->instances[$instanceKey] = new Doctor_DataAccess_Link($this->db);
         }
 
         return $this->instances[$instanceKey];

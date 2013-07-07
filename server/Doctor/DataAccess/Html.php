@@ -1,24 +1,12 @@
 <?php
 class Doctor_DataAccess_Html extends Doctor_DataAccess_Abstract_Provider {
     
-    public function create($studentId, $subjectId, $teacherId, $gradeId, $date) {
+    public function create($siteId) {
         
-        return $this->db->fetchLastId('
-            INSERT INTO assessment (
-                student_id, 
-                subject_id, 
-                teacher_id, 
-                grade_id, 
-                date
-            )
-            VALUES (
-                '.(int)$studentId.',
-                '.(int)$subjectId.',
-                '.(int)$teacherId.',
-                '.(int)$gradeId.',
-                '.$this->db->prepareString($date).'
-            );
-        ');
+        return $this->db->fetchDefaultId('html', 'id', array(
+            'site_id' => (int)$siteId,
+            'html' => $this->db->prepareString('')
+        ));
         
     }
     
@@ -53,13 +41,14 @@ class Doctor_DataAccess_Html extends Doctor_DataAccess_Abstract_Provider {
         
     }
     
-    public function destroy($assessmentId) {
+    public function delete($siteId, $id) {
         
         return $this->db->fetchNumberOfAffectedRows('
             DELETE FROM
-                assessment
+                html
             WHERE
-                id = '.(int)$assessmentId.'
+                site_id = '.(int)$siteId.'
+                AND id = '.(int)$id.'
             ;
         ');
         

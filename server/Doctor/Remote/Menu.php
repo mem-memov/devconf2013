@@ -12,6 +12,10 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
         if (!($request instanceof stdClass)) {
             return;
         }
+        
+        // TODO: добавить интерфейс
+        $linkId = $this->dataAccessFactory->make($request->link_type)->create($this->siteId);
+        $linkTypeId = $this->dataAccessFactory->makeLink()->fetchTypeId($request->link_type);
 
         $tree = $this->fetchMenuTree();
 
@@ -25,8 +29,8 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
             'position' => null,
             'text' => $request->text,
             'leaf' => $request->leaf,
-            'link_id' => null,
-            'link_type_id' => null
+            'link_id' => $linkId,
+            'link_type_id' => $linkTypeId
 
         ));
         $childNode = $this->serviceLocator->getTreeMaker($rows)->findNodeById($childId);
@@ -58,6 +62,11 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
         foreach ($removedNode->toFlatArray() as $row) {
 
             $this->dataAccessFactory->makeMenu()->delete($row['id'], $this->siteId);
+            
+            if (!empty($row['link_type']) && !empty($row['link_id'])) {
+                // TODO: добавить интерфейс
+                $this->dataAccessFactory->make($row['link_type'])->delete($this->siteId, $row['link_id']);
+            }
 
         }
 
