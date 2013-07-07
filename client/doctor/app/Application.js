@@ -50,8 +50,7 @@ Ext.define('Doctor.Application', {
     ],
 
     stores: [
-        'Doctor.store.MenuStore',
-        'Doctor.store.HtmlStore'
+        'Doctor.store.MenuStore'
     ],
     
     models: [

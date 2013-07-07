@@ -56,7 +56,6 @@ Ext.define('Admin.Application', {
     ],
 
     stores: [
-        'Admin.store.HtmlStore',
         'Admin.store.MenuStore'
     ]
 });

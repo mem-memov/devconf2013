@@ -4,9 +4,6 @@ Ext.define('Doctor.controller.HtmlPanelController', {
     
     init: function () {
         
-        this.store = Ext.create('Doctor.store.HtmlStore');
-        this.store.load();
-        
         this.listen({
             controller: {
                 '*': {
@@ -24,43 +21,48 @@ Ext.define('Doctor.controller.HtmlPanelController', {
             return;
         }
 
-        var htmlRecord = this.store.findRecord('id', menuRecord.get('link_id'));
-        
-        var htmlPanel = Ext.ComponentQuery.query('app-html-panel')[0];
-        
-        htmlPanel.animate({
-            to: {
-                opacity: 0
-            }, 
-            duration: htmlPanel.isUpdated ? 1000 : 0, // устраняем задержку первого показа
-            callback: function() {
+        this.getModel('Doctor.model.HtmlModel').load(menuRecord.get('link_id'), {
+            
+            success: function(htmlRecord, operation) {
                 
-                htmlPanel.update(htmlRecord.get('html'));
-                
-                htmlPanel.isUpdated = true;
- 
+                var htmlPanel = Ext.getCmp('html-panel');
+
                 htmlPanel.animate({
-                    from: {
-                        opacity: 1,
-                        x: 1000
-                    },
                     to: {
-                        opacity: 1,
-                        x: 250
-                    },
-                    duration: 2000
+                        opacity: 0
+                    }, 
+                    duration: htmlPanel.isUpdated ? 1000 : 0, // устраняем задержку первого показа
+                    callback: function() {
+
+                        htmlPanel.update(htmlRecord.get('html'));
+
+                        htmlPanel.isUpdated = true;
+
+                        htmlPanel.animate({
+                            from: {
+                                opacity: 1,
+                                x: 1000
+                            },
+                            to: {
+                                opacity: 1,
+                                x: 250
+                            },
+                            duration: 2000
+                        });
+
+                    }
                 });
                 
-            }
+            },
+            scope: this
+            
         });
-        
 
-        
     },
     
     onMenuDivisionSelected: function(menuRecord) {
         
-        var htmlPanel = Ext.ComponentQuery.query('app-html-panel')[0];
+        var htmlPanel = Ext.getCmp('html-panel');
         
         htmlPanel.animate({
             to: {

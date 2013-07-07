@@ -9,6 +9,18 @@ Ext.define('Doctor.model.HtmlModel', {
         { name:'id', type: 'int', useNull: true }, 
         { name:'html', type: 'string' }
         
-    ]
+    ],
+    
+    proxy: {
+        
+        type: 'direct',
+        
+        directFn: 'Ext.remote.Html.read',
+        
+        reader: {
+            type: 'json'
+        }
+        
+    }
 
 });

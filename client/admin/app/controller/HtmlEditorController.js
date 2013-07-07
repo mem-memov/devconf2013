@@ -25,11 +25,21 @@ Ext.define('Admin.controller.HtmlEditorController', {
             return;
         }
         
-        var editor = Ext.getCmp('html-editor');
-        editor.down('[itemId="document-title"]').setText(text);
-        editor.show();
-        
-        this.fireEvent('editor-active');
+        this.getModel('Admin.model.HtmlModel').load(linkId, {
+            
+            success: function(record, operation) {
+                
+                var editor = Ext.getCmp('html-editor');
+                editor.down('[itemId="document-title"]').setText(text);
+                editor.loadRecord(record);
+                editor.show();
+
+                this.fireEvent('editor-active');
+                
+            },
+            scope: this
+            
+        });
 
     },
     

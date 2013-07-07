@@ -15,7 +15,7 @@ Ext.define('Admin.view.HtmlEditor', {
         {
             xtype: 'htmleditor',
             enableKeyEvents: true,
-            name: 'markup'
+            name: 'html'
         }
     ],
     

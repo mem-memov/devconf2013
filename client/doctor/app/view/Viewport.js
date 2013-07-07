@@ -30,7 +30,8 @@ Ext.define('Doctor.view.Viewport', {
         layout: 'fit',
         items: [
             {
-                xtype: 'app-html-panel'
+                xtype: 'app-html-panel',
+                id: 'html-panel'
             }
         ]
     }]
