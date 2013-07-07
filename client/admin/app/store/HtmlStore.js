@@ -20,12 +20,6 @@ Ext.define('Admin.store.HtmlStore', {
             type: 'json'
         }
         
-    }//,
-    
-//    data: [
-//        { id: 1, html: '<img src="resources/images/portret.png" />' },
-//        { id: 2, html: '<p>Lorem ipsum</p>' },
-//        { id: 3, html: '<p>ляляляля</p>' }
-//    ]
+    }
     
 });

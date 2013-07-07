@@ -232,19 +232,19 @@ class Doctor_Service_TreeMaker_Tree implements Doctor_Service_Interface_TreeMake
     }
     
     public function insertBefore(Doctor_Service_Interface_TreeMaker  $targetNode, array $nodes) {
-        
+
         if (is_array($this->children)) {
             
             foreach ($this->children as $index => $child) {
 
                 if ($targetNode === $child) {
-                    
+
                     foreach ($nodes as $node) {
                         $this->checkType($node);
                     }
                     
                     array_splice($this->children, $index, 0, $nodes);
-                    
+
                     $this->orderChildren();
                     
                     return true;

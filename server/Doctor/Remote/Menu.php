@@ -124,9 +124,15 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
             
             $movedNode = $tree->findNodeById($movedId);
             
-            if ($movedNode instanceof Doctor_Service_TreeMaker_Tree) {
+            if ($movedNode instanceof Doctor_Service_Interface_TreeMaker) {
                 $movedNodes[] = $movedNode;
             }
+            
+        }
+        
+        foreach ($movedNodes as $movedNode) {
+            
+            $tree->removeNode($movedNode);
             
         }
 
