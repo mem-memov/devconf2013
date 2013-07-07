@@ -38,13 +38,16 @@ class Doctor_DataAccess_Html extends Doctor_DataAccess_Abstract_Provider {
         
     }
     
-    public function update($gradeId) {
+    public function update($siteId, $row) {
         
         return $this->db->fetchNumberOfAffectedRows('
             UPDATE
-                assessment
+                html
             SET
-                grade_id = '.(int)$gradeId.'
+                html = '.$this->db->prepareString($row['html']).'
+            WHERE
+                site_id = '.(int)$siteId.'
+                AND id = '.(int)$row['id'].'
             ;
         ');
         

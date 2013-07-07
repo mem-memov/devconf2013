@@ -6,8 +6,17 @@ Ext.define('Admin.controller.HtmlEditorController', {
         
         this.listen({
             component: {
+                'app-html-editor': {
+                    dirtychange: this.onDirtyChange
+                },
                 'app-html-editor [itemId="menu-button"]': {
                     click: this.onMenuButtonClick
+                },
+                'app-html-editor [itemId="save-button"]': {
+                    click: this.onSaveButtonClick
+                },
+                'app-html-editor [itemId="cancel-button"]': {
+                    click: this.onCancelButtonClick
                 }
             },
             controller: {
@@ -43,11 +52,65 @@ Ext.define('Admin.controller.HtmlEditorController', {
 
     },
     
-    onMenuButtonClick: function() {
+    onMenuButtonClick: function(button) {
+
+        var editor = button.up('app-html-editor');
         
-        Ext.getCmp('html-editor').hide();
+        if (!editor.isDirty()) {
+            editor.hide();
+            this.fireEvent('editor-not-active');
+            return;
+        }
         
-        this.fireEvent('editor-not-active');
+        Ext.Msg.alert('Внимание', 'Не сохранены изменения');
+
+    },
+    
+    onDirtyChange: function(basicForm, isDirty) {
+        
+        var formPanel = basicForm.owner;
+        
+        var menuButton = formPanel.down('[itemId="menu-button"]');
+        var saveButton = formPanel.down('[itemId="save-button"]');
+        var cancelButton = formPanel.down('[itemId="cancel-button"]');
+        
+        if (isDirty) {
+            
+            menuButton.disable();
+            saveButton.enable();
+            cancelButton.enable();
+            
+        } else {
+            
+            menuButton.enable();
+            saveButton.disable();
+            cancelButton.disable();
+            
+        }
+        
+    },
+    
+    onSaveButtonClick: function(button) {
+        
+        var formPanel = button.up('app-html-editor');
+        var record = formPanel.getRecord();
+        var values = formPanel.getValues();
+        
+        record.set(values); // изменяем значения записи, чтобы сработал метод save()
+        
+        record.save({
+            success: function(record, operation) {
+                formPanel.loadRecord(record); // загружаем запись в форму повторно, чтобы форма перестала быть dirty
+            }
+        });
+        
+    },
+    
+    onCancelButtonClick: function(button) {
+        
+        var formPanel = button.up('app-html-editor');
+        formPanel.getForm().reset();
+        formPanel.getForm().checkDirty();
         
     }
     

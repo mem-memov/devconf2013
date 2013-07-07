@@ -21,12 +21,6 @@ Ext.define('Admin.view.HtmlEditor', {
     
     tbar: [
         {
-            xtype: 'button',
-            itemId: 'menu-button',
-            text: 'В меню',
-            icon: 'resources/images/icons/arrow_left.png',
-            disabled: false
-        }, {
             xtype: 'tbtext',
             itemId: 'document-title',
             style: {
@@ -34,6 +28,12 @@ Ext.define('Admin.view.HtmlEditor', {
             },
             text: 'HTML-документ'
         }, '->', {
+            xtype: 'button',
+            itemId: 'menu-button',
+            text: 'В меню',
+            icon: 'resources/images/icons/arrow_left.png',
+            disabled: false
+        }, {
             xtype: 'button',
             itemId: 'save-button',
             text: 'Сохранить',

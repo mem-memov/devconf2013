@@ -17,7 +17,8 @@ Ext.define('Admin.model.HtmlModel', {
         
         api: {
             
-            read: 'Ext.remote.Html.read'
+            read: 'Ext.remote.Html.read',
+            update: 'Ext.remote.Html.update'
             
         },
         
