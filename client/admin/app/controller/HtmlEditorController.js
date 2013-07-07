@@ -67,7 +67,7 @@ Ext.define('Admin.controller.HtmlEditorController', {
     },
     
     onDirtyChange: function(basicForm, isDirty) {
-        
+
         var formPanel = basicForm.owner;
         
         var menuButton = formPanel.down('[itemId="menu-button"]');
@@ -110,7 +110,8 @@ Ext.define('Admin.controller.HtmlEditorController', {
         
         var formPanel = button.up('app-html-editor');
         formPanel.getForm().reset();
-        formPanel.getForm().checkDirty();
+
+        formPanel.loadRecord(formPanel.getRecord()); // загружаем запись в форму повторно, чтобы правильно выставлялся пизнак dirty
         
     }
     
