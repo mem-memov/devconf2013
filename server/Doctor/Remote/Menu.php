@@ -13,9 +13,14 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
             return;
         }
         
-        // TODO: добавить интерфейс
-        $linkId = $this->dataAccessFactory->make($request->link_type)->create($this->siteId);
-        $linkTypeId = $this->dataAccessFactory->makeLink()->fetchTypeId($request->link_type);
+        if ($request->leaf) {
+            // TODO: добавить интерфейс
+            $linkId = $this->dataAccessFactory->make($request->link_type)->create($this->siteId);
+            $linkTypeId = $this->dataAccessFactory->makeLink()->fetchTypeId($request->link_type);
+        } else {
+            $linkId = null;
+            $linkTypeId = null;
+        }
 
         $tree = $this->fetchMenuTree();
 
