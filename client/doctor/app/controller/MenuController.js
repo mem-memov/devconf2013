@@ -19,6 +19,10 @@ Ext.define('Doctor.controller.MenuController', {
     
     onListExpand: function(menuItemList) {
         
+        Ext.Array.each(Ext.ComponentQuery.query('app-menu [ItemId="app-menu-item"]'), function(menuItem) {
+            menuItem.isSelected = false;
+        });
+        
         this.fireEvent('menu-division-expanded', menuItemList.node);
         
     },
