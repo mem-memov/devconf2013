@@ -10,9 +10,13 @@ Ext.define('Admin.view.Viewport', {
 
     items: [
         {
+            id: 'authentication',
+            xtype: 'app-authentication',
+            hidden: false
+        }, {
             id: 'menu-editor',
             xtype: 'app-menu-editor',
-            hidden: false
+            hidden: true
         }, {
             id: 'html-editor',
             xtype: 'app-html-editor',

@@ -4,7 +4,9 @@ Ext.define('Doctor.view.HtmlPanel', {
     
     alias: 'widget.app-html-panel',
     
-    layout: 'fit',
+    requires: ['Ext.fx.Anim'],
+    
+    layout: 'fit',    
     
     initComponent: function() {
         

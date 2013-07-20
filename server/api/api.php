@@ -1,16 +1,19 @@
 <?php return array (
   'Doctor_Remote' => 
   array (
-    'Html' => 
+    'Authentication' => 
     array (
-      'create' => 
+      'loginFormHandler' => 
       array (
         'length' => 1,
         'parameters' => 
         array (
-          'request' => NULL,
+          'password' => NULL,
         ),
       ),
+    ),
+    'Html' => 
+    array (
       'read' => 
       array (
         'length' => 1,
@@ -20,14 +23,6 @@
         ),
       ),
       'update' => 
-      array (
-        'length' => 1,
-        'parameters' => 
-        array (
-          'request' => NULL,
-        ),
-      ),
-      'destroy' => 
       array (
         'length' => 1,
         'parameters' => 

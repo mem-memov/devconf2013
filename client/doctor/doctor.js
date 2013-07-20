@@ -110783,7 +110783,7 @@ Ext.define('Doctor.controller.HtmlPanelController', {
                     duration: htmlPanel.isUpdated ? 1000 : 0, // устраняем задержку первого показа
                     callback: function() {
 
-                        htmlPanel.update(htmlRecord.get('html'));
+                        htmlPanel.update(htmlRecord.get('html'), true);
 
                         htmlPanel.isUpdated = true;
 
@@ -111036,7 +111036,9 @@ Ext.define('Doctor.view.HtmlPanel', {
     
     alias: 'widget.app-html-panel',
     
-    layout: 'fit',
+                              
+    
+    layout: 'fit',    
     
     initComponent: function() {
         

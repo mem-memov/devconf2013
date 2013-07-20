@@ -12,10 +12,16 @@ Ext.define('Admin.controller.ViewportController', {
             },
             controller: {
                 '*': {
-                    
+                    'admin-authenticated': this.onAdminAuthenticated
                 }
             }
         });
+        
+    },
+    
+    onAdminAuthenticated: function() {
+        
+        Ext.getCmp('menu-editor').show();
         
     }
     

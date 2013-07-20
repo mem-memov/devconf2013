@@ -14,5 +14,18 @@ class Doctor_DataAccess_Site extends Doctor_DataAccess_Abstract_Provider {
         
     }
     
+    public function fetchPassword($id) {
+        
+        return $this->db->fetchValueFromFirstRow('
+            SELECT
+                password
+            FROM
+                site
+            WHERE
+                id = '.(int)$id.'
+        ', 'password');
+        
+    }
+    
     
 }

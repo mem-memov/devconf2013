@@ -38,6 +38,7 @@ Ext.define('Admin.Application', {
     },
 
     views: [
+        'Admin.view.Authentication',
         'Admin.view.HtmlEditor',
         'Admin.view.menu.MenuEditor',
         'Admin.view.menu.ContextMenu',
@@ -46,6 +47,7 @@ Ext.define('Admin.Application', {
 
     controllers: [
         'Admin.controller.ViewportController',
+        'Admin.controller.AuthenticationController',
         'Admin.controller.MenuController',
         'Admin.controller.HtmlEditorController'
     ],

@@ -4,12 +4,14 @@ Ext.remote.REMOTING_API = {
 	"namespace": "Ext.remote",
 	"type": "remoting",
 	"actions": {
-		"Html": [
+		"Authentication": [
 			{
-				"name": "create",
+				"name": "loginFormHandler",
 				"len": 1,
-				"formHandler": false
-			},
+				"formHandler": true
+			}
+		],
+		"Html": [
 			{
 				"name": "read",
 				"len": 1,
@@ -17,11 +19,6 @@ Ext.remote.REMOTING_API = {
 			},
 			{
 				"name": "update",
-				"len": 1,
-				"formHandler": false
-			},
-			{
-				"name": "destroy",
 				"len": 1,
 				"formHandler": false
 			}
