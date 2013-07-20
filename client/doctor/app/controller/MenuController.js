@@ -25,6 +25,16 @@ Ext.define('Doctor.controller.MenuController', {
     
     onItemClick: function(menuItem) {
 
+        if (menuItem.isSelected) { // предотвращаем повторные срабатывания
+            return;
+        }
+
+        Ext.Array.each(Ext.ComponentQuery.query('app-menu [ItemId="app-menu-item"]'), function(menuItem) {
+            menuItem.isSelected = false;
+        });
+        
+        menuItem.isSelected = true;
+        
         this.fireEvent('menu-item-selected', menuItem.node);
         
     }
