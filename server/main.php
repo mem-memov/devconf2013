@@ -12,6 +12,8 @@ error_reporting(-1);
 
 ini_set('always_populate_raw_post_data', true);
 
+session_start(); // авторизация через сессию
+
 require_once('Doctor/ExtDirect/Factory.php');
 
 try {

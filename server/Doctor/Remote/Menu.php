@@ -8,6 +8,13 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
      */
     public function createMenuItem($request) {
         
+        // проверяем авторизацию
+        if (!$this->isAuthenticated()) {
+            return array(
+                'success' => false
+            );
+        }
+        
         // если приходит массив, отказываемся выполнять операцию сразу на нескольких узлах
         if (!($request instanceof stdClass)) {
             return;
@@ -53,6 +60,13 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
     
     public function deleteMenuItem($request) {
         
+        // проверяем авторизацию
+        if (!$this->isAuthenticated()) {
+            return array(
+                'success' => false
+            );
+        }
+        
         // если приходит массив, отказываемся выполнять операцию сразу на нескольких узлах
         if (!($request instanceof stdClass)) {
             return;
@@ -84,6 +98,13 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
     }
     
     public function updateMenuItem($request) {
+        
+        // проверяем авторизацию
+        if (!$this->isAuthenticated()) {
+            return array(
+                'success' => false
+            );
+        }
         
         // если приходит массив, отказываемся выполнять операцию сразу на нескольких узлах
         if (!($request instanceof stdClass)) {
@@ -128,6 +149,13 @@ class Doctor_Remote_Menu extends Doctor_Remote_Abstract_Controller {
      */
     public function updatePositions($targetId, array $movedIds, $position) {
 
+        // проверяем авторизацию
+        if (!$this->isAuthenticated()) {
+            return array(
+                'success' => false
+            );
+        }
+        
         $tree = $this->fetchMenuTree();
         
         $targetNode = $tree->findNodeById($targetId);

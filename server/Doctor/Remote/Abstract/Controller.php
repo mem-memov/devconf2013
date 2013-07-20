@@ -15,6 +15,8 @@ class Doctor_Remote_Abstract_Controller {
     
     protected $siteId;
     
+    private $authenticated;
+    
     /**
      * Создаёт экземпляр класса
      */
@@ -27,7 +29,15 @@ class Doctor_Remote_Abstract_Controller {
         $this->serviceLocator = $serviceLocator;
        
         $this->siteId = $this->dataAccessFactory->makeSite()->fetchSiteId($_SERVER['SERVER_NAME']);
- 
+
+        $this->authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'];
+        
+    }
+    
+    protected function isAuthenticated() {
+        
+        return $this->authenticated;
+        
     }
     
     /**

@@ -5,8 +5,14 @@ class Doctor_Remote_Authentication extends Doctor_Remote_Abstract_Controller {
 
         $correctPassword = $this->dataAccessFactory->makeSite()->fetchPassword($this->siteId);
         
+        $authenticated = ($correctPassword == $password);
+        
+        if ($authenticated) {
+            $_SESSION['authenticated'] = true;
+        }
+        
         return array(
-            'success' => ($correctPassword == $password),
+            'success' => $authenticated,
             'data' => array()
         );
     }
