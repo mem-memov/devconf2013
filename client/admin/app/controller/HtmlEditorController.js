@@ -9,6 +9,9 @@ Ext.define('Admin.controller.HtmlEditorController', {
                 'app-html-editor': {
                     dirtychange: this.onDirtyChange
                 },
+                'app-html-editor [itemId="html-editor-field"]': {
+                    render: this.listenToKeyEvents
+                },
                 'app-html-editor [itemId="menu-button"]': {
                     click: this.onMenuButtonClick
                 },
@@ -24,6 +27,16 @@ Ext.define('Admin.controller.HtmlEditorController', {
                     'menu-link-click': this.onMenuLinkClick
                 }
             }
+        });
+        
+    },
+    
+    listenToKeyEvents: function(htmlEditorField) {
+        
+        htmlEditorField.getEl().down('textarea').on('keyup', function() {
+            
+            htmlEditorField.checkDirty();
+            
         });
         
     },

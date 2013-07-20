@@ -14,7 +14,7 @@ Ext.define('Admin.view.HtmlEditor', {
     items: [
         {
             xtype: 'htmleditor',
-            enableKeyEvents: true,
+            itemId: 'html-editor-field',
             name: 'html'
         }
     ],
