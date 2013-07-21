@@ -111007,6 +111007,7 @@ Ext.define('Doctor.view.Menu', {
                                 type: 'vbox',
                                 align: 'stretch'
                             },
+                            autoScroll: true,
                             node: node
                         };
                         
